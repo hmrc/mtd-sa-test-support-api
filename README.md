@@ -1,7 +1,7 @@
 
 # mtd-sa-test-support-api
 
-This is a placeholder README.md for a new repository
+This is a placeholder README.md for a new repository.
 
 ### License
 
