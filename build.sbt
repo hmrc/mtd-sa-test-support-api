@@ -1,16 +1,84 @@
-import uk.gov.hmrc.DefaultBuildSettings.integrationTestSettings
+//import uk.gov.hmrc.DefaultBuildSettings.integrationTestSettings
+//
+//lazy val microservice = Project("mtd-sa-test-support-api", file("."))
+//  .enablePlugins(play.sbt.PlayScala, SbtDistributablesPlugin)
+//  .settings(
+//    majorVersion        := 0,
+//    scalaVersion        := "2.13.8",
+//    libraryDependencies ++= AppDependencies.compile ++ AppDependencies.test,
+//    // https://www.scala-lang.org/2021/01/12/configuring-and-suppressing-warnings.html
+//    // suppress warnings in generated routes files
+//    scalacOptions += "-Wconf:src=routes/.*:s",
+//  )
+//  .configs(IntegrationTest)
+//  .settings(integrationTestSettings(): _*)
+//  .settings(resolvers += Resolver.jcenterRepo)
+//  .settings(CodeCoverageSettings.settings: _*)
 
-lazy val microservice = Project("mtd-sa-test-support-api", file("."))
-  .enablePlugins(play.sbt.PlayScala, SbtDistributablesPlugin)
+/*
+ * Copyright 2022 HM Revenue & Customs
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+import play.sbt.PlayImport.PlayKeys._
+import sbt._
+import sbt.complete.DefaultParsers._
+import uk.gov.hmrc.DefaultBuildSettings.{addTestReportOption, defaultSettings}
+import uk.gov.hmrc.sbtdistributables.SbtDistributablesPlugin.publishingSettings
+import uk.gov.hmrc.versioning.SbtGitVersioning.autoImport.majorVersion
+import uk.gov.hmrc.SbtAutoBuildPlugin
+
+import scala.sys.process._
+
+val appName = "mtd-sa-test-support-api"
+
+lazy val ItTest = config("it") extend Test
+
+lazy val microservice = Project(appName, file("."))
+  .enablePlugins(play.sbt.PlayScala, SbtAutoBuildPlugin, SbtDistributablesPlugin)
+  .disablePlugins(JUnitXmlReportPlugin) //Required to prevent https://github.com/scalatest/scalatest/issues/1427
   .settings(
-    majorVersion        := 0,
-    scalaVersion        := "2.13.8",
-    libraryDependencies ++= AppDependencies.compile ++ AppDependencies.test,
-    // https://www.scala-lang.org/2021/01/12/configuring-and-suppressing-warnings.html
-    // suppress warnings in generated routes files
-    scalacOptions += "-Wconf:src=routes/.*:s",
+    libraryDependencies ++= AppDependencies.compile ++ AppDependencies.test(),
+    retrieveManaged := true,
+    update / evictionWarningOptions := EvictionWarningOptions.default.withWarnScalaVersionEviction(warnScalaVersionEviction = false),
+    scalaVersion := "2.12.16",
+    scalacOptions ++= Seq(
+      "-Xfatal-warnings",
+      "-Wconf:src=routes/.*:silent"
+    )
   )
-  .configs(IntegrationTest)
-  .settings(integrationTestSettings(): _*)
-  .settings(resolvers += Resolver.jcenterRepo)
+  .settings(
+    Compile / unmanagedResourceDirectories += baseDirectory.value / "resources"
+  )
+  .settings(majorVersion := 0)
+  .settings(publishingSettings: _*)
   .settings(CodeCoverageSettings.settings: _*)
+  .settings(defaultSettings(): _*)
+  .configs(ItTest)
+  .settings(
+    inConfig(ItTest)(Defaults.itSettings ++ headerSettings(ItTest) ++ automateHeaderSettings(ItTest)),
+    ItTest / fork := true,
+    ItTest / unmanagedSourceDirectories := Seq((ItTest / baseDirectory).value / "it"),
+    ItTest / unmanagedClasspath += baseDirectory.value / "resources",
+    Runtime / unmanagedClasspath += baseDirectory.value / "resources",
+    ItTest / javaOptions += "-Dlogger.resource=logback-test.xml",
+    ItTest / parallelExecution := false,
+    addTestReportOption(ItTest, directory = "int-test-reports")
+  )
+  .settings(
+    resolvers += Resolver.jcenterRepo
+  )
+  .settings(PlayKeys.playDefaultPort := 7798)
+
+
