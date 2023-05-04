@@ -17,9 +17,7 @@
 package api.controllers
 
 import api.controllers.requestParsers.RequestParser
-import api.hateoas.{HateoasFactory, HateoasLinksFactory}
 import api.models.errors.{ErrorWrapper, InternalError}
-import api.models.hateoas.{HateoasData, HateoasWrapper}
 import api.models.outcomes.ResponseWrapper
 import api.models.request.RawData
 import cats.data.EitherT
@@ -87,27 +85,6 @@ object RequestHandler {
       */
     def withNoContentResult(successStatus: Int = Status.NO_CONTENT): RequestHandlerBuilder[InputRaw, Input, Output] =
       withResultCreator(ResultCreator.noContent(successStatus))
-
-    /** Shorthand for
-      * {{{
-      * withResultCreator(ResultCreator.hateoasWrapping(hateoasFactory, successStatus)(data))
-      * }}}
-      */
-    def withHateoasResultFrom[HData <: HateoasData](
-        hateoasFactory: HateoasFactory)(data: (Input, Output) => HData, successStatus: Int = Status.OK)(implicit
-        linksFactory: HateoasLinksFactory[Output, HData],
-        writes: Writes[HateoasWrapper[Output]]): RequestHandlerBuilder[InputRaw, Input, Output] =
-      withResultCreator(ResultCreator.hateoasWrapping(hateoasFactory, successStatus)(data))
-
-    /** Shorthand for
-      * {{{
-      * withResultCreator(ResultCreator.hateoasWrapping(hateoasFactory, successStatus)((_,_) => data))
-      * }}}
-      */
-    def withHateoasResult[HData <: HateoasData](hateoasFactory: HateoasFactory)(data: HData, successStatus: Int = Status.OK)(implicit
-        linksFactory: HateoasLinksFactory[Output, HData],
-        writes: Writes[HateoasWrapper[Output]]): RequestHandlerBuilder[InputRaw, Input, Output] =
-      withResultCreator(ResultCreator.hateoasWrapping(hateoasFactory, successStatus)((_, _) => data))
 
     // Scoped as a private delegate so as to keep the logic completely separate from the configuration
     private object Delegate extends RequestHandler[InputRaw] with Logging with RequestContextImplicits {
