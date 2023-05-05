@@ -14,17 +14,15 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.mtdsatestsupportapi.models.request.deleteStatefulTestData
+package api.controllers.requestParsers.validators.validations
 
-import api.models.request.RawData
-import play.api.libs.functional.syntax._
-import play.api.libs.json._
+import api.models.errors.{MtdError, VendorClientIdFormatError}
+import uk.gov.hmrc.mtdsatestsupportapi.models.domain.VendorClientId
 
-case class DeleteStatefulTestDataRawData(vendorClientId: String, body: Option[JsValue]) extends RawData
+object VendorClientIdValidation {
 
-object DeleteStatefulTestDataRawData {
-  implicit val writes: Writes[DeleteStatefulTestDataRawData] = (
-    (JsPath \ "vendorClientId").write[String] and
-      (JsPath \ "body").writeNullable[JsValue]
-  )(unlift(DeleteStatefulTestDataRawData.unapply))
+  private val noValidationErrors = List()
+
+  def validate(id: String): List[MtdError] = if (VendorClientId.isValid(id)) noValidationErrors else List(VendorClientIdFormatError)
+
 }
