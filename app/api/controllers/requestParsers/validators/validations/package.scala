@@ -16,12 +16,9 @@
 
 package api.controllers.requestParsers.validators
 
-import java.time.format.DateTimeFormatter
 
 package object validations {
 
-  val dateFormat: DateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
   val NoValidationErrors            = List()
-  val minimumTaxYear                = 2021
 
 }

@@ -17,7 +17,7 @@
 package api.connectors
 
 import api.connectors.DownstreamUri.{DesUri, IfsUri, TaxYearSpecificIfsUri}
-import config.{AppConfig, FeatureSwitches}
+import config.AppConfig
 import play.api.http.{HeaderNames, MimeTypes}
 import play.api.libs.json.Writes
 import uk.gov.hmrc.http.{HeaderCarrier, HttpClient, HttpReads}
@@ -31,8 +31,6 @@ trait BaseDownstreamConnector extends Logging {
   val appConfig: AppConfig
 
   private val jsonContentTypeHeader = HeaderNames.CONTENT_TYPE -> MimeTypes.JSON
-
-  implicit protected lazy val featureSwitches: FeatureSwitches = FeatureSwitches(appConfig.featureSwitches)
 
   def post[Body: Writes, Resp](body: Body, uri: DownstreamUri[Resp])(implicit
       ec: ExecutionContext,
