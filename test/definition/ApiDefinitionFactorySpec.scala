@@ -18,7 +18,7 @@ package definition
 
 import config.ConfidenceLevelConfig
 import definition.APIStatus.{ALPHA, BETA}
-import definition.Versions.{VERSION_1, VERSION_2}
+import definition.Versions.VERSION_1
 import mocks.{MockAppConfig, MockHttpClient}
 import play.api.Configuration
 import support.UnitSpec
@@ -74,11 +74,6 @@ class ApiDefinitionFactorySpec extends UnitSpec {
                 APIVersion(
                   version = VERSION_1,
                   status = BETA,
-                  endpointsEnabled = true
-                ),
-                APIVersion(
-                  version = VERSION_2,
-                  status = ALPHA,
                   endpointsEnabled = true
                 )
               ),

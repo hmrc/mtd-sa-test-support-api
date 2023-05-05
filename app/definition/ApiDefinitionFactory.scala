@@ -61,13 +61,7 @@ class ApiDefinitionFactory @Inject() (appConfig: AppConfig) extends Logging {
             version = VERSION_1,
             status = buildAPIStatus(VERSION_1),
             endpointsEnabled = appConfig.endpointsEnabled(VERSION_1)
-          ),
-          APIVersion(
-            version = VERSION_2,
-            status = buildAPIStatus(VERSION_2),
-            endpointsEnabled = appConfig.endpointsEnabled(VERSION_2)
-          )
-        ),
+          )),
         requiresTrust = None
       )
     )
