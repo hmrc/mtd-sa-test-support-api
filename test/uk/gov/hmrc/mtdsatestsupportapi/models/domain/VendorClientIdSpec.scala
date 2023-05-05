@@ -14,14 +14,18 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.mtdsatestsupportapi.config
+package uk.gov.hmrc.mtdsatestsupportapi.models.domain
 
-import com.google.inject.AbstractModule
+import org.scalatest.matchers.should.Matchers.convertToAnyShouldWrapper
+import org.scalatest.wordspec.AnyWordSpec
 
-class Module extends AbstractModule {
+class VendorClientIdSpec extends AnyWordSpec {
 
-  override def configure(): Unit = {
-
-    bind(classOf[AppConfig]).asEagerSingleton()
+  "VendorClientId" must {
+    "validate the id" in {
+      validateId(null) shouldBe false
+    }
   }
+
+  private def validateId(id: String): Boolean = VendorClientId.isValid(id)
 }

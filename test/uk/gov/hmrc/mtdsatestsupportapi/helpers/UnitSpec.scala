@@ -14,14 +14,9 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.mtdsatestsupportapi.config
+package uk.gov.hmrc.mtdsatestsupportapi.helpers
 
-import com.google.inject.AbstractModule
+import org.scalatest.matchers.should.Matchers
+import org.scalatest.wordspec.AnyWordSpec
 
-class Module extends AbstractModule {
-
-  override def configure(): Unit = {
-
-    bind(classOf[AppConfig]).asEagerSingleton()
-  }
-}
+trait UnitSpec extends AnyWordSpec with Matchers

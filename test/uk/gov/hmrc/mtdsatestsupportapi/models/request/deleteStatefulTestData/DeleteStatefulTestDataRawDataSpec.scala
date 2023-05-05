@@ -16,8 +16,24 @@
 
 package uk.gov.hmrc.mtdsatestsupportapi.models.request.deleteStatefulTestData
 
-/**
- * Placeholder case class for use when a body is provided for delete tuning
- */
+import play.api.libs.json.Json
+import uk.gov.hmrc.mtdsatestsupportapi.helpers.UnitSpec
 
-// case class DeleteStatefulTestDataRequestBody(params)
+class DeleteStatefulTestDataRawDataSpec extends UnitSpec {
+
+  "DeleteStatefulTestDataRawDataSpec" must {
+    "write to json" in {
+      val body = Json.obj("exampleBody" -> "someValue")
+      Json.toJson(DeleteStatefulTestDataRawData("someVendorId", Some(body))) shouldBe
+        Json.parse("""
+            |{
+            | "vendorClientId": "someVendorId",
+            | "body": {
+            |   "exampleBody": "someValue"
+            | }
+            |}
+            """.stripMargin)
+    }
+  }
+
+}

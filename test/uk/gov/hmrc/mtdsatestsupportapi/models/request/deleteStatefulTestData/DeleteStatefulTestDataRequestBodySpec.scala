@@ -14,14 +14,15 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.mtdsatestsupportapi.config
+package uk.gov.hmrc.mtdsatestsupportapi.models.request.deleteStatefulTestData
 
-import com.google.inject.AbstractModule
+import org.scalatest.wordspec.AnyWordSpec
 
-class Module extends AbstractModule {
 
-  override def configure(): Unit = {
+/*
+  Place holder for test class once class is implemented
+ */
 
-    bind(classOf[AppConfig]).asEagerSingleton()
-  }
+class DeleteStatefulTestDataRequestBodySpec extends AnyWordSpec {
+
 }
