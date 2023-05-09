@@ -14,9 +14,15 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.mtdsatestsupportapi.models.request.deleteStatefulTestData
+package uk.gov.hmrc.mtdsatestsupportapi.controllers.requestParsers.validators
 
-import api.models.request.RawData
-import play.api.libs.json._
+import api.controllers.requestParsers.validators.Validator
+import api.models.errors.MtdError
+import uk.gov.hmrc.mtdsatestsupportapi.models.request.deleteStatefulTestData.DeleteStatefulTestDataRawData
 
-case class DeleteStatefulTestDataRawData(vendorClientId: String, body: Option[JsValue]) extends RawData
+class DeleteStatefulTestDataValidator extends Validator[DeleteStatefulTestDataRawData] {
+
+  private val validationSet = List()
+
+  override def validate(data: DeleteStatefulTestDataRawData): List[MtdError] = run(validationSet, data).distinct
+}
