@@ -16,7 +16,6 @@
 
 package uk.gov.hmrc.mtdsatestsupportapi.models.request.deleteStatefulTestData
 
-import play.api.libs.functional.syntax._
 import play.api.libs.json._
 
 case class DeleteStatefulTestDataRawData(vendorClientId: String, body: Option[JsValue])
