@@ -16,7 +16,6 @@
 
 package uk.gov.hmrc.mtdsatestsupportapi.controllers.requestParsers.validators
 
-import api.models.errors.VendorClientIdFormatError
 import play.api.libs.json._
 import support.UnitSpec
 import uk.gov.hmrc.mtdsatestsupportapi.mocks.validators.MockDeleteStatefulTestDataValidator
@@ -25,18 +24,12 @@ import uk.gov.hmrc.mtdsatestsupportapi.models.request.deleteStatefulTestData.Del
 class DeleteStatefulTestDataValidatorSpec extends UnitSpec {
 
   val vendorClientId = "some_id"
-  val invalidVendorClientId = null
   val requestBody: JsObject = Json.obj("exampleBody" -> "someValue")
 
   "DeleteStatefulTestDataValidator when validating" should {
     "return no errors" when {
       "a valid request is supplied" in new Test {
         validator.validate(DeleteStatefulTestDataRawData(vendorClientId, Some(requestBody))) shouldBe Nil
-      }
-    }
-    "return VendorClientIdFormatError error" when {
-      "the vendor client id is supplied in the wrong format" in new Test {
-        validator.validate(DeleteStatefulTestDataRawData(invalidVendorClientId, Some(requestBody))) shouldBe List(VendorClientIdFormatError)
       }
     }
   }

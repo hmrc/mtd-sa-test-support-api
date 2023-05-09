@@ -29,8 +29,6 @@ object StringFormatError extends MtdError("FORMAT_STRING", "The supplied string 
 
 object DateFormatError extends MtdError("FORMAT_DATE", "The supplied date format is not valid", BAD_REQUEST)
 
-object VendorClientIdFormatError extends MtdError("TO_DO", "TO_DO", BAD_REQUEST)
-
 object ValueFormatError extends MtdError("FORMAT_VALUE", "The value must be between 0 and 99999999999.99", BAD_REQUEST) {
 
   def forPathAndRange(path: String, min: String, max: String): MtdError =

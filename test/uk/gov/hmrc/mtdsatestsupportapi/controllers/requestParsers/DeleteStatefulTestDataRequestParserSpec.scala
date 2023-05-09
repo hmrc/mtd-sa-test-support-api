@@ -16,11 +16,10 @@
 
 package uk.gov.hmrc.mtdsatestsupportapi.controllers.requestParsers
 
-import api.models.errors.{BadRequestError, ErrorWrapper, NinoFormatError, VendorClientIdFormatError}
+import api.models.errors._
 import play.api.libs.json._
 import support.UnitSpec
 import uk.gov.hmrc.mtdsatestsupportapi.mocks.validators.MockDeleteStatefulTestDataValidator
-import uk.gov.hmrc.mtdsatestsupportapi.models.domain.VendorClientId
 import uk.gov.hmrc.mtdsatestsupportapi.models.request.deleteStatefulTestData.{DeleteStatefulTestDataRawData, DeleteStatefulTestDataRequest}
 
 class DeleteStatefulTestDataRequestParserSpec extends UnitSpec {
@@ -35,19 +34,19 @@ class DeleteStatefulTestDataRequestParserSpec extends UnitSpec {
       "valid request data is supplied" in new Test {
         MockDeleteStatefulTestDataValidator.validate(data).returns(Nil)
 
-        parser.parseRequest(data) shouldBe Right(DeleteStatefulTestDataRequest(VendorClientId(vendorClientId), Some(requestBody)))
+        parser.parseRequest(data) shouldBe Right(DeleteStatefulTestDataRequest(vendorClientId, Some(requestBody)))
       }
     }
     "return an error" when {
       "a single validation error occurs" in new Test {
-        MockDeleteStatefulTestDataValidator.validate(data).returns(List(VendorClientIdFormatError))
+        MockDeleteStatefulTestDataValidator.validate(data).returns(List(NinoFormatError))
 
-        parser.parseRequest(data) shouldBe Left(ErrorWrapper(correlationId, VendorClientIdFormatError, None))
+        parser.parseRequest(data) shouldBe Left(ErrorWrapper(correlationId, NinoFormatError, None))
       }
       "multiple validation errors occur" in new Test {
-        MockDeleteStatefulTestDataValidator.validate(data).returns(List(VendorClientIdFormatError, NinoFormatError))
+        MockDeleteStatefulTestDataValidator.validate(data).returns(List(StringFormatError, NinoFormatError))
 
-        parser.parseRequest(data) shouldBe Left(ErrorWrapper(correlationId, BadRequestError, Some(Seq(VendorClientIdFormatError, NinoFormatError))))
+        parser.parseRequest(data) shouldBe Left(ErrorWrapper(correlationId, BadRequestError, Some(Seq(StringFormatError, NinoFormatError))))
       }
     }
   }
