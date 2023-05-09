@@ -14,18 +14,9 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.mtdsatestsupportapi.controllers
+package uk.gov.hmrc.mtdsatestsupportapi.models.request.deleteStatefulTestData
 
-import uk.gov.hmrc.play.bootstrap.backend.controller.BackendController
-import play.api.mvc.{Action, AnyContent, ControllerComponents}
-import javax.inject.{Inject, Singleton}
-import scala.concurrent.Future
+import api.models.request.RawData
+import play.api.libs.json._
 
-@Singleton()
-class MicroserviceHelloWorldController @Inject()(cc: ControllerComponents)
-    extends BackendController(cc) {
-
-  def hello(): Action[AnyContent] = Action.async { /*implicit request =>*/
-    Future.successful(Ok("Hello world"))
-  }
-}
+case class DeleteStatefulTestDataRawData(vendorClientId: String, body: Option[JsValue]) extends RawData
