@@ -1,5 +1,8 @@
 # Add all the application routes to the app.routes file
-->         /mtd-sa-test-support-api              app.Routes
-->         /                          health.Routes
+->         /                     health.Routes
+->         /                     definition.Routes
 
-GET        /admin/metrics             com.kenshoo.play.metrics.MetricsController.metrics
+# NOTE: versioned API routes (e.g. v1.routes) are handled automatically
+# via VersionRoutingRequestHandler and so there is no need to include them here
+
+GET        /admin/metrics        com.kenshoo.play.metrics.MetricsController.metrics

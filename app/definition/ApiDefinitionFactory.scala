@@ -40,20 +40,20 @@ class ApiDefinitionFactory @Inject() (appConfig: AppConfig) extends Logging {
       scopes = Seq(
         Scope(
           key = readScope,
-          name = "View your Self Assessment information",
+          name = "Read Self Assessment test information",
           description = "Allow read access to self assessment data",
           confidenceLevel = confidenceLevel
         ),
         Scope(
           key = writeScope,
-          name = "Change your Self Assessment information",
+          name = "Change Self Assessment test information",
           description = "Allow write access to self assessment data",
           confidenceLevel = confidenceLevel
         )
       ),
       api = APIDefinition(
-        name = "Property Business (MTD)",
-        description = "An API for providing property business data",
+        name = "Self-Assessment Test Support (MTD)",
+        description = "An API providing test support for MTD Self-Assessment APIs",
         context = appConfig.apiGatewayContext,
         categories = Seq("INCOME_TAX_MTD"),
         versions = Seq(

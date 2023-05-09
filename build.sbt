@@ -14,15 +14,10 @@
  * limitations under the License.
  */
 
-import play.sbt.PlayImport.PlayKeys._
 import sbt._
-import sbt.complete.DefaultParsers._
 import uk.gov.hmrc.DefaultBuildSettings.{addTestReportOption, defaultSettings}
-import uk.gov.hmrc.sbtdistributables.SbtDistributablesPlugin.publishingSettings
 import uk.gov.hmrc.versioning.SbtGitVersioning.autoImport.majorVersion
 import uk.gov.hmrc.SbtAutoBuildPlugin
-
-import scala.sys.process._
 
 val appName = "mtd-sa-test-support-api"
 
@@ -45,7 +40,6 @@ lazy val microservice = Project(appName, file("."))
     Compile / unmanagedResourceDirectories += baseDirectory.value / "resources"
   )
   .settings(majorVersion := 0)
-  .settings(publishingSettings: _*)
   .settings(CodeCoverageSettings.settings: _*)
   .settings(defaultSettings(): _*)
   .configs(ItTest)
