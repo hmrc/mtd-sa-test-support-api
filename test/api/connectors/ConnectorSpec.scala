@@ -30,10 +30,10 @@ trait ConnectorSpec extends UnitSpec with Status with MimeTypes with HeaderNames
   lazy val baseUrl                   = "http://test-BaseUrl"
   implicit val correlationId: String = "a1e8057e-fbbc-47a8-a8b4-78d9f015c253"
 
-  val otherHeaders: Seq[(String, String)] = Seq(
-    "Gov-Test-Scenario" -> "DEFAULT",
-    "AnotherHeader"     -> "HeaderValue"
-  )
+  protected val notPassedThroughHeader: (String, String) = "NotPassedThroughHeader" -> "NotPassedThroughValue"
+  protected val passedThroughHeader: (String, String) = "PassedThroughHeader"    -> "PassedThroughValue"
+
+  val otherHeaders: Seq[(String, String)] = Seq(passedThroughHeader, notPassedThroughHeader)
 
   implicit val hc: HeaderCarrier    = HeaderCarrier(otherHeaders = otherHeaders)
   implicit val ec: ExecutionContext = scala.concurrent.ExecutionContext.global
@@ -46,16 +46,13 @@ trait ConnectorSpec extends UnitSpec with Status with MimeTypes with HeaderNames
     )
 
   val requiredStubHeaders: Seq[(String, String)] = Seq(
-    "CorrelationId"     -> correlationId
+    "CorrelationId" -> correlationId,
+    passedThroughHeader
   )
 
   val allowedStubHeaders: Seq[String] = Seq(
-    "Accept",
-    "Gov-Test-Scenario",
     "Content-Type",
-    "Location",
-    "X-Request-Timestamp",
-    "X-Session-Id"
+    "PassedThroughHeader"
   )
 
   protected trait ConnectorTest extends MockHttpClient with MockAppConfig {
@@ -72,7 +69,7 @@ trait ConnectorSpec extends UnitSpec with Status with MimeTypes with HeaderNames
           parameters = parameters,
           config = dummyHeaderCarrierConfig,
           requiredHeaders = requiredHeaders,
-          excludedHeaders = Seq("AnotherHeader" -> "HeaderValue")
+          excludedHeaders = Seq(notPassedThroughHeader)
         )
     }
 
@@ -83,7 +80,7 @@ trait ConnectorSpec extends UnitSpec with Status with MimeTypes with HeaderNames
           config = dummyHeaderCarrierConfig,
           body = body,
           requiredHeaders = requiredHeaders ++ Seq("Content-Type" -> "application/json"),
-          excludedHeaders = Seq("AnotherHeader" -> "HeaderValue")
+          excludedHeaders = Seq(notPassedThroughHeader)
         )
     }
 
@@ -94,7 +91,7 @@ trait ConnectorSpec extends UnitSpec with Status with MimeTypes with HeaderNames
           config = dummyHeaderCarrierConfig,
           body = body,
           requiredHeaders = requiredHeaders ++ Seq("Content-Type" -> "application/json"),
-          excludedHeaders = Seq("AnotherHeader" -> "HeaderValue")
+          excludedHeaders = Seq(notPassedThroughHeader)
         )
     }
 
@@ -106,7 +103,7 @@ trait ConnectorSpec extends UnitSpec with Status with MimeTypes with HeaderNames
           url = fullUrl,
           config = dummyHeaderCarrierConfig,
           requiredHeaders = requiredHeaders,
-          excludedHeaders = Seq("AnotherHeader" -> "HeaderValue")
+          excludedHeaders = Seq(notPassedThroughHeader)
         )
     }
 

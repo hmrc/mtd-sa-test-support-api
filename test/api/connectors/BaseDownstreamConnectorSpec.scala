@@ -61,7 +61,7 @@ class BaseDownstreamConnectorSpec extends ConnectorSpec {
             config = dummyHeaderCarrierConfig,
             body,
             requiredHeaders = requiredStubHeadersPost,
-            excludedHeaders = Seq("AnotherHeader" -> "HeaderValue"))
+            excludedHeaders = Seq(notPassedThroughHeader))
           .returns(Future.successful(outcome))
 
         await(connector.post(body, StubUri[Result](url))) shouldBe outcome
@@ -78,7 +78,7 @@ class BaseDownstreamConnectorSpec extends ConnectorSpec {
             config = dummyHeaderCarrierConfig,
             parameters = qps,
             requiredHeaders = requiredStubHeaders,
-            excludedHeaders = Seq("AnotherHeader" -> "HeaderValue"))
+            excludedHeaders = Seq(notPassedThroughHeader))
           .returns(Future.successful(outcome))
 
         await(connector.get(StubUri[Result](url), queryParams = qps)) shouldBe outcome
@@ -94,7 +94,7 @@ class BaseDownstreamConnectorSpec extends ConnectorSpec {
             absoluteUrl,
             config = dummyHeaderCarrierConfig,
             requiredHeaders = requiredStubHeaders,
-            excludedHeaders = Seq("AnotherHeader" -> "HeaderValue"))
+            excludedHeaders = Seq(notPassedThroughHeader))
           .returns(Future.successful(outcome))
 
         await(connector.delete(StubUri[Result](url))) shouldBe outcome
@@ -112,7 +112,7 @@ class BaseDownstreamConnectorSpec extends ConnectorSpec {
             config = dummyHeaderCarrierConfig,
             body,
             requiredHeaders = requiredStubHeadersPut,
-            excludedHeaders = Seq("AnotherHeader" -> "HeaderValue"))
+            excludedHeaders = Seq(notPassedThroughHeader))
           .returns(Future.successful(outcome))
 
         await(connector.put(body, StubUri[Result](url))) shouldBe outcome
