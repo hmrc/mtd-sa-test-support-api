@@ -18,7 +18,6 @@ package api.connectors
 
 import mocks.{MockAppConfig, MockHttpClient}
 import org.scalamock.handlers.CallHandler
-import play.api.Configuration
 import play.api.http.{HeaderNames, MimeTypes, Status}
 import support.UnitSpec
 import uk.gov.hmrc.http.HeaderCarrier
@@ -31,10 +30,10 @@ trait ConnectorSpec extends UnitSpec with Status with MimeTypes with HeaderNames
   lazy val baseUrl                   = "http://test-BaseUrl"
   implicit val correlationId: String = "a1e8057e-fbbc-47a8-a8b4-78d9f015c253"
 
-  val otherHeaders: Seq[(String, String)] = Seq(
-    "Gov-Test-Scenario" -> "DEFAULT",
-    "AnotherHeader"     -> "HeaderValue"
-  )
+  protected val notPassedThroughHeader: (String, String) = "NotPassedThroughHeader" -> "NotPassedThroughValue"
+  protected val passedThroughHeader: (String, String) = "PassedThroughHeader"    -> "PassedThroughValue"
+
+  val otherHeaders: Seq[(String, String)] = Seq(passedThroughHeader, notPassedThroughHeader)
 
   implicit val hc: HeaderCarrier    = HeaderCarrier(otherHeaders = otherHeaders)
   implicit val ec: ExecutionContext = scala.concurrent.ExecutionContext.global
@@ -46,55 +45,14 @@ trait ConnectorSpec extends UnitSpec with Status with MimeTypes with HeaderNames
       Some("this-api")
     )
 
-  val requiredDesHeaders: Seq[(String, String)] = Seq(
-    "Authorization"     -> "Bearer des-token",
-    "Environment"       -> "des-environment",
-    "User-Agent"        -> "this-api",
-    "CorrelationId"     -> correlationId,
-    "Gov-Test-Scenario" -> "DEFAULT"
+  val requiredStubHeaders: Seq[(String, String)] = Seq(
+    "CorrelationId" -> correlationId,
+    passedThroughHeader
   )
 
-  val allowedDesHeaders: Seq[String] = Seq(
-    "Accept",
-    "Gov-Test-Scenario",
+  val allowedStubHeaders: Seq[String] = Seq(
     "Content-Type",
-    "Location",
-    "X-Request-Timestamp",
-    "X-Session-Id"
-  )
-
-  val requiredIfsHeaders: Seq[(String, String)] = Seq(
-    "Authorization"     -> "Bearer ifs-token",
-    "Environment"       -> "ifs-environment",
-    "User-Agent"        -> "this-api",
-    "CorrelationId"     -> correlationId,
-    "Gov-Test-Scenario" -> "DEFAULT"
-  )
-
-  val allowedIfsHeaders: Seq[String] = Seq(
-    "Accept",
-    "Gov-Test-Scenario",
-    "Content-Type",
-    "Location",
-    "X-Request-Timestamp",
-    "X-Session-Id"
-  )
-
-  val requiredTysIfsHeaders: Seq[(String, String)] = Seq(
-    "Authorization"     -> "Bearer TYS-IFS-token",
-    "Environment"       -> "TYS-IFS-environment",
-    "User-Agent"        -> "this-api",
-    "CorrelationId"     -> correlationId,
-    "Gov-Test-Scenario" -> "DEFAULT"
-  )
-
-  val allowedTysIfsHeaders: Seq[String] = Seq(
-    "Accept",
-    "Gov-Test-Scenario",
-    "Content-Type",
-    "Location",
-    "X-Request-Timestamp",
-    "X-Session-Id"
+    "PassedThroughHeader"
   )
 
   protected trait ConnectorTest extends MockHttpClient with MockAppConfig {
@@ -111,7 +69,7 @@ trait ConnectorSpec extends UnitSpec with Status with MimeTypes with HeaderNames
           parameters = parameters,
           config = dummyHeaderCarrierConfig,
           requiredHeaders = requiredHeaders,
-          excludedHeaders = Seq("AnotherHeader" -> "HeaderValue")
+          excludedHeaders = Seq(notPassedThroughHeader)
         )
     }
 
@@ -122,7 +80,7 @@ trait ConnectorSpec extends UnitSpec with Status with MimeTypes with HeaderNames
           config = dummyHeaderCarrierConfig,
           body = body,
           requiredHeaders = requiredHeaders ++ Seq("Content-Type" -> "application/json"),
-          excludedHeaders = Seq("AnotherHeader" -> "HeaderValue")
+          excludedHeaders = Seq(notPassedThroughHeader)
         )
     }
 
@@ -133,7 +91,7 @@ trait ConnectorSpec extends UnitSpec with Status with MimeTypes with HeaderNames
           config = dummyHeaderCarrierConfig,
           body = body,
           requiredHeaders = requiredHeaders ++ Seq("Content-Type" -> "application/json"),
-          excludedHeaders = Seq("AnotherHeader" -> "HeaderValue")
+          excludedHeaders = Seq(notPassedThroughHeader)
         )
     }
 
@@ -145,47 +103,19 @@ trait ConnectorSpec extends UnitSpec with Status with MimeTypes with HeaderNames
           url = fullUrl,
           config = dummyHeaderCarrierConfig,
           requiredHeaders = requiredHeaders,
-          excludedHeaders = Seq("AnotherHeader" -> "HeaderValue")
+          excludedHeaders = Seq(notPassedThroughHeader)
         )
     }
 
   }
 
-  protected trait DesTest extends ConnectorTest {
+  protected trait StubTest extends ConnectorTest {
 
-    protected lazy val requiredHeaders: Seq[(String, String)] = requiredDesHeaders
+    protected lazy val requiredHeaders: Seq[(String, String)] = requiredStubHeaders
 
-    MockAppConfig.desBaseUrl returns baseUrl
-    MockAppConfig.desToken returns "des-token"
-    MockAppConfig.desEnvironment returns "des-environment"
-    MockAppConfig.desEnvironmentHeaders returns Some(allowedDesHeaders)
+    MockAppConfig.stubBaseUrl returns baseUrl
+    MockAppConfig.stubEnvironmentHeaders returns Some(allowedStubHeaders)
 
-    MockAppConfig.featureSwitches returns Configuration("tys-api.enabled" -> false)
-
-  }
-
-  protected trait IfsTest extends ConnectorTest {
-
-    protected lazy val requiredHeaders: Seq[(String, String)] = requiredIfsHeaders
-
-    MockAppConfig.ifsBaseUrl returns baseUrl
-    MockAppConfig.ifsToken returns "ifs-token"
-    MockAppConfig.ifsEnvironment returns "ifs-environment"
-    MockAppConfig.ifsEnvironmentHeaders returns Some(allowedIfsHeaders)
-
-    MockAppConfig.featureSwitches returns Configuration("tys-api.enabled" -> false)
-  }
-
-  protected trait TysIfsTest extends ConnectorTest {
-
-    protected lazy val requiredHeaders: Seq[(String, String)] = requiredTysIfsHeaders
-
-    MockAppConfig.tysIfsBaseUrl returns baseUrl
-    MockAppConfig.tysIfsToken returns "TYS-IFS-token"
-    MockAppConfig.tysIfsEnvironment returns "TYS-IFS-environment"
-    MockAppConfig.tysIfsEnvironmentHeaders returns Some(allowedIfsHeaders)
-
-    MockAppConfig.featureSwitches returns Configuration("tys-api.enabled" -> true)
   }
 
 }

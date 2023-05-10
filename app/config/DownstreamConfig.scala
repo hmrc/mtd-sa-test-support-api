@@ -18,7 +18,5 @@ package config
 
 case class DownstreamConfig(
     baseUrl: String,
-    env: String,
-    token: String,
     environmentHeaders: Option[Seq[String]]
 )
