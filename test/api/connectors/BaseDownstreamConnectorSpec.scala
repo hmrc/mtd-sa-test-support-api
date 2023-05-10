@@ -53,14 +53,14 @@ class BaseDownstreamConnectorSpec extends ConnectorSpec {
     "post" must {
       "posts with the required headers and returns the result" in new Test {
         implicit val hc: HeaderCarrier                    = HeaderCarrier(otherHeaders = otherHeaders ++ Seq("Content-Type" -> "application/json"))
-        val requiredDesHeadersPost: Seq[(String, String)] = requiredStubHeaders ++ Seq("Content-Type" -> "application/json")
+        val requiredStubHeadersPost: Seq[(String, String)] = requiredStubHeaders ++ Seq("Content-Type" -> "application/json")
 
         MockHttpClient
           .post(
             absoluteUrl,
             config = dummyHeaderCarrierConfig,
             body,
-            requiredHeaders = requiredDesHeadersPost,
+            requiredHeaders = requiredStubHeadersPost,
             excludedHeaders = Seq("AnotherHeader" -> "HeaderValue"))
           .returns(Future.successful(outcome))
 
@@ -104,14 +104,14 @@ class BaseDownstreamConnectorSpec extends ConnectorSpec {
     "put" must {
       "put with the required headers and return result" in new Test {
         implicit val hc: HeaderCarrier                   = HeaderCarrier(otherHeaders = otherHeaders ++ Seq("Content-Type" -> "application/json"))
-        val requiredDesHeadersPut: Seq[(String, String)] = requiredStubHeaders ++ Seq("Content-Type" -> "application/json")
+        val requiredStubHeadersPut: Seq[(String, String)] = requiredStubHeaders ++ Seq("Content-Type" -> "application/json")
 
         MockHttpClient
           .put(
             absoluteUrl,
             config = dummyHeaderCarrierConfig,
             body,
-            requiredHeaders = requiredDesHeadersPut,
+            requiredHeaders = requiredStubHeadersPut,
             excludedHeaders = Seq("AnotherHeader" -> "HeaderValue"))
           .returns(Future.successful(outcome))
 

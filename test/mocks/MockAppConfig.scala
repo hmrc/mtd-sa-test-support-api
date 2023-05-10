@@ -29,7 +29,7 @@ trait MockAppConfig extends MockFactory {
     // MTD ID Lookup Config
     def mtdIdBaseUrl: CallHandler[String] = (mockAppConfig.mtdIdBaseUrl _: () => String).expects()
 
-    // DES Config
+    // Stub Config
     def stubBaseUrl: CallHandler[String]                         = (mockAppConfig.stubBaseUrl _: () => String).expects()
     def stubEnvironmentHeaders: CallHandler[Option[Seq[String]]] = (mockAppConfig.stubEnvironmentHeaders _).expects()
 
