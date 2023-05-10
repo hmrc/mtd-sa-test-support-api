@@ -27,23 +27,11 @@ trait AppConfig {
   // MTD ID Lookup Config
   def mtdIdBaseUrl: String
 
-  // IFS Config
-  def ifsBaseUrl: String
-  def ifsEnv: String
-  def ifsToken: String
-  def ifsEnvironmentHeaders: Option[Seq[String]]
+  def stubBaseUrl: String
+  def stubEnvironmentHeaders: Option[Seq[String]]
 
-  lazy val ifsDownstreamConfig: DownstreamConfig =
-    DownstreamConfig(baseUrl = ifsBaseUrl, env = ifsEnv, token = ifsToken, environmentHeaders = ifsEnvironmentHeaders)
-
-  // Tax Year Specific (TYS) IFS Config
-  def tysIfsBaseUrl: String
-  def tysIfsEnv: String
-  def tysIfsToken: String
-  def tysIfsEnvironmentHeaders: Option[Seq[String]]
-
-  lazy val taxYearSpecificIfsDownstreamConfig: DownstreamConfig =
-    DownstreamConfig(baseUrl = tysIfsBaseUrl, env = tysIfsEnv, token = tysIfsToken, environmentHeaders = tysIfsEnvironmentHeaders)
+  lazy val stubDownstreamConfig: DownstreamConfig =
+    DownstreamConfig(baseUrl = stubBaseUrl, environmentHeaders = stubEnvironmentHeaders)
 
   // API Config
   def apiGatewayContext: String
@@ -60,17 +48,8 @@ class AppConfigImpl @Inject() (config: ServicesConfig, configuration: Configurat
   // MTD ID Lookup Config
   val mtdIdBaseUrl: String = config.baseUrl("mtd-id-lookup")
 
-  // IFS Config
-  val ifsBaseUrl: String                         = config.baseUrl("ifs")
-  val ifsEnv: String                             = config.getString("microservice.services.ifs.env")
-  val ifsToken: String                           = config.getString("microservice.services.ifs.token")
-  val ifsEnvironmentHeaders: Option[Seq[String]] = configuration.getOptional[Seq[String]]("microservice.services.ifs.environmentHeaders")
-
-  // Tax Year Specific (TYS) IFS Config
-  val tysIfsBaseUrl: String                         = config.baseUrl("tys-ifs")
-  val tysIfsEnv: String                             = config.getString("microservice.services.tys-ifs.env")
-  val tysIfsToken: String                           = config.getString("microservice.services.tys-ifs.token")
-  val tysIfsEnvironmentHeaders: Option[Seq[String]] = configuration.getOptional[Seq[String]]("microservice.services.tys-ifs.environmentHeaders")
+  val stubBaseUrl: String                         = config.baseUrl("stub")
+  val stubEnvironmentHeaders: Option[Seq[String]] = configuration.getOptional[Seq[String]]("microservice.services.stub.environmentHeaders")
 
   // API Config
   val apiGatewayContext: String                    = config.getString("api.gateway.context")
