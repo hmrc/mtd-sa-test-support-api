@@ -16,6 +16,7 @@
 
 package api.connectors
 
+
 import api.connectors.DownstreamUri._
 import api.models.outcomes.ResponseWrapper
 import config.AppConfig
@@ -35,6 +36,7 @@ class BaseDownstreamConnectorSpec extends ConnectorSpec {
   case class Result(value: Int)
 
   implicit val httpReads: HttpReads[DownstreamOutcome[Result]] = mock[HttpReads[DownstreamOutcome[Result]]]
+
 
   class Test extends MockHttpClient with MockAppConfig {
 
@@ -125,6 +127,7 @@ class BaseDownstreamConnectorSpec extends ConnectorSpec {
         testNoDuplicatedContentType("content-type" -> "application/user-type")
 
         def testNoDuplicatedContentType(userContentType: (String, String)): Unit =
+
           s"for user content type header $userContentType" in new Test {
             implicit val hc: HeaderCarrier = HeaderCarrier(otherHeaders = otherHeaders ++ Seq(userContentType))
 
