@@ -27,15 +27,6 @@ trait AppConfig {
   // MTD ID Lookup Config
   def mtdIdBaseUrl: String
 
-  // DES Config
-  def desBaseUrl: String
-  def desEnv: String
-  def desToken: String
-  def desEnvironmentHeaders: Option[Seq[String]]
-
-  lazy val desDownstreamConfig: DownstreamConfig =
-    DownstreamConfig(baseUrl = desBaseUrl, env = desEnv, token = desToken, environmentHeaders = desEnvironmentHeaders)
-
   // IFS Config
   def ifsBaseUrl: String
   def ifsEnv: String
@@ -61,11 +52,6 @@ trait AppConfig {
   def featureSwitches: Configuration
   def endpointsEnabled(version: String): Boolean
 
-  def minimumTaxV2Foreign: Int
-  def minimumTaxV2Uk: Int
-
-  def minimumTaxHistoric: Int
-  def maximumTaxHistoric: Int
 }
 
 @Singleton
@@ -73,12 +59,6 @@ class AppConfigImpl @Inject() (config: ServicesConfig, configuration: Configurat
 
   // MTD ID Lookup Config
   val mtdIdBaseUrl: String = config.baseUrl("mtd-id-lookup")
-
-  // DES Config
-  val desBaseUrl: String                         = config.baseUrl("des")
-  val desEnv: String                             = config.getString("microservice.services.des.env")
-  val desToken: String                           = config.getString("microservice.services.des.token")
-  val desEnvironmentHeaders: Option[Seq[String]] = configuration.getOptional[Seq[String]]("microservice.services.des.environmentHeaders")
 
   // IFS Config
   val ifsBaseUrl: String                         = config.baseUrl("ifs")
@@ -99,11 +79,6 @@ class AppConfigImpl @Inject() (config: ServicesConfig, configuration: Configurat
   def featureSwitches: Configuration               = configuration.getOptional[Configuration](s"feature-switch").getOrElse(Configuration.empty)
   def endpointsEnabled(version: String): Boolean   = config.getBoolean(s"api.$version.endpoints.enabled")
 
-  val minimumTaxV2Foreign: Int = config.getInt("minimum-tax-year.version-2.foreign")
-  val minimumTaxV2Uk: Int      = config.getInt("minimum-tax-year.version-2.uk")
-
-  val minimumTaxHistoric: Int = config.getInt("minimum-tax-year.version-2.historic")
-  val maximumTaxHistoric: Int = config.getInt("maximum-tax-year.version-2.historic")
 }
 
 case class ConfidenceLevelConfig(confidenceLevel: ConfidenceLevel, definitionEnabled: Boolean, authValidationEnabled: Boolean)

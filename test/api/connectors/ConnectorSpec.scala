@@ -46,23 +46,6 @@ trait ConnectorSpec extends UnitSpec with Status with MimeTypes with HeaderNames
       Some("this-api")
     )
 
-  val requiredDesHeaders: Seq[(String, String)] = Seq(
-    "Authorization"     -> "Bearer des-token",
-    "Environment"       -> "des-environment",
-    "User-Agent"        -> "this-api",
-    "CorrelationId"     -> correlationId,
-    "Gov-Test-Scenario" -> "DEFAULT"
-  )
-
-  val allowedDesHeaders: Seq[String] = Seq(
-    "Accept",
-    "Gov-Test-Scenario",
-    "Content-Type",
-    "Location",
-    "X-Request-Timestamp",
-    "X-Session-Id"
-  )
-
   val requiredIfsHeaders: Seq[(String, String)] = Seq(
     "Authorization"     -> "Bearer ifs-token",
     "Environment"       -> "ifs-environment",
@@ -148,19 +131,6 @@ trait ConnectorSpec extends UnitSpec with Status with MimeTypes with HeaderNames
           excludedHeaders = Seq("AnotherHeader" -> "HeaderValue")
         )
     }
-
-  }
-
-  protected trait DesTest extends ConnectorTest {
-
-    protected lazy val requiredHeaders: Seq[(String, String)] = requiredDesHeaders
-
-    MockAppConfig.desBaseUrl returns baseUrl
-    MockAppConfig.desToken returns "des-token"
-    MockAppConfig.desEnvironment returns "des-environment"
-    MockAppConfig.desEnvironmentHeaders returns Some(allowedDesHeaders)
-
-    MockAppConfig.featureSwitches returns Configuration("tys-api.enabled" -> false)
 
   }
 
