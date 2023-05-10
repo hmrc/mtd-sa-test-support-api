@@ -16,7 +16,7 @@
 
 package api.connectors
 
-import api.connectors.DownstreamUri.{DesUri, IfsUri, TaxYearSpecificIfsUri}
+import api.connectors.DownstreamUri._
 import config.AppConfig
 import play.api.http.{HeaderNames, MimeTypes}
 import play.api.libs.json.Writes
@@ -103,8 +103,6 @@ trait BaseDownstreamConnector extends Logging {
       extraHeaders = hc.extraHeaders ++
         // Contract headers
         List(
-          "Authorization" -> s"Bearer ${downstreamConfig.token}",
-          "Environment"   -> downstreamConfig.env,
           "CorrelationId" -> correlationId
         ) ++
         additionalHeaders ++
@@ -114,9 +112,7 @@ trait BaseDownstreamConnector extends Logging {
 
   private def configFor[Resp](uri: DownstreamUri[Resp]) =
     uri match {
-      case DesUri(_)                => appConfig.desDownstreamConfig
-      case IfsUri(_)                => appConfig.ifsDownstreamConfig
-      case TaxYearSpecificIfsUri(_) => appConfig.taxYearSpecificIfsDownstreamConfig
+      case StubUri(_)                => appConfig.stubDownstreamConfig
     }
 
 }
