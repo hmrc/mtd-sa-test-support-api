@@ -1,0 +1,6 @@
+delete:
+  $ref: "./vendor_state_delete.yaml"
+  summary: Retrieve a UK Property Business Annual Submission
+  security:
+    - User-Restricted:
+        - write:self-assessment

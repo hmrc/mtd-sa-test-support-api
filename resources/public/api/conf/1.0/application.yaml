@@ -1,0 +1,37 @@
+openapi: "3.0.3"
+
+info:
+  version: "1.0"
+  title: Self-Assessment Test Support (MTD)
+  description: |
+    # Changelog
+    The changelog is [available here](https://github.com/hmrc/income-tax-mtd-changelog/#readme).
+    
+    # Support
+    
+    * Raise non-technical or platform-related issues with the [Software Development Support Team (SDST)](https://developer.service.hmrc.gov.uk/developer/support).
+    * Raise technical issues on the [income-tax-mtd-changelog](https://github.com/hmrc/income-tax-mtd-changelog/issues) GitHub page.
+
+servers:
+  - url: https://test-api.service.hmrc.gov.uk
+    description: Sandbox
+
+components:
+  securitySchemes:
+    User-Restricted:
+      type: oauth2
+      description: HMRC supports OAuth 2.0 for authenticating [User-restricted](https://developer.qa.tax.service.gov.uk/api-documentation/docs/authorisation/user-restricted-endpoints) API requests
+      flows:
+        authorizationCode:
+          authorizationUrl: https://api.service.hmrc.gov.uk/oauth/authorize
+          tokenUrl: https://api.service.hmrc.gov.uk/oauth/token
+          refreshUrl: https://api.service.hmrc.gov.uk/oauth/refresh
+          scopes:
+            write:self-assessment: Grant write access
+            read:self-assessment: Grant read access
+
+paths:
+  /individuals/self-assessment-test-support/vendor-state:
+    $ref: "./vendor_state.yaml"
+
+
