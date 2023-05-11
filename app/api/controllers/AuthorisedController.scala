@@ -35,6 +35,17 @@ abstract class AuthorisedController(cc: ControllerComponents)(implicit ec: Execu
   val authService: EnrolmentsAuthService
   val lookupService: MtdIdLookupService
 
+  def authorisedAction(): ActionBuilder[UserRequest, AnyContent] = new ActionBuilder[UserRequest, AnyContent] {
+
+    override def parser: BodyParser[AnyContent] = cc.parsers.defaultBodyParser
+
+    override protected def executionContext: ExecutionContext = cc.executionContext
+
+    override def invokeBlock[A](request: Request[A], block: UserRequest[A] => Future[Result]): Future[Result] =
+      block(UserRequest(UserDetails("dummyMtdId", "Individual", None), request))
+
+  }
+
   def authorisedAction(nino: String): ActionBuilder[UserRequest, AnyContent] = new ActionBuilder[UserRequest, AnyContent] {
 
     override def parser: BodyParser[AnyContent] = cc.parsers.defaultBodyParser
@@ -49,9 +60,9 @@ abstract class AuthorisedController(cc: ControllerComponents)(implicit ec: Execu
     def invokeBlockWithAuthCheck[A](mtdId: String, request: Request[A], block: UserRequest[A] => Future[Result])(implicit
         headerCarrier: HeaderCarrier): Future[Result] = {
       authService.authorised(predicate(mtdId)).flatMap[Result] {
-        case Right(userDetails)      => block(UserRequest(userDetails.copy(mtdId = mtdId), request))
+        case Right(userDetails)                => block(UserRequest(userDetails.copy(mtdId = mtdId), request))
         case Left(ClientNotAuthenticatedError) => Future.successful(Forbidden(Json.toJson(ClientNotAuthenticatedError)))
-        case Left(_)                 => Future.successful(InternalServerError(Json.toJson(InternalError)))
+        case Left(_)                           => Future.successful(InternalServerError(Json.toJson(InternalError)))
       }
     }
 
@@ -60,7 +71,7 @@ abstract class AuthorisedController(cc: ControllerComponents)(implicit ec: Execu
       implicit val headerCarrier: HeaderCarrier = hc(request)
 
       lookupService.lookup(nino).flatMap[Result] {
-        case Right(mtdId) => invokeBlockWithAuthCheck(mtdId, request, block)
+        case Right(mtdId)   => invokeBlockWithAuthCheck(mtdId, request, block)
         case Left(mtdError) => errorResponse(mtdError)
       }
     }
