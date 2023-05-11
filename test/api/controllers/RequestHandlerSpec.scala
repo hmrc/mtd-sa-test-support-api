@@ -37,13 +37,7 @@ import uk.gov.hmrc.play.audit.http.connector.AuditResult
 import scala.concurrent.{ExecutionContext, Future}
 import scala.concurrent.ExecutionContext.Implicits.global
 
-class RequestHandlerSpec
-    extends UnitSpec
-    with MockAuditService
-    with MockIdGenerator
-    with Status
-    with HeaderNames
-    with ResultExtractors {
+class RequestHandlerSpec extends UnitSpec with MockAuditService with MockIdGenerator with Status with HeaderNames with ResultExtractors {
 
   private val successResponseJson = Json.obj("result" -> "SUCCESS!")
   private val successCode         = Status.ACCEPTED
@@ -62,7 +56,7 @@ class RequestHandlerSpec
 
   implicit val hc: HeaderCarrier                    = HeaderCarrier()
   implicit val ctx: RequestContext                  = RequestContext.from(mockIdGenerator, endpointLogContext)
-  private val userDetails                           = UserDetails("mtdId", "Individual", Some("agentReferenceNumber"))
+  private val userDetails                           = UserDetails("Individual", Some("agentReferenceNumber"))
   implicit val userRequest: UserRequest[AnyContent] = UserRequest[AnyContent](userDetails, FakeRequest())
 
   trait DummyService {

@@ -31,7 +31,7 @@ class FlattenedGenericAuditDetailSpec extends UnitSpec with MockAppConfig {
   val employmentId: String                 = "4557ecb5-fd32-48cc-81f5-e6acd1099f3c"
   val agentReferenceNumber: Option[String] = Some("012345678")
   val userType: String                     = "Agent"
-  val userDetails: UserDetails             = UserDetails("mtdId", userType, agentReferenceNumber)
+  val userDetails: UserDetails             = UserDetails(userType, agentReferenceNumber)
   val correlationId: String                = "a1e8057e-fbbc-47a8-a8b4-78d9f015c253"
 
   val requestBodyJson: JsValue = Json.parse(
