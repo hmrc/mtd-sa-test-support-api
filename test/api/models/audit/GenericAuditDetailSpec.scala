@@ -25,7 +25,7 @@ class GenericAuditDetailSpec extends UnitSpec {
 
   "writes" must {
     "work" in {
-      val userDetails = UserDetails(mtdId = "ignoredMtdId", userType = "Agent", agentReferenceNumber = Some("someARN"))
+      val userDetails = UserDetails(userType = "Agent", agentReferenceNumber = Some("someARN"))
 
       Json.toJson(
         GenericAuditDetail(
