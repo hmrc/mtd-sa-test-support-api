@@ -1,0 +1,26 @@
+summary: Delete Stateful Test Data
+description: |
+  TODO: ADD CONTENT
+
+security:
+  - User-Restricted:
+      - write:self-assessment
+
+responses:
+  204:
+    description: Success
+    headers:
+      X-CorrelationId:
+        $ref: './common/headers.yaml#/components/parameters/correlationId'
+
+  404:
+    description: Not Found
+    content:
+      application/json:
+        schema:
+          $ref: './schemas/error-response.yaml'
+        examples:
+          MATCHING_RESOURCE_NOT_FOUND:
+            $ref: './common/errors.yaml#/components/examples/notFound'
+
+

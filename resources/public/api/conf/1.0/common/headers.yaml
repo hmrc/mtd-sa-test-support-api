@@ -1,0 +1,55 @@
+components:
+  parameters:
+    acceptHeader:
+      name: "Accept"
+      in: header
+      description: |
+        Specifies the response format and the version of the API to be used.
+      schema:
+        type: string
+        enum:
+          - "application/vnd.hmrc.2.0+json"
+      required: true
+
+    authorizationReadScopeHeader:
+      name: "Authorization"
+      in: header
+      description: |
+        An OAuth 2.0 Bearer Token with the *read:self-assessment* scope.
+      schema:
+        type: string
+        example: Bearer bb7fed3fe10dd235a2ccda3d50fb
+      required: true
+
+    authorizationWriteScopeHeader:
+      name: "Authorization"
+      in: header
+      description: |
+        An OAuth 2.0 Bearer Token with the *write:self-assessment* scope.
+      schema:
+        type: string
+        example: Bearer bb7fed3fe10dd235a2ccda3d50fb
+      required: true
+
+    contentTypeJson:
+      name: "Content-Type"
+      in: header
+      description: |
+        Specifies the format of the request body, which must be JSON.
+      schema:
+        type: string
+        enum:
+          - "application/json"
+      required: true
+
+    correlationId:
+      in: header
+      type: string
+      description: |
+        Unique ID for operation tracking
+        String, 36 characters.
+      schema:
+        type: string
+        example: c75f40a6-a3df-4429-a697-471eeec46435
+      required: true
+

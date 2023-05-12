@@ -38,9 +38,7 @@ class ApiDefinitionFactorySpec extends UnitSpec {
       "return a valid Definition case class" in new Test {
         MockAppConfig.featureSwitches returns Configuration.empty anyNumberOfTimes ()
         MockAppConfig.apiStatus("1.0") returns "BETA"
-        MockAppConfig.apiStatus("2.0") returns "ALPHA"
         MockAppConfig.endpointsEnabled("1.0") returns true anyNumberOfTimes ()
-        MockAppConfig.endpointsEnabled("2.0") returns true anyNumberOfTimes ()
         MockAppConfig.confidenceLevelCheckEnabled returns ConfidenceLevelConfig(
           confidenceLevel = confidenceLevel,
           definitionEnabled = true,
@@ -54,20 +52,20 @@ class ApiDefinitionFactorySpec extends UnitSpec {
             scopes = Seq(
               Scope(
                 key = readScope,
-                name = "View your Self Assessment information",
+                name = "Read Self Assessment test information",
                 description = "Allow read access to self assessment data",
                 confidenceLevel
               ),
               Scope(
                 key = writeScope,
-                name = "Change your Self Assessment information",
+                name = "Change Self Assessment test information",
                 description = "Allow write access to self assessment data",
                 confidenceLevel
               )
             ),
             api = APIDefinition(
-              name = "Property Business (MTD)",
-              description = "An API for providing property business data",
+              name = "Self-Assessment Test Support (MTD)",
+              description = "An API providing test support for MTD Self-Assessment APIs",
               context = "individuals/business/property",
               categories = Seq("INCOME_TAX_MTD"),
               versions = Seq(
