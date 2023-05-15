@@ -43,7 +43,7 @@ class DeleteVendorStateControllerISpec extends IntegrationBaseSpec {
       }
 
     }
-    "return a downstream error" when {
+    "return a stub error" when {
       def serviceError(stubErrorStatus: Int, stubErrorCode: String, expectedStatus: Int, expectedError: MtdError): Unit = {
         s"stub returns a $stubErrorCode error and status $stubErrorStatus" in new Test {
 
