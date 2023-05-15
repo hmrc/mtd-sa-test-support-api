@@ -1,2 +1,3 @@
 # microservice specific routes
 
+DELETE          /test-support/vendor-state/:vendorId     uk.gov.hmrc.mtdsatestsupportapi.controllers.DeleteVendorStateController.handleRequest(vendorId: String)

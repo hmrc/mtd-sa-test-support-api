@@ -47,6 +47,8 @@ class ControllerBaseSpec extends UnitSpec with Status with MimeTypes with Header
 
   def fakePostRequest[T](body: T): FakeRequest[T] = fakeRequest.withBody(body)
 
+  def fakeDeleteRequestWithBody[T](body: T): FakeRequest[T] = fakeRequest.withBody(body)
+
   def fakePutRequest[T](body: T): FakeRequest[T] = fakeRequest.withBody(body)
 
   def fakeRequestWithBody[T](body: T): FakeRequest[T] = fakeRequest.withBody(body)
@@ -62,7 +64,6 @@ trait ControllerTestRunner extends MockEnrolmentsAuthService with MockMtdIdLooku
   trait ControllerTest {
     protected val hc: HeaderCarrier = HeaderCarrier()
 
-    MockMtdIdLookupService.lookup(nino).returns(Future.successful(Right("test-mtd-id")))
     MockedEnrolmentsAuthService.authoriseUser()
     MockIdGenerator.getCorrelationId.returns(correlationId)
 

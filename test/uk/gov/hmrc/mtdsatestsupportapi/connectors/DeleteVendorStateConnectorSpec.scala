@@ -37,7 +37,7 @@ class DeleteVendorStateConnectorSpec extends ConnectorSpec {
     )
 
     protected def stubHttpResponse(outcome: DownstreamOutcome[Unit]): CallHandler[Future[DownstreamOutcome[Unit]]]#Derived = {
-      willDelete(url = s"$baseUrl//test-support/vendor-state/$vendorId") returns Future.successful(outcome)
+      willDelete(url = s"$baseUrl/test-support/vendor-state/$vendorId") returns Future.successful(outcome)
     }
 
   }

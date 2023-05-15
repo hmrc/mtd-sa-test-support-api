@@ -22,7 +22,7 @@ import org.scalamock.scalatest.MockFactory
 import uk.gov.hmrc.mtdsatestsupportapi.controllers.requestParsers.DeleteStatefulTestDataRequestParser
 import uk.gov.hmrc.mtdsatestsupportapi.models.request.deleteStatefulTestData.{DeleteStatefulTestDataRawData, DeleteStatefulTestDataRequest}
 
-class MockStatefulTestDataRequestParser extends MockFactory {
+trait MockStatefulTestDataRequestParser extends MockFactory {
 
   val mockRequestParser: DeleteStatefulTestDataRequestParser = mock[DeleteStatefulTestDataRequestParser]
 
