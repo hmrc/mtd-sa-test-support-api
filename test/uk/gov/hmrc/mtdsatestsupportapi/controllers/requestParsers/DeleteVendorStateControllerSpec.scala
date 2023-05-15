@@ -48,7 +48,7 @@ class DeleteVendorStateControllerSpec
       idGenerator = mockIdGenerator)
 
     override protected def callController(): Future[Result] = {
-      controller.handleRequest(vendorClientId)(fakeRequest)
+      controller.handleRequest(vendorClientId)(fakeDeleteRequest)
     }
 
   }
