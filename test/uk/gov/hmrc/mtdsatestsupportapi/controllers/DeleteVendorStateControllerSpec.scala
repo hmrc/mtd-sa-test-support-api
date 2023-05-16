@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.mtdsatestsupportapi.controllers.requestParsers
+package uk.gov.hmrc.mtdsatestsupportapi.controllers
 
 import api.controllers.{ControllerBaseSpec, ControllerTestRunner}
 import api.mocks.MockIdGenerator
@@ -23,7 +23,6 @@ import api.models.errors._
 import api.models.outcomes.ResponseWrapper
 import play.api.http.HeaderNames
 import play.api.mvc.Result
-import uk.gov.hmrc.mtdsatestsupportapi.controllers.DeleteVendorStateController
 import uk.gov.hmrc.mtdsatestsupportapi.mocks.requestParsers.MockStatefulTestDataRequestParser
 import uk.gov.hmrc.mtdsatestsupportapi.mocks.services.MockDeleteVendorStateService
 import uk.gov.hmrc.mtdsatestsupportapi.models.request.deleteStatefulTestData.{DeleteStatefulTestDataRawData, DeleteStatefulTestDataRequest}
