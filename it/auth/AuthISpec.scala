@@ -64,7 +64,7 @@ class AuthISpec extends IntegrationBaseSpec {
         override def setupStubs(): StubMapping = AuthStub.unauthorisedNotLoggedIn()
 
         val response: WSResponse = await(request().delete())
-        response.status shouldBe FORBIDDEN
+        response.status shouldBe UNAUTHORIZED
       }
     }
 
@@ -73,7 +73,7 @@ class AuthISpec extends IntegrationBaseSpec {
         override def setupStubs(): StubMapping = AuthStub.unauthorisedOther()
 
         val response: WSResponse = await(request().delete())
-        response.status shouldBe FORBIDDEN
+        response.status shouldBe UNAUTHORIZED
       }
     }
   }
