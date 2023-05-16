@@ -70,17 +70,19 @@ class DeleteVendorStateControllerISpec extends IntegrationBaseSpec {
 
   trait Test {
 
-    val vendorClientId = "some_id"
-    val stubUri        = s"/test-support/vendor-state/$vendorClientId"
+    private val vendorClientId = "some_id"
+    private val mtdUri         = "/vendor-state"
+    val stubUri                = s"/test-support/vendor-state/$vendorClientId"
 
     def setupStubs(): StubMapping
 
     def request(): WSRequest = {
       setupStubs()
-      buildRequest(stubUri)
+      buildRequest(mtdUri)
         .withHttpHeaders(
           (ACCEPT, "application/vnd.hmrc.1.0+json"),
-          (AUTHORIZATION, "Bearer 123") // some bearer token
+          (AUTHORIZATION, "Bearer 123"), // some bearer token
+          ("X-Client-Id", vendorClientId)
         )
     }
 

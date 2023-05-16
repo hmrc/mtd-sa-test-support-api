@@ -22,29 +22,37 @@ import play.api.mvc.{Action, AnyContent, ControllerComponents}
 import uk.gov.hmrc.mtdsatestsupportapi.controllers.requestParsers.DeleteStatefulTestDataRequestParser
 import uk.gov.hmrc.mtdsatestsupportapi.models.request.deleteStatefulTestData.DeleteStatefulTestDataRawData
 import uk.gov.hmrc.mtdsatestsupportapi.services.DeleteVendorStateService
-import utils.IdGenerator
+import utils.{IdGenerator, Logging}
 
 import javax.inject.Inject
-import scala.concurrent.ExecutionContext
+import scala.concurrent.{ExecutionContext, Future}
 
 class DeleteVendorStateController @Inject() (val cc: ControllerComponents,
                                              val authService: EnrolmentsAuthService,
                                              parser: DeleteStatefulTestDataRequestParser,
                                              service: DeleteVendorStateService,
                                              idGenerator: IdGenerator)(implicit ec: ExecutionContext)
-    extends AuthorisedController(cc) {
+    extends AuthorisedController(cc)
+    with Logging {
 
-  def handleRequest(vendorClientId: String): Action[AnyContent] = authorisedAction().async { implicit request =>
+  def handleRequest(): Action[AnyContent] = authorisedAction().async { implicit request =>
     val endpointLogContext           = EndpointLogContext(controllerName = "DeleteVendorStateController", endpointName = "DeleteStatefulTestData")
     implicit val ctx: RequestContext = RequestContext.from(idGenerator, endpointLogContext)
 
-    val rawData = DeleteStatefulTestDataRawData(vendorClientId, None)
+    request.headers.get("X-Client-Id") match {
+      case Some(vendorClientId) =>
+        val rawData = DeleteStatefulTestDataRawData(vendorClientId, None)
 
-    val requestHandler = RequestHandler
-      .withParser(parser)
-      .withService(service.deleteVendorState)
+        val requestHandler = RequestHandler
+          .withParser(parser)
+          .withService(service.deleteVendorState)
 
-    requestHandler.handleRequest(rawData)
+        requestHandler.handleRequest(rawData)
+
+      case None =>
+        logger.warn("[DeleteVendorStateController] [DeleteStatefulTestData] - No X-Client-Id header present in the request")
+        Future.successful(InternalServerError)
+    }
 
   }
 

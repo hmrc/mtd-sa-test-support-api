@@ -19,8 +19,9 @@ package uk.gov.hmrc.mtdsatestsupportapi.controllers.requestParsers
 import api.controllers.{ControllerBaseSpec, ControllerTestRunner}
 import api.mocks.MockIdGenerator
 import api.mocks.services.MockEnrolmentsAuthService
-import api.models.errors.{ErrorWrapper, NinoFormatError, TaxYearFormatError}
+import api.models.errors._
 import api.models.outcomes.ResponseWrapper
+import play.api.http.HeaderNames
 import play.api.mvc.Result
 import uk.gov.hmrc.mtdsatestsupportapi.controllers.DeleteVendorStateController
 import uk.gov.hmrc.mtdsatestsupportapi.mocks.requestParsers.MockStatefulTestDataRequestParser
@@ -40,16 +41,12 @@ class DeleteVendorStateControllerSpec
 
   trait Test extends ControllerTest {
 
-    private val controller = new DeleteVendorStateController(
+    val controller = new DeleteVendorStateController(
       cc = cc,
       authService = mockEnrolmentsAuthService,
       parser = mockRequestParser,
       service = mockService,
       idGenerator = mockIdGenerator)
-
-    override protected def callController(): Future[Result] = {
-      controller.handleRequest(vendorClientId)(fakeDeleteRequest)
-    }
 
   }
 
@@ -60,8 +57,11 @@ class DeleteVendorStateControllerSpec
   private val requestData = DeleteStatefulTestDataRequest(vendorClientId, None)
 
   "handleRequest" should {
-    "handle the request and return an Ok Action" when {
+    "return an Ok Action" when {
       "the request received is valid" in new Test {
+        override protected def callController(): Future[Result] =
+          controller.handleRequest()(fakeDeleteRequestWithHeaders(HeaderNames.AUTHORIZATION -> "Bearer Token", "X-Client-Id" -> "some_id"))
+
         MockStatefulTestDataRequestParser
           .parseRequest(rawData)
           .returns(Right(requestData))
@@ -75,6 +75,9 @@ class DeleteVendorStateControllerSpec
     }
     "return the error as per spec" when {
       "the parser validation fails" in new Test {
+        override protected def callController(): Future[Result] =
+          controller.handleRequest()(fakeDeleteRequestWithHeaders(HeaderNames.AUTHORIZATION -> "Bearer Token", "X-Client-Id" -> "some_id"))
+
         MockStatefulTestDataRequestParser
           .parseRequest(rawData)
           .returns(Left(ErrorWrapper(correlationId, NinoFormatError, None)))
@@ -83,6 +86,9 @@ class DeleteVendorStateControllerSpec
 
       }
       "the service returns an error" in new Test {
+        override protected def callController(): Future[Result] =
+          controller.handleRequest()(fakeDeleteRequestWithHeaders(HeaderNames.AUTHORIZATION -> "Bearer Token", "X-Client-Id" -> "some_id"))
+
         MockStatefulTestDataRequestParser
           .parseRequest(rawData)
           .returns(Right(requestData))
@@ -92,6 +98,17 @@ class DeleteVendorStateControllerSpec
           .returns(Future.successful(Left(ErrorWrapper(correlationId, TaxYearFormatError))))
 
         runErrorTest(TaxYearFormatError)
+      }
+    }
+
+    "return an InternalServerError" when {
+      "the request is missing an X-Client-Id header" in new Test {
+        override protected def callController(): Future[Result] =
+          controller.handleRequest()(fakeDeleteRequestWithHeaders(HeaderNames.AUTHORIZATION -> "Bearer Token"))
+
+        val result: Future[Result] = callController()
+
+        status(result) shouldBe InternalError.httpStatus
       }
     }
   }

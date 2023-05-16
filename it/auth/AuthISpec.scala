@@ -1,3 +1,19 @@
+/*
+ * Copyright 2023 HM Revenue & Customs
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package auth
 
 import com.github.tomakehurst.wiremock.stubbing.StubMapping
@@ -12,17 +28,19 @@ import support.IntegrationBaseSpec
 class AuthISpec extends IntegrationBaseSpec {
 
   private trait Test {
-    val vendorClientId = "some_id"
-    val stubUri        = s"/test-support/vendor-state/$vendorClientId"
+    private val vendorClientId = "some_id"
+    private val mtdUri         = "/vendor-state"
+    val stubUri                = s"/test-support/vendor-state/$vendorClientId"
 
     def setupStubs(): StubMapping
 
     def request(): WSRequest = {
       setupStubs()
-      buildRequest(stubUri)
+      buildRequest(mtdUri)
         .withHttpHeaders(
           (ACCEPT, "application/vnd.hmrc.1.0+json"),
-          (AUTHORIZATION, "Bearer 123") // some bearer token
+          (AUTHORIZATION, "Bearer 123"), // some bearer token
+          ("X-Client-Id", vendorClientId)
         )
     }
 
