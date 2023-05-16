@@ -1,1 +1,1 @@
-[comment]: <> (This file is intenionally left blank to override default text)
+[comment]: <> (This file is intentionally left blank to override default text)
