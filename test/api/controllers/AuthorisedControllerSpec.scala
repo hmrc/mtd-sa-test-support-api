@@ -17,7 +17,7 @@
 package api.controllers
 
 import api.mocks.services.MockEnrolmentsAuthService
-import api.models.errors.{ClientNotAuthenticatedError, InternalError}
+import api.models.errors.{ClientNotAuthenticatedError, ClientNotAuthorisedError, InternalError, InvalidBearerTokenError, MtdError}
 import api.services.EnrolmentsAuthService
 import play.api.libs.json.Json
 import play.api.mvc.{Action, AnyContent}
@@ -58,16 +58,23 @@ class AuthorisedControllerSpec extends ControllerBaseSpec {
       }
     }
 
-    "the MTD user is not authorised" should {
-      "return a 403" in new Test {
+    "the MTD user is not authorised" when {
 
-        MockedEnrolmentsAuthService
-          .authorised(predicate)
-          .returns(Future.successful(Left(ClientNotAuthenticatedError)))
+      def testNotAuth(error: MtdError): Unit =
+        s"the service returns an error with code ${error.code}" must {
+          s"return a ${error.httpStatus} with code ${error.code}" in new Test {
+            MockedEnrolmentsAuthService
+              .authorised(predicate)
+              .returns(Future.successful(Left(error)))
 
-        private val result = target.action()(fakeGetRequest)
-        status(result) shouldBe FORBIDDEN
-      }
+            private val result = target.action()(fakeGetRequest)
+            contentAsJson(result) shouldBe error.asJson
+            status(result) shouldBe error.httpStatus
+          }
+        }
+
+      Seq(ClientNotAuthenticatedError, ClientNotAuthorisedError, InvalidBearerTokenError)
+        .foreach(testNotAuth)
     }
 
     "auth returns an unexpected error" should {
