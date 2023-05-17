@@ -2,7 +2,7 @@
 # mtd-sa-test-support-api
 
 This API allows a developer to:
-- delete stateful test data supplied by them in the sandbox environment.
+- delete stateful test data supplied by them in the sandbox environment
 
 ### Requirements 
 
@@ -13,7 +13,7 @@ This API allows a developer to:
 
 ### Development Setup
 
-Run the microservice from the console using: `sbt run` (starts on port 12221 by default)
+Run the microservice from the console using the command: `sbt run` (starts on port 12221 by default)
 
 Start the service manager profile: `sm --start MTDFB_ALL`
 
