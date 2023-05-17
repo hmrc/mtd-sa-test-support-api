@@ -45,7 +45,7 @@ class AuthorisedControllerSpec extends ControllerBaseSpec {
     lazy val target = new TestController()
   }
 
-  val predicate: Predicate = Enrolment("HMRC-MTD-IT")
+  val predicate: Predicate = Enrolment("HMRC-MTD-IT") or Enrolment("HMRC-AS-AGENT")
 
   "calling an action" when {
 

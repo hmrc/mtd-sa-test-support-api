@@ -40,7 +40,7 @@ abstract class AuthorisedController(cc: ControllerComponents)(implicit ec: Execu
 
     override protected def executionContext: ExecutionContext = cc.executionContext
 
-    def predicate: Predicate = Enrolment("HMRC-MTD-IT")
+    def predicate: Predicate = Enrolment("HMRC-MTD-IT") or Enrolment("HMRC-AS-AGENT")
 
     override def invokeBlock[A](request: Request[A], block: UserRequest[A] => Future[Result]): Future[Result] = {
       implicit val headerCarrier: HeaderCarrier = hc(request)
