@@ -45,7 +45,7 @@ class AuthorisedControllerSpec extends ControllerBaseSpec {
     lazy val target = new TestController()
   }
 
-  val predicate: Predicate = Enrolment("HMRC-MTD-IT")
+  val predicate: Predicate = Enrolment("HMRC-MTD-IT") or Enrolment("HMRC-AS-AGENT")
 
   "calling an action" when {
 
@@ -64,7 +64,7 @@ class AuthorisedControllerSpec extends ControllerBaseSpec {
         s"the service returns an error with code ${error.code}" must {
           s"return a ${error.httpStatus} with code ${error.code}" in new Test {
             MockedEnrolmentsAuthService
-              .authorised(predicate)
+              .authorised
               .returns(Future.successful(Left(error)))
 
             private val result = target.action()(fakeGetRequest)
@@ -80,7 +80,7 @@ class AuthorisedControllerSpec extends ControllerBaseSpec {
     "auth returns an unexpected error" should {
       "return a 500" in new Test {
         MockedEnrolmentsAuthService
-          .authorised(predicate)
+          .authorised
           .returns(Future.successful(Left(InternalError)))
 
         private val result = target.action()(fakeGetRequest)

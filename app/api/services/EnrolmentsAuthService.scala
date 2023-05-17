@@ -23,8 +23,8 @@ import config.AppConfig
 import uk.gov.hmrc.auth.core.AffinityGroup.{Agent, Individual, Organisation}
 import uk.gov.hmrc.auth.core._
 import uk.gov.hmrc.auth.core.authorise.Predicate
-import uk.gov.hmrc.auth.core.retrieve.v2.Retrievals
-import uk.gov.hmrc.auth.core.retrieve.v2.Retrievals.affinityGroup
+import uk.gov.hmrc.auth.core.retrieve.v2.Retrievals.{affinityGroup, authorisedEnrolments}
+import uk.gov.hmrc.auth.core.retrieve.~
 import uk.gov.hmrc.http.HeaderCarrier
 import utils.Logging
 
@@ -38,18 +38,16 @@ class EnrolmentsAuthService @Inject() (val connector: AuthConnector, val appConf
     override def authConnector: AuthConnector = connector
   }
 
-  def authorised(predicate: Predicate)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[AuthOutcome] = {
-    authFunction.authorised(buildPredicate(predicate)).retrieve(affinityGroup) {
-      case Some(Individual)   => Future.successful(Right(UserDetails("Individual", None)))
-      case Some(Organisation) => Future.successful(Right(UserDetails("Organisation", None)))
-      case Some(Agent) =>
-        retrieveAgentDetails() map {
-          case arn @ Some(_) =>
-            val user: AuthOutcome = Right(UserDetails("Agent", arn))
-            user
+  def authorised(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[AuthOutcome] = {
+    authFunction.authorised(buildPredicate).retrieve(affinityGroup and authorisedEnrolments) {
+      case Some(Individual) ~ _   => Future.successful(Right(UserDetails("Individual", None)))
+      case Some(Organisation) ~ _ => Future.successful(Right(UserDetails("Organisation", None)))
+      case Some(Agent) ~ enrolments =>
+        getAgentReferenceFrom(enrolments) match {
+          case arn @ Some(_) => Future.successful(Right(UserDetails("Agent", arn)))
           case None =>
             logger.warn(s"[EnrolmentsAuthService][authorised] No AgentReferenceNumber defined on agent enrolment.")
-            Left(InternalError)
+            Future.successful(Left(InternalError))
         }
       case _ =>
         logger.warn(s"[EnrolmentsAuthService][authorised] Invalid AffinityGroup.")
@@ -65,25 +63,20 @@ class EnrolmentsAuthService @Inject() (val connector: AuthConnector, val appConf
     }
   }
 
-  private def buildPredicate(predicate: Predicate): Predicate =
+  private def buildPredicate: Predicate = {
+    val basePredicate = Enrolment("HMRC-MTD-IT") or Enrolment("HMRC-AS-AGENT")
+
     if (appConfig.confidenceLevelConfig.authValidationEnabled) {
-      predicate and ((Individual and ConfidenceLevel.L200) or Organisation or Agent)
+      basePredicate and ((Individual and ConfidenceLevel.L200) or Organisation or Agent)
     } else {
-      predicate
+      basePredicate
     }
-
-  private def retrieveAgentDetails()(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Option[String]] = {
-    def getAgentReferenceFrom(enrolments: Enrolments) =
-      enrolments
-        .getEnrolment("HMRC-AS-AGENT")
-        .flatMap(_.getIdentifier("AgentReferenceNumber"))
-        .map(_.value)
-
-    authFunction
-      .authorised(AffinityGroup.Agent and Enrolment("HMRC-AS-AGENT"))
-      .retrieve(Retrievals.authorisedEnrolments) { enrolments =>
-        Future.successful(getAgentReferenceFrom(enrolments))
-      }
   }
+
+  private def getAgentReferenceFrom(enrolments: Enrolments) =
+    enrolments
+      .getEnrolment("HMRC-AS-AGENT")
+      .flatMap(_.getIdentifier("AgentReferenceNumber"))
+      .map(_.value)
 
 }
