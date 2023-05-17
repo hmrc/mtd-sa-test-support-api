@@ -17,7 +17,8 @@
 package api.services
 
 import api.models.auth.UserDetails
-import api.models.errors.{ClientNotAuthenticatedError, InternalError}
+import api.models.errors.{ClientNotAuthenticatedError, ClientNotAuthorisedError, InternalError, InvalidBearerTokenError, MtdError}
+import api.models.outcomes.AuthOutcome
 import config.ConfidenceLevelConfig
 import mocks.MockAppConfig
 import org.scalamock.handlers.CallHandler
@@ -34,62 +35,71 @@ class EnrolmentsAuthServiceSpec extends ServiceSpec with MockAppConfig {
   private def extraPredicatesAnd(predicate: Predicate) = predicate and
     ((AffinityGroup.Individual and ConfidenceLevel.L200) or AffinityGroup.Organisation or AffinityGroup.Agent)
 
+  private def agentEnrolments(identifier: EnrolmentIdentifier) = Enrolments(Set(Enrolment("HMRC-AS-AGENT", Seq(identifier), "Active")))
+
   "calling .authorised" when {
     val inputPredicate = EmptyPredicate
 
     "confidence level checks are on" should {
-      behave like authService(authValidationEnabled = true, extraPredicatesAnd(inputPredicate))
+      behave like new AuthBehaviours(authValidationEnabled = true, expectedPredicate = extraPredicatesAnd(inputPredicate))
     }
 
     "confidence level checks are off" should {
-      behave like authService(authValidationEnabled = false, inputPredicate)
+      behave like new AuthBehaviours(authValidationEnabled = false, expectedPredicate = inputPredicate)
     }
 
-    def authService(authValidationEnabled: Boolean, expectedPredicate: Predicate): Unit = {
-      behave like authorisedIndividual(inputPredicate, authValidationEnabled, expectedPredicate)
-      behave like authorisedOrganisation(inputPredicate, authValidationEnabled, expectedPredicate)
+    class AuthBehaviours(authValidationEnabled: Boolean, val expectedPredicate: Predicate) {
 
-      behave like authorisedAgentsMissingArn(inputPredicate, authValidationEnabled, expectedPredicate)
-      behave like authorisedAgents(inputPredicate, authValidationEnabled, expectedPredicate)
+      "allow authorised individuals" in authSuccess(AffinityGroup.Individual, "Individual")
+      "allow authorised organisations" in authSuccess(AffinityGroup.Organisation, "Organisation")
 
-      behave like disallowUsersWithoutEnrolments(inputPredicate, authValidationEnabled, expectedPredicate)
-      behave like disallowWhenNotLoggedIn(inputPredicate, authValidationEnabled, expectedPredicate)
-    }
+      "when an agent has no ARN identifier" must {
+        val enrolmentsWithoutArn: Enrolments = agentEnrolments(EnrolmentIdentifier("SomeOtherIdentifier", "123567890"))
 
-    def authorisedIndividual(inputPredicate: Predicate, authValidationEnabled: Boolean, expectedPredicate: Predicate): Unit =
-      "allow authorised individuals" in new Test {
-        mockConfidenceLevelCheckConfig(authValidationEnabled = authValidationEnabled)
+        "disallow the agent" in authAgent(enrolmentsWithoutArn, Left(InternalError))
+      }
+
+      "when an agent has an ARN identifier" must {
+        val arn                           = "123567890"
+        val enrolmentsWithArn: Enrolments = agentEnrolments(EnrolmentIdentifier("AgentReferenceNumber", arn))
+
+        "allow the agent" in authAgent(enrolmentsWithArn, Right(UserDetails("Agent", Some(arn))))
+      }
+
+      "disallow users without enrolments" in
+        authFailure(InsufficientEnrolments(), ClientNotAuthorisedError)
+
+      "disallow users that are not logged in" in
+        authFailure(InvalidBearerToken(), InvalidBearerTokenError)
+
+      "disallow requests without a bearer token" in
+        authFailure(MissingBearerToken(), InvalidBearerTokenError)
+
+      "disallow users where auth fails in other ways" in
+        authFailure(new AuthorisationException("general auth failure") {}, ClientNotAuthenticatedError)
+
+      def authSuccess(userAffinityGroup: AffinityGroup, userTypeName: String): Unit =
+        new Test {
+          mockConfidenceLevelCheckConfig(authValidationEnabled = authValidationEnabled)
+
+          MockedAuthConnector
+            .authorised(expectedPredicate, affinityGroup)
+            .returns(Future.successful(Some(userAffinityGroup)))
+
+          await(target.authorised(inputPredicate)) shouldBe Right(UserDetails(userTypeName, None))
+        }
+
+      def authFailure(authException: AuthorisationException, expectedError: MtdError): Unit = new Test {
+        mockConfidenceLevelCheckConfig(authValidationEnabled)
 
         MockedAuthConnector
           .authorised(expectedPredicate, affinityGroup)
-          .returns(Future.successful(Some(AffinityGroup.Individual)))
+          .returns(Future.failed(authException))
 
-        await(target.authorised(inputPredicate)) shouldBe Right(UserDetails("Individual", None))
+        await(target.authorised(inputPredicate)) shouldBe Left(expectedError)
       }
 
-    def authorisedOrganisation(inputPredicate: Predicate, authValidationEnabled: Boolean, expectedPredicate: Predicate): Unit =
-      "allow authorised organisations" in new Test {
-        mockConfidenceLevelCheckConfig(authValidationEnabled = authValidationEnabled)
-
-        MockedAuthConnector
-          .authorised(expectedPredicate, affinityGroup)
-          .returns(Future.successful(Some(AffinityGroup.Organisation)))
-
-        await(target.authorised(inputPredicate)) shouldBe Right(UserDetails("Organisation", None))
-      }
-
-    def authorisedAgentsMissingArn(inputPredicate: Predicate, authValidationEnabled: Boolean, expectedPredicate: Predicate): Unit = {
-      "disallow agents that are missing an ARN" in new Test {
-        val enrolmentsWithoutArn: Enrolments = Enrolments(
-          Set(
-            Enrolment(
-              "HMRC-AS-AGENT",
-              Seq(EnrolmentIdentifier("SomeOtherIdentifier", "123567890")),
-              "Active"
-            )
-          )
-        )
-
+      def authAgent(enrolments: Enrolments, expectedResult: AuthOutcome): Unit = new Test {
         mockConfidenceLevelCheckConfig(authValidationEnabled = authValidationEnabled)
 
         MockedAuthConnector
@@ -98,60 +108,11 @@ class EnrolmentsAuthServiceSpec extends ServiceSpec with MockAppConfig {
 
         MockedAuthConnector
           .authorised(AffinityGroup.Agent and Enrolment("HMRC-AS-AGENT"), authorisedEnrolments)
-          .returns(Future.successful(enrolmentsWithoutArn))
+          .returns(Future.successful(enrolments))
 
-        await(target.authorised(inputPredicate)) shouldBe Left(InternalError)
+        await(target.authorised(inputPredicate)) shouldBe expectedResult
       }
     }
-
-    def authorisedAgents(inputPredicate: Predicate, authValidationEnabled: Boolean, expectedPredicate: Predicate): Unit =
-      "allow authorised agents with ARN" in new Test {
-        val arn = "123567890"
-        val enrolmentsWithArn: Enrolments = Enrolments(
-          Set(
-            Enrolment(
-              "HMRC-AS-AGENT",
-              Seq(EnrolmentIdentifier("AgentReferenceNumber", arn)),
-              "Active"
-            )
-          )
-        )
-
-        mockConfidenceLevelCheckConfig(authValidationEnabled = authValidationEnabled)
-
-        MockedAuthConnector
-          .authorised(expectedPredicate, affinityGroup)
-          .returns(Future.successful(Some(AffinityGroup.Agent)))
-
-        MockedAuthConnector
-          .authorised(AffinityGroup.Agent and Enrolment("HMRC-AS-AGENT"), authorisedEnrolments)
-          .returns(Future.successful(enrolmentsWithArn))
-
-        await(target.authorised(inputPredicate)) shouldBe Right(UserDetails("Agent", Some(arn)))
-
-      }
-
-    def disallowWhenNotLoggedIn(inputPredicate: Predicate, authValidationEnabled: Boolean, expectedPredicate: Predicate): Unit =
-      "disallow users that are not logged in" in new Test {
-        mockConfidenceLevelCheckConfig(authValidationEnabled = authValidationEnabled)
-
-        MockedAuthConnector
-          .authorised(expectedPredicate, affinityGroup)
-          .returns(Future.failed(MissingBearerToken()))
-
-        await(target.authorised(inputPredicate)) shouldBe Left(ClientNotAuthenticatedError)
-      }
-
-    def disallowUsersWithoutEnrolments(inputPredicate: Predicate, authValidationEnabled: Boolean, expectedPredicate: Predicate): Unit =
-      "disallow users without enrolments" in new Test {
-        mockConfidenceLevelCheckConfig(authValidationEnabled = authValidationEnabled)
-
-        MockedAuthConnector
-          .authorised(expectedPredicate, affinityGroup)
-          .returns(Future.failed(InsufficientEnrolments()))
-
-        await(target.authorised(inputPredicate)) shouldBe Left(ClientNotAuthenticatedError)
-      }
   }
 
   trait Test {
@@ -165,6 +126,7 @@ class EnrolmentsAuthServiceSpec extends ServiceSpec with MockAppConfig {
           .authorise[A](_: Predicate, _: Retrieval[A])(_: HeaderCarrier, _: ExecutionContext))
           .expects(predicate, retrievals, *, *)
       }
+
     }
 
     def mockConfidenceLevelCheckConfig(authValidationEnabled: Boolean): Unit = {

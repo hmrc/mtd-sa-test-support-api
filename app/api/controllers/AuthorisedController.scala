@@ -44,11 +44,19 @@ abstract class AuthorisedController(cc: ControllerComponents)(implicit ec: Execu
 
     override def invokeBlock[A](request: Request[A], block: UserRequest[A] => Future[Result]): Future[Result] = {
       implicit val headerCarrier: HeaderCarrier = hc(request)
+
       authService.authorised(predicate).flatMap[Result] {
-        case Right(userDetails)                => block(UserRequest(userDetails, request))
-        case Left(ClientNotAuthenticatedError) => Future.successful(Forbidden(Json.toJson(ClientNotAuthenticatedError)))
-        case Left(_)                           => Future.successful(InternalServerError(Json.toJson(InternalError)))
+        case Right(userDetails) => block(UserRequest(userDetails, request))
+        case Left(error) =>
+          val result = error match {
+            case ClientNotAuthenticatedError | ClientNotAuthorisedError | InvalidBearerTokenError => errorResult(error)
+            case _                                                                                => errorResult(InternalError)
+          }
+          Future.successful(result)
       }
     }
+
+    private def errorResult(error: MtdError) = Status(error.httpStatus)(Json.toJson(error))
   }
+
 }

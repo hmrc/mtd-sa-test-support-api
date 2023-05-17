@@ -22,7 +22,7 @@ components:
     # 404
 
     notFound:
-      description: TODO ADD CONTENT
+      description: The remote endpoint has indicated that no data can be found for the given vendor ID.
       value:
         code: MATCHING_RESOURCE_NOT_FOUND
         message: Matching resource not found

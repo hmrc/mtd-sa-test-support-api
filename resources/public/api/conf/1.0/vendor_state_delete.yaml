@@ -1,6 +1,8 @@
 summary: Delete Stateful Test Data
 description: |
-  TODO: ADD CONTENT
+  This endpoint allows a developer to delete stateful test data supplied by them in sandbox environment. 
+  When the vendor calls this endpoint all stateful test data stored against vendor specific ID is deleted from the sandbox database. 
+  Any stateful test data that has not been deleted by vendor is automatically purged from database after 7 days from its creation.
 
 security:
   - User-Restricted:
@@ -13,12 +15,22 @@ responses:
       X-CorrelationId:
         $ref: './common/headers.yaml#/components/parameters/correlationId'
 
+  403:
+    description: Forbidden
+    content:
+      application/json:
+        schema:
+          $ref: './schemas/error_response.yaml'
+        examples:
+          CLIENT_OR_AGENT_NOT_AUTHORISED:
+            $ref: './common/errors.yaml#/components/examples/clientOrAgentNotAuthorised'
+
   404:
     description: Not Found
     content:
       application/json:
         schema:
-          $ref: './schemas/error-response.yaml'
+          $ref: './schemas/error_response.yaml'
         examples:
           MATCHING_RESOURCE_NOT_FOUND:
             $ref: './common/errors.yaml#/components/examples/notFound'

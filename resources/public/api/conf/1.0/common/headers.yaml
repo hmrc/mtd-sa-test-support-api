@@ -8,7 +8,7 @@ components:
       schema:
         type: string
         enum:
-          - "application/vnd.hmrc.2.0+json"
+          - "application/vnd.hmrc.1.0+json"
       required: true
 
     authorizationReadScopeHeader:
