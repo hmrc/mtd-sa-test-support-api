@@ -27,12 +27,15 @@ import uk.gov.hmrc.auth.core.authorise.Predicate
 import uk.gov.hmrc.auth.core.retrieve.Retrieval
 import uk.gov.hmrc.auth.core.retrieve.v2.Retrievals._
 import uk.gov.hmrc.http.HeaderCarrier
+import uk.gov.hmrc.auth.core.retrieve.~
 
 import scala.concurrent.{ExecutionContext, Future}
 
 class EnrolmentsAuthServiceSpec extends ServiceSpec with MockAppConfig {
 
   private def agentEnrolments(identifier: EnrolmentIdentifier) = Enrolments(Set(Enrolment("HMRC-AS-AGENT", Seq(identifier), "Active")))
+
+  private val ignoredEnrolments = Enrolments(Set())
 
   "calling .authorised" when {
 
@@ -85,8 +88,8 @@ class EnrolmentsAuthServiceSpec extends ServiceSpec with MockAppConfig {
           mockConfidenceLevelCheckConfig(authValidationEnabled = authValidationEnabled)
 
           MockedAuthConnector
-            .authorised(expectedPredicate, affinityGroup)
-            .returns(Future.successful(Some(userAffinityGroup)))
+            .authorised(expectedPredicate, affinityGroup and authorisedEnrolments)
+            .returns(Future.successful(new ~(Some(userAffinityGroup), ignoredEnrolments)))
 
           await(target.authorised) shouldBe Right(UserDetails(userTypeName, None))
         }
@@ -95,7 +98,7 @@ class EnrolmentsAuthServiceSpec extends ServiceSpec with MockAppConfig {
         mockConfidenceLevelCheckConfig(authValidationEnabled)
 
         MockedAuthConnector
-          .authorised(expectedPredicate, affinityGroup)
+          .authorised(expectedPredicate, affinityGroup and authorisedEnrolments)
           .returns(Future.failed(authException))
 
         await(target.authorised) shouldBe Left(expectedError)
@@ -105,12 +108,8 @@ class EnrolmentsAuthServiceSpec extends ServiceSpec with MockAppConfig {
         mockConfidenceLevelCheckConfig(authValidationEnabled = authValidationEnabled)
 
         MockedAuthConnector
-          .authorised(expectedPredicate, affinityGroup)
-          .returns(Future.successful(Some(AffinityGroup.Agent)))
-
-        MockedAuthConnector
-          .authorised(AffinityGroup.Agent and Enrolment("HMRC-AS-AGENT"), authorisedEnrolments)
-          .returns(Future.successful(enrolments))
+          .authorised(expectedPredicate, affinityGroup and authorisedEnrolments)
+          .returns(Future.successful(new ~(Some(AffinityGroup.Agent), enrolments)))
 
         await(target.authorised) shouldBe expectedResult
       }
