@@ -21,8 +21,6 @@ import api.models.errors._
 import api.services.EnrolmentsAuthService
 import play.api.libs.json.Json
 import play.api.mvc._
-import uk.gov.hmrc.auth.core.Enrolment
-import uk.gov.hmrc.auth.core.authorise.Predicate
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.bootstrap.backend.controller.BackendController
 
@@ -40,12 +38,11 @@ abstract class AuthorisedController(cc: ControllerComponents)(implicit ec: Execu
 
     override protected def executionContext: ExecutionContext = cc.executionContext
 
-    def predicate: Predicate = Enrolment("HMRC-MTD-IT") or Enrolment("HMRC-AS-AGENT")
 
     override def invokeBlock[A](request: Request[A], block: UserRequest[A] => Future[Result]): Future[Result] = {
       implicit val headerCarrier: HeaderCarrier = hc(request)
 
-      authService.authorised(predicate).flatMap[Result] {
+      authService.authorised.flatMap[Result] {
         case Right(userDetails) => block(UserRequest(userDetails, request))
         case Left(error) =>
           val result = error match {

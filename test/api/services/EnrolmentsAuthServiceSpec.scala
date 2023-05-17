@@ -23,7 +23,7 @@ import config.ConfidenceLevelConfig
 import mocks.MockAppConfig
 import org.scalamock.handlers.CallHandler
 import uk.gov.hmrc.auth.core._
-import uk.gov.hmrc.auth.core.authorise.{EmptyPredicate, Predicate}
+import uk.gov.hmrc.auth.core.authorise.Predicate
 import uk.gov.hmrc.auth.core.retrieve.Retrieval
 import uk.gov.hmrc.auth.core.retrieve.v2.Retrievals._
 import uk.gov.hmrc.http.HeaderCarrier
@@ -32,23 +32,25 @@ import scala.concurrent.{ExecutionContext, Future}
 
 class EnrolmentsAuthServiceSpec extends ServiceSpec with MockAppConfig {
 
-  private def extraPredicatesAnd(predicate: Predicate) = predicate and
-    ((AffinityGroup.Individual and ConfidenceLevel.L200) or AffinityGroup.Organisation or AffinityGroup.Agent)
-
   private def agentEnrolments(identifier: EnrolmentIdentifier) = Enrolments(Set(Enrolment("HMRC-AS-AGENT", Seq(identifier), "Active")))
 
   "calling .authorised" when {
-    val inputPredicate = EmptyPredicate
 
     "confidence level checks are on" should {
-      behave like new AuthBehaviours(authValidationEnabled = true, expectedPredicate = extraPredicatesAnd(inputPredicate))
+      behave like new AuthBehaviours(authValidationEnabled = true)
     }
 
     "confidence level checks are off" should {
-      behave like new AuthBehaviours(authValidationEnabled = false, expectedPredicate = inputPredicate)
+      behave like new AuthBehaviours(authValidationEnabled = false)
     }
 
-    class AuthBehaviours(authValidationEnabled: Boolean, val expectedPredicate: Predicate) {
+    class AuthBehaviours(authValidationEnabled: Boolean) {
+      val expectedPredicate: Predicate =
+        if (authValidationEnabled)
+          Enrolment("HMRC-MTD-IT") or Enrolment("HMRC-AS-AGENT") and
+            ((AffinityGroup.Individual and ConfidenceLevel.L200) or AffinityGroup.Organisation or AffinityGroup.Agent)
+        else
+          Enrolment("HMRC-MTD-IT") or Enrolment("HMRC-AS-AGENT")
 
       "allow authorised individuals" in authSuccess(AffinityGroup.Individual, "Individual")
       "allow authorised organisations" in authSuccess(AffinityGroup.Organisation, "Organisation")
@@ -86,7 +88,7 @@ class EnrolmentsAuthServiceSpec extends ServiceSpec with MockAppConfig {
             .authorised(expectedPredicate, affinityGroup)
             .returns(Future.successful(Some(userAffinityGroup)))
 
-          await(target.authorised(inputPredicate)) shouldBe Right(UserDetails(userTypeName, None))
+          await(target.authorised) shouldBe Right(UserDetails(userTypeName, None))
         }
 
       def authFailure(authException: AuthorisationException, expectedError: MtdError): Unit = new Test {
@@ -96,7 +98,7 @@ class EnrolmentsAuthServiceSpec extends ServiceSpec with MockAppConfig {
           .authorised(expectedPredicate, affinityGroup)
           .returns(Future.failed(authException))
 
-        await(target.authorised(inputPredicate)) shouldBe Left(expectedError)
+        await(target.authorised) shouldBe Left(expectedError)
       }
 
       def authAgent(enrolments: Enrolments, expectedResult: AuthOutcome): Unit = new Test {
@@ -110,7 +112,7 @@ class EnrolmentsAuthServiceSpec extends ServiceSpec with MockAppConfig {
           .authorised(AffinityGroup.Agent and Enrolment("HMRC-AS-AGENT"), authorisedEnrolments)
           .returns(Future.successful(enrolments))
 
-        await(target.authorised(inputPredicate)) shouldBe expectedResult
+        await(target.authorised) shouldBe expectedResult
       }
     }
   }
