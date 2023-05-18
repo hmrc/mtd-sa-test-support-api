@@ -1,1 +1,1 @@
-[comment]: <> (This file is intentionally left blank to override default text)
+Not applicable to this API.
