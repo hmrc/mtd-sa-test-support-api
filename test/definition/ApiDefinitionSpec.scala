@@ -22,7 +22,7 @@ import support.UnitSpec
 class ApiDefinitionSpec extends UnitSpec {
 
   val apiVersion: APIVersion       = APIVersion("a", ALPHA, endpointsEnabled = false)
-  val apiDefinition: APIDefinition = APIDefinition("b", "c", "d", Seq("e"), Seq(apiVersion), Some(false))
+  val apiDefinition: APIDefinition = APIDefinition("b", "c", "d", Seq("e"), Seq(apiVersion), Some(false), isTestSupport=true)
 
   "APIVersion" when {
     "the 'version' parameter is empty" should {
