@@ -15,7 +15,7 @@ This API allows a developer to:
 
 Run the microservice from the console using the command: `sbt run` (starts on port 12221 by default)
 
-Start the service manager profile: `sm --start MTDFB_ALL`
+Start the service manager profile: `sm2 --start MTDFB_ALL`
 
 ### Run Tests
 
