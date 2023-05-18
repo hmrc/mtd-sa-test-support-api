@@ -60,7 +60,8 @@ case class APIDefinition(name: String,
                          context: String,
                          categories: Seq[String],
                          versions: Seq[APIVersion],
-                         requiresTrust: Option[Boolean]) {
+                         requiresTrust: Option[Boolean],
+                         isTestSupport: Boolean) {
 
   require(name.nonEmpty, "name is required")
   require(context.nonEmpty, "context is required")

@@ -75,7 +75,8 @@ class ApiDefinitionFactorySpec extends UnitSpec {
                   endpointsEnabled = true
                 )
               ),
-              requiresTrust = None
+              requiresTrust = None,
+              isTestSupport = true
             )
           )
       }
