@@ -24,8 +24,6 @@ import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
 import javax.inject.{Inject, Singleton}
 
 trait AppConfig {
-  // MTD ID Lookup Config
-  def mtdIdBaseUrl: String
 
   def stubBaseUrl: String
   def stubEnvironmentHeaders: Option[Seq[String]]
@@ -44,9 +42,6 @@ trait AppConfig {
 
 @Singleton
 class AppConfigImpl @Inject() (config: ServicesConfig, configuration: Configuration) extends AppConfig {
-
-  // MTD ID Lookup Config
-  val mtdIdBaseUrl: String = config.baseUrl("mtd-id-lookup")
 
   val stubBaseUrl: String                         = config.baseUrl("stub")
   val stubEnvironmentHeaders: Option[Seq[String]] = configuration.getOptional[Seq[String]]("microservice.services.stub.environmentHeaders")
