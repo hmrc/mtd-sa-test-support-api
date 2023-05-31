@@ -18,7 +18,7 @@ package api.controllers
 
 import api.controllers.ControllerTestRunner.validNino
 import api.mocks.MockIdGenerator
-import api.mocks.services.{MockAuditService, MockEnrolmentsAuthService, MockMtdIdLookupService}
+import api.mocks.services.{MockAuditService, MockEnrolmentsAuthService}
 import api.models.errors.MtdError
 import play.api.http.{HeaderNames, MimeTypes, Status}
 import play.api.libs.json.JsValue
@@ -56,7 +56,7 @@ class ControllerBaseSpec extends UnitSpec with Status with MimeTypes with Header
 
 }
 
-trait ControllerTestRunner extends MockEnrolmentsAuthService with MockMtdIdLookupService with MockIdGenerator { _: ControllerBaseSpec =>
+trait ControllerTestRunner extends MockEnrolmentsAuthService with MockIdGenerator { _: ControllerBaseSpec =>
   protected val nino: String  = validNino
   protected val correlationId = "X-123"
 
