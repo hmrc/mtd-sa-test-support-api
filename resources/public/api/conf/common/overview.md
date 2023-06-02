@@ -1,5 +1,3 @@
-## Overview 
-
 This API supports the testing of MTD APIs.
 
 This API allows developers to:
