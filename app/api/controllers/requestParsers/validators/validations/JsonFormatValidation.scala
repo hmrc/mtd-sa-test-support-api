@@ -49,7 +49,7 @@ object JsonFormatValidation {
     } else {
       data.validate[A] match {
         case JsSuccess(a, _)                                          => Right(a)
-        case JsError(errors: Seq[(JsPath, Seq[JsonValidationError])]) => Left(handleErrors(errors))
+        case JsError(errors) => Left(handleErrors(errors.map(e => (e._1, e._2.toList)).toList))
       }
     }
   }

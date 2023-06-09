@@ -31,8 +31,8 @@ trait Validator[A <: RawData] {
       case Nil => List()
       case thisLevel :: remainingLevels =>
         thisLevel(data).flatten match {
-          case x if x.isEmpty  => run(remainingLevels, data)
           case x if x.nonEmpty => x
+          case _               => run(remainingLevels, data)
         }
     }
   }

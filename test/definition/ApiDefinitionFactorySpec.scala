@@ -36,13 +36,12 @@ class ApiDefinitionFactorySpec extends UnitSpec {
   "definition" when {
     "called" should {
       "return a valid Definition case class" in new Test {
-        MockAppConfig.featureSwitches returns Configuration.empty anyNumberOfTimes ()
+        MockAppConfig.featureSwitches.returns(Configuration.empty).anyNumberOfTimes()
         MockAppConfig.apiStatus("1.0") returns "BETA"
-        MockAppConfig.endpointsEnabled("1.0") returns true anyNumberOfTimes ()
-        MockAppConfig.confidenceLevelCheckEnabled returns ConfidenceLevelConfig(
-          confidenceLevel = confidenceLevel,
-          definitionEnabled = true,
-          authValidationEnabled = true) anyNumberOfTimes ()
+        MockAppConfig.endpointsEnabled("1.0").returns(true).anyNumberOfTimes()
+        MockAppConfig.confidenceLevelCheckEnabled
+          .returns(ConfidenceLevelConfig(confidenceLevel = confidenceLevel, definitionEnabled = true, authValidationEnabled = true))
+          .anyNumberOfTimes()
 
         private val readScope  = "read:self-assessment"
         private val writeScope = "write:self-assessment"

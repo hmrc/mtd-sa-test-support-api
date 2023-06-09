@@ -27,17 +27,17 @@ trait MockAppConfig extends MockFactory {
 
   object MockAppConfig {
     // Stub Config
-    def stubBaseUrl: CallHandler[String]                         = (mockAppConfig.stubBaseUrl _: () => String).expects()
-    def stubEnvironmentHeaders: CallHandler[Option[Seq[String]]] = (mockAppConfig.stubEnvironmentHeaders _).expects()
+    def stubBaseUrl: CallHandler[String]                         = (()=>mockAppConfig.stubBaseUrl).expects()
+    def stubEnvironmentHeaders: CallHandler[Option[Seq[String]]] = (()=>mockAppConfig.stubEnvironmentHeaders).expects()
 
     // API Config
-    def featureSwitches: CallHandler[Configuration]             = (mockAppConfig.featureSwitches _: () => Configuration).expects()
-    def apiGatewayContext: CallHandler[String]                  = (mockAppConfig.apiGatewayContext _: () => String).expects()
+    def featureSwitches: CallHandler[Configuration]             = (()=> mockAppConfig.featureSwitches).expects()
+    def apiGatewayContext: CallHandler[String]                  = (()=> mockAppConfig.apiGatewayContext).expects()
     def apiStatus(status: String): CallHandler[String]          = (mockAppConfig.apiStatus: String => String).expects(status)
     def endpointsEnabled(version: String): CallHandler[Boolean] = (mockAppConfig.endpointsEnabled: String => Boolean).expects(version)
 
     def confidenceLevelCheckEnabled: CallHandler[ConfidenceLevelConfig] =
-      (mockAppConfig.confidenceLevelConfig _: () => ConfidenceLevelConfig).expects()
+      (()=> mockAppConfig.confidenceLevelConfig).expects()
 
   }
 
