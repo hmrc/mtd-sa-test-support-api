@@ -6,7 +6,7 @@ This API allows a developer to:
 
 ### Requirements 
 
-- Scala 2.12.x
+- Scala 2.13.x
 - Java 11
 - sbt 1.7.x
 - [Service Manager](https://github.com/hmrc/service-manager)

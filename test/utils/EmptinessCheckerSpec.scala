@@ -18,7 +18,6 @@ package utils
 
 import support.UnitSpec
 import utils.EmptinessChecker._
-
 import EmptyPathsResult._
 
 class EmptinessCheckerSpec extends UnitSpec {
@@ -43,56 +42,67 @@ class EmptinessCheckerSpec extends UnitSpec {
   "EmptinessChecker" when {
     "empty object" must {
       "return root path as empty" in {
-        EmptinessChecker.findEmptyPaths(Foo()) shouldBe CompletelyEmpty
+        val result = EmptinessChecker.findEmptyPaths(Foo())
+
+        result shouldBe CompletelyEmpty
       }
     }
 
     "all arrays and objects are non empty" must {
       "return empty" in {
         val barFull = Bar(baz = Some(Baz(Some(1))))
-        EmptinessChecker.findEmptyPaths(Foo(bar = Some(barFull), arr1 = Some(List(barFull)))) shouldBe NoEmptyPaths
+        val result = EmptinessChecker.findEmptyPaths(Foo(bar = Some(barFull), arr1 = Some(List(barFull))))
+
+        result shouldBe NoEmptyPaths
       }
     }
 
     "has an empty object" must {
-      "return an path" in {
-        EmptinessChecker.findEmptyPaths(Foo(bar = Some(Bar()))) shouldBe EmptyPaths(List("/bar"))
+      "return a path" in {
+        val result = EmptinessChecker.findEmptyPaths(Foo(bar = Some(Bar())))
+
+        result shouldBe EmptyPaths(List("/bar"))
       }
     }
 
     "has empty object nested" must {
       "return the path" in {
-        EmptinessChecker.findEmptyPaths(Foo(bar = Some(Bar(Some(Baz()))))) shouldBe EmptyPaths(List("/bar/baz"))
+        val result = EmptinessChecker.findEmptyPaths(Foo(bar = Some(Bar(Some(Baz())))))
+
+        result shouldBe EmptyPaths(List("/bar/baz"))
       }
     }
 
     "has empty list" must {
       "return the path of the list" in {
-        EmptinessChecker.findEmptyPaths(Foo(arr1 = Some(List()))) shouldBe EmptyPaths(List("/arr1"))
+        val result = EmptinessChecker.findEmptyPaths(Foo(arr1 = Some(List())))
+
+        result shouldBe EmptyPaths(List("/arr1"))
       }
     }
 
     "has empty list nested" must {
       "return the path of the list" in {
-        EmptinessChecker.findEmptyPaths(Foo(bar = Some(Bar(arr = Some(List()))))) shouldBe EmptyPaths(List("/bar/arr"))
+        val result = EmptinessChecker.findEmptyPaths(Foo(bar = Some(Bar(arr = Some(List())))))
+
+        result shouldBe EmptyPaths(List("/bar/arr"))
       }
     }
 
     "has empty objects inside list" must {
       "return the paths" in {
-        EmptinessChecker.findEmptyPaths(Foo(arr2 = Some(List(Bar(Some(Baz())), Bar(Some(Baz())))))) shouldBe
-          EmptyPaths(List("/arr2/0/baz", "/arr2/1/baz"))
+        val result = EmptinessChecker.findEmptyPaths(Foo(arr2 = Some(List(Bar(Some(Baz())), Bar(Some(Baz()))))))
+
+        result shouldBe EmptyPaths(List("/arr2/0/baz", "/arr2/1/baz"))
       }
     }
 
     "has multiple empty objects" must {
       "return an error with the paths for all of them" in {
-        EmptinessChecker.findEmptyPaths(Foo(bar = Some(Bar(Some(Baz()))),
-                                            arr1 = Some(Nil),
-                                            arr2 = Some(List(Bar())),
-                                            arr3 = Some(List(Bar(Some(Baz())))),
-                                            bar2 = Some(Bar()))) shouldBe
-          EmptyPaths(List("/bar/baz", "/arr1", "/arr2/0", "/arr3/0/baz", "/bar2"))
+        val result = EmptinessChecker.findEmptyPaths(
+          Foo(bar = Some(Bar(Some(Baz()))), arr1 = Some(Nil), arr2 = Some(List(Bar())), arr3 = Some(List(Bar(Some(Baz())))), bar2 = Some(Bar())))
+
+        result shouldBe EmptyPaths(List("/bar/baz", "/arr1", "/arr2/0", "/arr3/0/baz", "/bar2"))
       }
     }
   }

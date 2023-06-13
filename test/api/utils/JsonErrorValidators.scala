@@ -46,7 +46,7 @@ trait JsonErrorValidators {
   implicit class JsResultOps[T](res: JsResult[T]) {
 
     def errors: JsErrors = res match {
-      case JsError(jsErrors) => jsErrors
+      case JsError(jsErrors) => jsErrors.map(error => (error._1, error._2.toList)).toList
       case JsSuccess(_, _)   => fail("A JSON error was expected")
     }
   }
@@ -139,6 +139,7 @@ trait JsonErrorValidators {
       case (path, err :: Nil) if jsError.path == path => err
       case (path, _ :: Nil)                           => fail(s"single error returned but path $path does not match $jsPath")
       case (path, errs @ _ :: _)                      => fail(s"multiple errors returned for $path but only 1 required : $errs")
+      case _                                          => fail(s"unrecognised error(s) returned")
     }
   }
 }
