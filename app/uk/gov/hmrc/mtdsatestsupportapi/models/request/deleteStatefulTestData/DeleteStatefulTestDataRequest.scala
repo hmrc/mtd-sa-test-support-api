@@ -16,6 +16,6 @@
 
 package uk.gov.hmrc.mtdsatestsupportapi.models.request.deleteStatefulTestData
 
-import play.api.libs.json.JsValue
+import api.models.domain.Nino
 
-case class DeleteStatefulTestDataRequest(vendorClientId: String, body: Option[JsValue])
+case class DeleteStatefulTestDataRequest(vendorClientId: String, nino: Option[Nino])

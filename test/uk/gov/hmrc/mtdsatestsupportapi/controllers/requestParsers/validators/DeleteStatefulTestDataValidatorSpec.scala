@@ -24,12 +24,13 @@ import uk.gov.hmrc.mtdsatestsupportapi.models.request.deleteStatefulTestData.Del
 class DeleteStatefulTestDataValidatorSpec extends UnitSpec {
 
   val vendorClientId = "some_id"
+  val nino = "TC663795B"
   val requestBody: JsObject = Json.obj("exampleBody" -> "someValue")
 
   "DeleteStatefulTestDataValidator when validating" should {
     "return no errors" when {
       "a valid request is supplied" in new Test {
-        validator.validate(DeleteStatefulTestDataRawData(vendorClientId, Some(requestBody))) shouldBe Nil
+        validator.validate(DeleteStatefulTestDataRawData(vendorClientId, Some(nino))) shouldBe Nil
       }
     }
   }

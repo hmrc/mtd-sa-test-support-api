@@ -27,21 +27,21 @@ import utils.{IdGenerator, Logging}
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
-class DeleteVendorStateController @Inject() (val cc: ControllerComponents,
-                                             val authService: EnrolmentsAuthService,
-                                             parser: DeleteStatefulTestDataRequestParser,
-                                             service: DeleteVendorStateService,
-                                             idGenerator: IdGenerator)(implicit ec: ExecutionContext)
+class DeleteVendorStateByNinoController @Inject() (val cc: ControllerComponents,
+                                                   val authService: EnrolmentsAuthService,
+                                                   parser: DeleteStatefulTestDataRequestParser,
+                                                   service: DeleteVendorStateService,
+                                                   idGenerator: IdGenerator)(implicit ec: ExecutionContext)
     extends AuthorisedController(cc)
     with Logging {
 
-  def handleRequest(nino: Option[String] = None): Action[AnyContent] = authorisedAction().async { implicit request =>
+  def handleRequest(nino: String): Action[AnyContent] = authorisedAction().async { implicit request =>
     val endpointLogContext           = EndpointLogContext(controllerName = "DeleteVendorStateController", endpointName = "DeleteStatefulTestData")
     implicit val ctx: RequestContext = RequestContext.from(idGenerator, endpointLogContext)
 
     request.headers.get("X-Client-Id") match {
       case Some(vendorClientId) =>
-        val rawData = DeleteStatefulTestDataRawData(vendorClientId, nino)
+        val rawData = DeleteStatefulTestDataRawData(vendorClientId, Some(nino))
 
         val requestHandler = RequestHandler
           .withParser(parser)

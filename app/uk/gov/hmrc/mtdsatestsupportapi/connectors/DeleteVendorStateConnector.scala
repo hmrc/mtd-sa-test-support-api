@@ -31,7 +31,11 @@ class DeleteVendorStateConnector @Inject() (val http: HttpClient, val appConfig:
   def deleteVendorState(request: DeleteStatefulTestDataRequest)(implicit hc: HeaderCarrier, ec: ExecutionContext, correlationId: String): Future[DownstreamOutcome[Unit]] = {
     import request._
 
-    delete(StubUri(s"test-support/vendor-state/$vendorClientId"))
+    val downstreamuri = request.nino match{
+      case Some(nino) => StubUri[Unit](s"test-support/vendor-state/$vendorClientId/$nino")
+      case _ => StubUri[Unit](s"test-support/vendor-state/$vendorClientId")
+    }
+    delete(downstreamuri)
   }
 
 }

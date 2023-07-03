@@ -1,3 +1,5 @@
 # microservice specific routes
 
 DELETE   /vendor-state   uk.gov.hmrc.mtdsatestsupportapi.controllers.DeleteVendorStateController.handleRequest()
+
+DELETE   /vendor-state/:nino   uk.gov.hmrc.mtdsatestsupportapi.controllers.DeleteVendorStateByNinoController.handleRequest(nino: String)
