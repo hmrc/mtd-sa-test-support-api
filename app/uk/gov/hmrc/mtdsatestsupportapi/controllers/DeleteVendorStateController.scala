@@ -35,7 +35,7 @@ class DeleteVendorStateController @Inject() (val cc: ControllerComponents,
     extends AuthorisedController(cc)
     with Logging {
 
-  def handleRequest(nino: Option[String] = None): Action[AnyContent] = authorisedAction().async { implicit request =>
+  def handleRequest(nino: Option[String]): Action[AnyContent] = authorisedAction().async { implicit request =>
     val endpointLogContext           = EndpointLogContext(controllerName = "DeleteVendorStateController", endpointName = "DeleteStatefulTestData")
     implicit val ctx: RequestContext = RequestContext.from(idGenerator, endpointLogContext)
 

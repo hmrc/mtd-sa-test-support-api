@@ -41,8 +41,9 @@ class DeleteVendorStateControllerISpec extends IntegrationBaseSpec {
         response.status shouldBe NO_CONTENT
         response.header("X-CorrelationId") should not be empty
       }
-      "a valid request with nino is made" in new NinoTest {
+      "a valid request with nino is made" in new Test {
 
+        override val mtdUri: String = s"/vendor-state\\?nino=$nino"
         override def setupStubs(): StubMapping = {
           AuthStub.authorised()
           DownstreamStub.onSuccess(DownstreamStub.DELETE, stubUriWithNino, Map.empty, NO_CONTENT, JsObject.empty)
@@ -82,10 +83,10 @@ class DeleteVendorStateControllerISpec extends IntegrationBaseSpec {
   trait Test {
 
     val vendorClientId  = "some_id"
-    private val mtdUri  = "/vendor-state"
+    val mtdUri          = "/vendor-state"
     val nino            = "AA123456A"
     val stubUri         = s"/test-support/vendor-state/$vendorClientId"
-    val stubUriWithNino = s"/test-support/vendor-state/$vendorClientId/$nino"
+    val stubUriWithNino = s"/test-support/vendor-state/$vendorClientId?nino=$nino"
 
     def setupStubs(): StubMapping
 
@@ -106,21 +107,6 @@ class DeleteVendorStateControllerISpec extends IntegrationBaseSpec {
          |   "reason": "Downstream message"
          |}
       """.stripMargin
-
-  }
-
-  private trait NinoTest extends Test {
-    private val mtdUri = s"/vendor-state/$nino"
-
-    override def request(): WSRequest = {
-      setupStubs()
-      buildRequest(mtdUri)
-        .withHttpHeaders(
-          (ACCEPT, "application/vnd.hmrc.1.0+json"),
-          (AUTHORIZATION, "Bearer 123"), // some bearer token
-          ("X-Client-Id", vendorClientId)
-        )
-    }
 
   }
 

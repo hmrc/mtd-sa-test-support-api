@@ -28,14 +28,19 @@ import uk.gov.hmrc.mtdsatestsupportapi.models.request.deleteStatefulTestData.Del
 
 class DeleteVendorStateConnector @Inject() (val http: HttpClient, val appConfig: AppConfig) extends BaseDownstreamConnector {
 
-  def deleteVendorState(request: DeleteStatefulTestDataRequest)(implicit hc: HeaderCarrier, ec: ExecutionContext, correlationId: String): Future[DownstreamOutcome[Unit]] = {
+  def deleteVendorState(request: DeleteStatefulTestDataRequest)(implicit
+      hc: HeaderCarrier,
+      ec: ExecutionContext,
+      correlationId: String): Future[DownstreamOutcome[Unit]] = {
     import request._
 
-    val downstreamuri = request.nino match{
-      case Some(nino) => StubUri[Unit](s"test-support/vendor-state/$vendorClientId/$nino")
-      case _ => StubUri[Unit](s"test-support/vendor-state/$vendorClientId")
+    val queryParams: Seq[(String, String)] = nino match {
+      case Some(n) => Seq(("nino", n.toString))
+      case None    => Seq()
     }
-    delete(downstreamuri)
+
+    val downstreamuri = StubUri[Unit](s"test-support/vendor-state/$vendorClientId")
+    delete(downstreamuri, queryParams)
   }
 
 }

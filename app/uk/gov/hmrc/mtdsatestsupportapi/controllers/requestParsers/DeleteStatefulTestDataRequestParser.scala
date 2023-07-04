@@ -24,10 +24,11 @@ import uk.gov.hmrc.mtdsatestsupportapi.models.request.deleteStatefulTestData.{De
 import javax.inject.Inject
 
 class DeleteStatefulTestDataRequestParser @Inject() (val validator: DeleteStatefulTestDataValidator)
-  extends RequestParser[DeleteStatefulTestDataRawData, DeleteStatefulTestDataRequest] {
+    extends RequestParser[DeleteStatefulTestDataRawData, DeleteStatefulTestDataRequest] {
 
   override protected def requestFor(data: DeleteStatefulTestDataRawData): DeleteStatefulTestDataRequest = {
-    val nino = data.nino.map(Nino)
+    val nino: Option[Nino] = data.nino.map(Nino)
     DeleteStatefulTestDataRequest(data.vendorClientId, nino)
   }
+
 }
