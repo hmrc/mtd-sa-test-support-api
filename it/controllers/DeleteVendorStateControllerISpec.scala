@@ -28,25 +28,27 @@ import support.IntegrationBaseSpec
 
 class DeleteVendorStateControllerISpec extends IntegrationBaseSpec {
 
-  "Invoking the delete vendor state endpoint" should {
+  "Calling the delete vendor state endpoint" should {
     "return a 204 status code" when {
       "a valid request is made" in new Test {
 
         override def setupStubs(): StubMapping = {
           AuthStub.authorised()
-          DownstreamStub.onSuccess(DownstreamStub.DELETE, stubUri, Map.empty, NO_CONTENT, JsObject.empty)
+          DownstreamStub.onSuccess(DownstreamStub.DELETE, downstreamUri, downstreamQueryParams, NO_CONTENT, JsObject.empty)
         }
 
         val response: WSResponse = await(request().delete())
         response.status shouldBe NO_CONTENT
         response.header("X-CorrelationId") should not be empty
       }
-      "a valid request with nino is made" in new Test {
 
-        override val mtdUri: String = s"/vendor-state\\?nino=$nino"
+      "a valid request with nino is made" in new Test {
+        override val mtdQueryParams: Seq[(String, String)]      = Seq(("nino", nino))
+        override val downstreamQueryParams: Map[String, String] = Map("nino" -> nino)
+
         override def setupStubs(): StubMapping = {
           AuthStub.authorised()
-          DownstreamStub.onSuccess(DownstreamStub.DELETE, stubUriWithNino, Map.empty, NO_CONTENT, JsObject.empty)
+          DownstreamStub.onSuccess(DownstreamStub.DELETE, downstreamUri, downstreamQueryParams, NO_CONTENT, JsObject.empty)
         }
 
         val response: WSResponse = await(request().delete())
@@ -61,7 +63,7 @@ class DeleteVendorStateControllerISpec extends IntegrationBaseSpec {
 
           override def setupStubs(): StubMapping = {
             AuthStub.authorised()
-            DownstreamStub.onError(DownstreamStub.DELETE, stubUri, Map.empty, stubErrorStatus, errorBody(stubErrorCode))
+            DownstreamStub.onError(DownstreamStub.DELETE, downstreamUri, Map.empty, stubErrorStatus, errorBody(stubErrorCode))
           }
 
           val response: WSResponse = await(request().delete())
@@ -81,18 +83,21 @@ class DeleteVendorStateControllerISpec extends IntegrationBaseSpec {
   }
 
   trait Test {
+    val nino           = "AA123456A"
+    val vendorClientId = "some_id"
 
-    val vendorClientId  = "some_id"
-    val mtdUri          = "/vendor-state"
-    val nino            = "AA123456A"
-    val stubUri         = s"/test-support/vendor-state/$vendorClientId"
-    val stubUriWithNino = s"/test-support/vendor-state/$vendorClientId?nino=$nino"
+    val mtdUri                                = "/vendor-state"
+    val mtdQueryParams: Seq[(String, String)] = Seq()
+
+    val downstreamUri                              = s"/test-support/vendor-state/$vendorClientId"
+    val downstreamQueryParams: Map[String, String] = Map()
 
     def setupStubs(): StubMapping
 
     def request(): WSRequest = {
       setupStubs()
       buildRequest(mtdUri)
+        .addQueryStringParameters(mtdQueryParams: _*)
         .withHttpHeaders(
           (ACCEPT, "application/vnd.hmrc.1.0+json"),
           (AUTHORIZATION, "Bearer 123"), // some bearer token
