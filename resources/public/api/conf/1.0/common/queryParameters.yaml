@@ -1,0 +1,12 @@
+components:
+  parameters:
+    nino:
+      in: query
+      name: nino
+      description: |
+        National Insurance number, in the format `AA999999A`. 
+        
+        If supplied, the endpoint will delete only stateful test data stored against the vendor that is associated with the specified National Insurance number.
+      schema:
+        type: string
+        example: TC663795B
