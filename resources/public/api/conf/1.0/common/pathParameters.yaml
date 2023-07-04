@@ -1,10 +1,2 @@
 components:
   parameters:
-    nino:
-      name: nino
-      in: path
-      description: |
-        National Insurance number, in the format `AA999999A`.
-      schema:
-        type: string
-        example: TC663795B

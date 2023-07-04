@@ -5,6 +5,6 @@ delete:
     - User-Restricted:
         - write:self-assessment
   parameters:
-    - $ref: './common/pathParameters.yaml#/components/parameters/nino'
+    - $ref: './common/queryParameters.yaml#/components/parameters/nino'
     - $ref: './common/headers.yaml#/components/parameters/acceptHeader'
     - $ref: './common/headers.yaml#/components/parameters/authorizationWriteScopeHeader'
