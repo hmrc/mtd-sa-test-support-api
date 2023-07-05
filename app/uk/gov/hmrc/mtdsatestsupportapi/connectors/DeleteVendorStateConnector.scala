@@ -35,7 +35,7 @@ class DeleteVendorStateConnector @Inject() (val http: HttpClient, val appConfig:
     import request._
 
     val queryParams: Seq[(String, String)] = nino match {
-      case Some(n) => Seq(("nino", n.toString))
+      case Some(n) => Seq(("taxableEntityId", n.toString))
       case None    => Seq()
     }
 

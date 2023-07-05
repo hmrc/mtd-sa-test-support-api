@@ -16,6 +16,7 @@
 
 package uk.gov.hmrc.mtdsatestsupportapi.controllers.requestParsers.validators
 
+import api.models.errors.NinoFormatError
 import play.api.libs.json._
 import support.UnitSpec
 import uk.gov.hmrc.mtdsatestsupportapi.mocks.validators.MockDeleteStatefulTestDataValidator
@@ -23,19 +24,29 @@ import uk.gov.hmrc.mtdsatestsupportapi.models.request.deleteStatefulTestData.Del
 
 class DeleteStatefulTestDataValidatorSpec extends UnitSpec {
 
-  val vendorClientId = "some_id"
-  val nino = "TC663795B"
+  val vendorClientId        = "some_id"
+  val nino                  = "TC663795B"
   val requestBody: JsObject = Json.obj("exampleBody" -> "someValue")
 
   "DeleteStatefulTestDataValidator when validating" should {
     "return no errors" when {
-      "a valid request is supplied" in new Test {
+      "a valid request without nino is supplied" in new Test {
+        validator.validate(DeleteStatefulTestDataRawData(vendorClientId, None)) shouldBe Nil
+      }
+      "a valid request with nino is supplied" in new Test {
         validator.validate(DeleteStatefulTestDataRawData(vendorClientId, Some(nino))) shouldBe Nil
       }
+    }
+    s"return NinoFormatError error" when {
+      s"DeleteStatefulTestDataRawData($nino) is supplied" in new Test {
+        validator.validate(DeleteStatefulTestDataRawData(vendorClientId, Some("A12344A"))) shouldBe List(NinoFormatError)
+      }
+
     }
   }
 
   trait Test extends MockDeleteStatefulTestDataValidator {
     lazy val validator = new DeleteStatefulTestDataValidator()
   }
+
 }

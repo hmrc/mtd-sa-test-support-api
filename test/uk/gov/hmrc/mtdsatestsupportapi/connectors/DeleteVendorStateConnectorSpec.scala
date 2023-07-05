@@ -17,6 +17,7 @@
 package uk.gov.hmrc.mtdsatestsupportapi.connectors
 
 import api.connectors.{ConnectorSpec, DownstreamOutcome}
+import api.models.domain.Nino
 import api.models.errors.{DownstreamErrorCode, DownstreamErrors}
 import api.models.outcomes.ResponseWrapper
 import org.scalamock.handlers.CallHandler
@@ -25,8 +26,10 @@ import uk.gov.hmrc.mtdsatestsupportapi.models.request.deleteStatefulTestData.Del
 import scala.concurrent.Future
 
 class DeleteVendorStateConnectorSpec extends ConnectorSpec {
-  private val vendorId = "someVendor"
-  private val request  = DeleteStatefulTestDataRequest(vendorId, None)
+  private val vendorId        = "someVendor"
+  private val nino            = "AA123456A"
+  private val request         = DeleteStatefulTestDataRequest(vendorId, None)
+  private val requestWithNino = DeleteStatefulTestDataRequest(vendorId, Some(Nino(nino)))
 
   trait Test {
     _: ConnectorTest =>
@@ -40,6 +43,10 @@ class DeleteVendorStateConnectorSpec extends ConnectorSpec {
       willDelete(url = s"$baseUrl/test-support/vendor-state/$vendorId") returns Future.successful(outcome)
     }
 
+    protected def stubHttpResponseWithNino(outcome: DownstreamOutcome[Unit]): CallHandler[Future[DownstreamOutcome[Unit]]]#Derived = {
+      willDelete(url = s"$baseUrl/test-support/vendor-state/$vendorId?taxableEntityId=$nino") returns Future.successful(outcome)
+    }
+
   }
 
   "deleteVendorState" when {
@@ -49,6 +56,12 @@ class DeleteVendorStateConnectorSpec extends ConnectorSpec {
         stubHttpResponse(outcome)
 
         await(connector.deleteVendorState(request)) shouldBe outcome
+      }
+      "return a successful result with nino" in new StubTest with Test {
+        val outcome = Right(ResponseWrapper(correlationId, ()))
+        stubHttpResponseWithNino(outcome)
+
+        await(connector.deleteVendorState(requestWithNino)) shouldBe outcome
       }
     }
 

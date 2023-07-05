@@ -41,6 +41,10 @@ class DeleteVendorStateControllerSpec
 
   trait Test extends ControllerTest {
     protected val vendorClientId = "some_id"
+    val nino                     = "AA123456A"
+
+    val rawData: DeleteStatefulTestDataRawData     = DeleteStatefulTestDataRawData(vendorClientId, None)
+    val requestData: DeleteStatefulTestDataRequest = DeleteStatefulTestDataRequest(vendorClientId, None)
 
     val controller = new DeleteVendorStateController(
       cc = cc,
@@ -51,19 +55,9 @@ class DeleteVendorStateControllerSpec
 
   }
 
-  trait DeleteAllTest extends Test {
-    protected val rawData: DeleteStatefulTestDataRawData     = DeleteStatefulTestDataRawData(vendorClientId, None)
-    protected val requestData: DeleteStatefulTestDataRequest = DeleteStatefulTestDataRequest(vendorClientId, None)
-  }
-
-  trait DeleteByNinoTest extends Test {
-    protected val rawData: DeleteStatefulTestDataRawData     = DeleteStatefulTestDataRawData(vendorClientId, Some(nino))
-    protected val requestData: DeleteStatefulTestDataRequest = DeleteStatefulTestDataRequest(vendorClientId, Some(Nino(nino)))
-  }
-
   "handleRequest" should {
     "return an OK Action" when {
-      "the request received without nino query params is valid" in new DeleteAllTest {
+      "the request received without nino query params is valid" in new Test {
         override protected def callController(): Future[Result] =
           controller.handleRequest(None)(fakeDeleteRequestWithHeaders(HeaderNames.AUTHORIZATION -> "Bearer Token", "X-Client-Id" -> "some_id"))
 
@@ -77,9 +71,12 @@ class DeleteVendorStateControllerSpec
 
         runOkTest(expectedStatus = NO_CONTENT, maybeExpectedResponseBody = None)
       }
-      "the request received with nino query params is valid" in new DeleteByNinoTest {
+      "the request received with nino query params is valid" in new Test {
         override protected def callController(): Future[Result] =
           controller.handleRequest(Some(nino))(fakeDeleteRequestWithHeaders(HeaderNames.AUTHORIZATION -> "Bearer Token", "X-Client-Id" -> "some_id"))
+
+        override val rawData: DeleteStatefulTestDataRawData     = DeleteStatefulTestDataRawData(vendorClientId, Some(nino))
+        override val requestData: DeleteStatefulTestDataRequest = DeleteStatefulTestDataRequest(vendorClientId, Some(Nino(nino)))
 
         MockStatefulTestDataRequestParser
           .parseRequest(rawData)
@@ -93,7 +90,7 @@ class DeleteVendorStateControllerSpec
       }
     }
     "return the error as per spec" when {
-      "the parser validation fails" in new DeleteAllTest {
+      "the parser validation fails" in new Test {
         override protected def callController(): Future[Result] =
           controller.handleRequest(None)(fakeDeleteRequestWithHeaders(HeaderNames.AUTHORIZATION -> "Bearer Token", "X-Client-Id" -> "some_id"))
 
@@ -104,7 +101,7 @@ class DeleteVendorStateControllerSpec
         runErrorTest(NinoFormatError)
 
       }
-      "the service returns an error" in new DeleteAllTest {
+      "the service returns an error" in new Test {
         override protected def callController(): Future[Result] =
           controller.handleRequest(None)(fakeDeleteRequestWithHeaders(HeaderNames.AUTHORIZATION -> "Bearer Token", "X-Client-Id" -> "some_id"))
 
@@ -121,7 +118,7 @@ class DeleteVendorStateControllerSpec
     }
 
     "return an InternalServerError" when {
-      "the request is missing an X-Client-Id header" in new DeleteAllTest {
+      "the request is missing an X-Client-Id header" in new Test {
         override protected def callController(): Future[Result] =
           controller.handleRequest(None)(fakeDeleteRequestWithHeaders(HeaderNames.AUTHORIZATION -> "Bearer Token"))
 

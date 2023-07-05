@@ -25,15 +25,21 @@ import uk.gov.hmrc.mtdsatestsupportapi.models.request.deleteStatefulTestData.{De
 
 class DeleteStatefulTestDataRequestParserSpec extends UnitSpec {
 
-  val vendorClientId = "some_id"
-  val nino = "TC663795B"
-  val requestBody: JsObject = Json.obj("exampleBody" -> "someValue")
+  val vendorClientId                 = "some_id"
+  val nino                           = "TC663795B"
+  val requestBody: JsObject          = Json.obj("exampleBody" -> "someValue")
   implicit val correlationId: String = "X-123"
 
   "DeleteStatefulTestDataRequestParser" should {
-    val data = DeleteStatefulTestDataRawData(vendorClientId, Some(nino))
+    val data = DeleteStatefulTestDataRawData(vendorClientId, None)
     "return a request object" when {
       "valid request data is supplied" in new Test {
+        MockDeleteStatefulTestDataValidator.validate(data).returns(Nil)
+
+        parser.parseRequest(data) shouldBe Right(DeleteStatefulTestDataRequest(vendorClientId, None))
+      }
+      "valid request data with nino is supplied" in new Test {
+        val data = DeleteStatefulTestDataRawData(vendorClientId, Some(nino))
         MockDeleteStatefulTestDataValidator.validate(data).returns(Nil)
 
         parser.parseRequest(data) shouldBe Right(DeleteStatefulTestDataRequest(vendorClientId, Some(Nino(nino))))
@@ -56,6 +62,5 @@ class DeleteStatefulTestDataRequestParserSpec extends UnitSpec {
   trait Test extends MockDeleteStatefulTestDataValidator {
     lazy val parser = new DeleteStatefulTestDataRequestParser(mockValidator)
   }
-
 
 }

@@ -32,11 +32,6 @@ class DeleteVendorStateControllerISpec extends IntegrationBaseSpec {
     "return a 204 status code" when {
       "a valid request is made" in new Test {
 
-        override def setupStubs(): StubMapping = {
-          AuthStub.authorised()
-          DownstreamStub.onSuccess(DownstreamStub.DELETE, downstreamUri, downstreamQueryParams, NO_CONTENT, JsObject.empty)
-        }
-
         val response: WSResponse = await(request().delete())
         response.status shouldBe NO_CONTENT
         response.header("X-CorrelationId") should not be empty
@@ -44,12 +39,7 @@ class DeleteVendorStateControllerISpec extends IntegrationBaseSpec {
 
       "a valid request with nino is made" in new Test {
         override val mtdQueryParams: Seq[(String, String)]      = Seq(("nino", nino))
-        override val downstreamQueryParams: Map[String, String] = Map("nino" -> nino)
-
-        override def setupStubs(): StubMapping = {
-          AuthStub.authorised()
-          DownstreamStub.onSuccess(DownstreamStub.DELETE, downstreamUri, downstreamQueryParams, NO_CONTENT, JsObject.empty)
-        }
+        override val downstreamQueryParams: Map[String, String] = Map("taxableEntityId" -> nino)
 
         val response: WSResponse = await(request().delete())
         response.status shouldBe NO_CONTENT
@@ -92,7 +82,10 @@ class DeleteVendorStateControllerISpec extends IntegrationBaseSpec {
     val downstreamUri                              = s"/test-support/vendor-state/$vendorClientId"
     val downstreamQueryParams: Map[String, String] = Map()
 
-    def setupStubs(): StubMapping
+    def setupStubs(): StubMapping = {
+      AuthStub.authorised()
+      DownstreamStub.onSuccess(DownstreamStub.DELETE, downstreamUri, downstreamQueryParams, NO_CONTENT, JsObject.empty)
+    }
 
     def request(): WSRequest = {
       setupStubs()
