@@ -1,6 +1,6 @@
 delete:
   $ref: "./vendor_state_delete.yaml"
-  summary: Retrieve a UK Property Business Annual Submission
+  summary: Delete Stateful Test Data
   security:
     - User-Restricted:
         - write:self-assessment
