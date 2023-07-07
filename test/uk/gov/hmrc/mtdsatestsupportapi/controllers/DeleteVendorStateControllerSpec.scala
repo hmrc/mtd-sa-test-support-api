@@ -19,6 +19,7 @@ package uk.gov.hmrc.mtdsatestsupportapi.controllers
 import api.controllers.{ControllerBaseSpec, ControllerTestRunner}
 import api.mocks.MockIdGenerator
 import api.mocks.services.MockEnrolmentsAuthService
+import api.models.domain.Nino
 import api.models.errors._
 import api.models.outcomes.ResponseWrapper
 import play.api.http.HeaderNames
@@ -39,6 +40,11 @@ class DeleteVendorStateControllerSpec
     with MockIdGenerator {
 
   trait Test extends ControllerTest {
+    protected val vendorClientId = "some_id"
+    val nino                     = "AA123456A"
+
+    val rawData: DeleteStatefulTestDataRawData     = DeleteStatefulTestDataRawData(vendorClientId, None)
+    val requestData: DeleteStatefulTestDataRequest = DeleteStatefulTestDataRequest(vendorClientId, None)
 
     val controller = new DeleteVendorStateController(
       cc = cc,
@@ -49,17 +55,28 @@ class DeleteVendorStateControllerSpec
 
   }
 
-  private val vendorClientId = "some_id"
-  override val correlationId = "X-123"
-
-  private val rawData     = DeleteStatefulTestDataRawData(vendorClientId, None)
-  private val requestData = DeleteStatefulTestDataRequest(vendorClientId, None)
-
   "handleRequest" should {
-    "return an Ok Action" when {
-      "the request received is valid" in new Test {
+    "return an OK Action" when {
+      "the request received without nino query params is valid" in new Test {
         override protected def callController(): Future[Result] =
-          controller.handleRequest()(fakeDeleteRequestWithHeaders(HeaderNames.AUTHORIZATION -> "Bearer Token", "X-Client-Id" -> "some_id"))
+          controller.handleRequest(None)(fakeDeleteRequestWithHeaders(HeaderNames.AUTHORIZATION -> "Bearer Token", "X-Client-Id" -> "some_id"))
+
+        MockStatefulTestDataRequestParser
+          .parseRequest(rawData)
+          .returns(Right(requestData))
+
+        MockDeleteVendorStateService
+          .deleteVendorState(requestData)
+          .returns(Future.successful(Right(ResponseWrapper(correlationId, ()))))
+
+        runOkTest(expectedStatus = NO_CONTENT, maybeExpectedResponseBody = None)
+      }
+      "the request received with nino query params is valid" in new Test {
+        override protected def callController(): Future[Result] =
+          controller.handleRequest(Some(nino))(fakeDeleteRequestWithHeaders(HeaderNames.AUTHORIZATION -> "Bearer Token", "X-Client-Id" -> "some_id"))
+
+        override val rawData: DeleteStatefulTestDataRawData     = DeleteStatefulTestDataRawData(vendorClientId, Some(nino))
+        override val requestData: DeleteStatefulTestDataRequest = DeleteStatefulTestDataRequest(vendorClientId, Some(Nino(nino)))
 
         MockStatefulTestDataRequestParser
           .parseRequest(rawData)
@@ -75,7 +92,7 @@ class DeleteVendorStateControllerSpec
     "return the error as per spec" when {
       "the parser validation fails" in new Test {
         override protected def callController(): Future[Result] =
-          controller.handleRequest()(fakeDeleteRequestWithHeaders(HeaderNames.AUTHORIZATION -> "Bearer Token", "X-Client-Id" -> "some_id"))
+          controller.handleRequest(None)(fakeDeleteRequestWithHeaders(HeaderNames.AUTHORIZATION -> "Bearer Token", "X-Client-Id" -> "some_id"))
 
         MockStatefulTestDataRequestParser
           .parseRequest(rawData)
@@ -86,7 +103,7 @@ class DeleteVendorStateControllerSpec
       }
       "the service returns an error" in new Test {
         override protected def callController(): Future[Result] =
-          controller.handleRequest()(fakeDeleteRequestWithHeaders(HeaderNames.AUTHORIZATION -> "Bearer Token", "X-Client-Id" -> "some_id"))
+          controller.handleRequest(None)(fakeDeleteRequestWithHeaders(HeaderNames.AUTHORIZATION -> "Bearer Token", "X-Client-Id" -> "some_id"))
 
         MockStatefulTestDataRequestParser
           .parseRequest(rawData)
@@ -103,7 +120,7 @@ class DeleteVendorStateControllerSpec
     "return an InternalServerError" when {
       "the request is missing an X-Client-Id header" in new Test {
         override protected def callController(): Future[Result] =
-          controller.handleRequest()(fakeDeleteRequestWithHeaders(HeaderNames.AUTHORIZATION -> "Bearer Token"))
+          controller.handleRequest(None)(fakeDeleteRequestWithHeaders(HeaderNames.AUTHORIZATION -> "Bearer Token"))
 
         val result: Future[Result] = callController()
 

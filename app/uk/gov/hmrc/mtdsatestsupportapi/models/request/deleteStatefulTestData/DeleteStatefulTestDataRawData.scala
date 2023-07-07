@@ -17,6 +17,5 @@
 package uk.gov.hmrc.mtdsatestsupportapi.models.request.deleteStatefulTestData
 
 import api.models.request.RawData
-import play.api.libs.json._
 
-case class DeleteStatefulTestDataRawData(vendorClientId: String, body: Option[JsValue]) extends RawData
+case class DeleteStatefulTestDataRawData(vendorClientId: String, nino: Option[String]) extends RawData

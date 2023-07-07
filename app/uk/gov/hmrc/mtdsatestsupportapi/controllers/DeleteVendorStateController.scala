@@ -35,13 +35,13 @@ class DeleteVendorStateController @Inject() (val cc: ControllerComponents,
     extends AuthorisedController(cc)
     with Logging {
 
-  def handleRequest(): Action[AnyContent] = authorisedAction().async { implicit request =>
+  def handleRequest(nino: Option[String]): Action[AnyContent] = authorisedAction().async { implicit request =>
     val endpointLogContext           = EndpointLogContext(controllerName = "DeleteVendorStateController", endpointName = "DeleteStatefulTestData")
     implicit val ctx: RequestContext = RequestContext.from(idGenerator, endpointLogContext)
 
     request.headers.get("X-Client-Id") match {
       case Some(vendorClientId) =>
-        val rawData = DeleteStatefulTestDataRawData(vendorClientId, None)
+        val rawData = DeleteStatefulTestDataRawData(vendorClientId, nino)
 
         val requestHandler = RequestHandler
           .withParser(parser)

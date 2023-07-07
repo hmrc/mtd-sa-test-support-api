@@ -16,6 +16,7 @@
 
 package uk.gov.hmrc.mtdsatestsupportapi.services
 
+import api.models.domain.Nino
 import api.models.errors._
 import api.models.outcomes.ResponseWrapper
 import api.services.ServiceSpec
@@ -64,6 +65,6 @@ class DeleteVendorStateServiceSpec extends ServiceSpec {
   trait Test extends MockDeleteVendorStateConnector {
     protected val service = new DeleteVendorStateService(mockDeleteVendorStateConnector)
 
-    protected val request: DeleteStatefulTestDataRequest = DeleteStatefulTestDataRequest(vendorClientId = "someId", body = None)
+    protected val request: DeleteStatefulTestDataRequest = DeleteStatefulTestDataRequest(vendorClientId = "someId", nino = Some(Nino("TC663795B")))
   }
 }
