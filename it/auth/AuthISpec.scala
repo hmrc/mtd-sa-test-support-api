@@ -22,7 +22,6 @@ import play.api.http.Status._
 import play.api.libs.json.JsObject
 import play.api.libs.ws.{WSRequest, WSResponse}
 import play.api.test.Helpers.AUTHORIZATION
-import stubs.{AuthStub, DownstreamStub}
 import support.IntegrationBaseSpec
 
 class AuthISpec extends IntegrationBaseSpec {
@@ -50,8 +49,8 @@ class AuthISpec extends IntegrationBaseSpec {
     "the user is authorised" should {
       "return a 204 response" in new Test {
         override def setupStubs(): StubMapping = {
-          AuthStub.authorised()
-          DownstreamStub.onSuccess(DownstreamStub.DELETE, stubUri, Map.empty, NO_CONTENT, JsObject.empty)
+          authorised()
+          onSuccess(DELETE, stubUri, Map.empty, NO_CONTENT, JsObject.empty)
         }
 
         val response: WSResponse = await(request().delete())
@@ -61,7 +60,7 @@ class AuthISpec extends IntegrationBaseSpec {
 
     "the user is not logged in" should {
       "return 403" in new Test {
-        override def setupStubs(): StubMapping = AuthStub.unauthorisedNotLoggedIn()
+        override def setupStubs(): StubMapping = unauthorisedNotLoggedIn()
 
         val response: WSResponse = await(request().delete())
         response.status shouldBe UNAUTHORIZED
@@ -70,7 +69,7 @@ class AuthISpec extends IntegrationBaseSpec {
 
     "the user is not authorised" should {
       "return 403" in new Test {
-        override def setupStubs(): StubMapping = AuthStub.unauthorisedOther()
+        override def setupStubs(): StubMapping = unauthorisedOther()
 
         val response: WSResponse = await(request().delete())
         response.status shouldBe UNAUTHORIZED

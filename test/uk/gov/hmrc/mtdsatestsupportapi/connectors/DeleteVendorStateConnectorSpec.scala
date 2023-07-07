@@ -16,16 +16,14 @@
 
 package uk.gov.hmrc.mtdsatestsupportapi.connectors
 
-import api.connectors.{ConnectorSpec, DownstreamOutcome}
+import api.connectors.WiremockConnectorSpec
 import api.models.domain.Nino
 import api.models.errors.{DownstreamErrorCode, DownstreamErrors}
 import api.models.outcomes.ResponseWrapper
-import org.scalamock.handlers.CallHandler
+import play.api.libs.json.Json
 import uk.gov.hmrc.mtdsatestsupportapi.models.request.deleteStatefulTestData.DeleteStatefulTestDataRequest
 
-import scala.concurrent.Future
-
-class DeleteVendorStateConnectorSpec extends ConnectorSpec {
+class DeleteVendorStateConnectorSpec extends WiremockConnectorSpec {
   private val vendorId        = "someVendor"
   private val nino            = "AA123456A"
   private val request         = DeleteStatefulTestDataRequest(vendorId, None)
@@ -34,46 +32,37 @@ class DeleteVendorStateConnectorSpec extends ConnectorSpec {
   trait Test {
     _: ConnectorTest =>
 
-    protected val connector: DeleteVendorStateConnector = new DeleteVendorStateConnector(
-      http = mockHttpClient,
-      appConfig = mockAppConfig
-    )
-
-    protected def stubHttpResponse(outcome: DownstreamOutcome[Unit]): CallHandler[Future[DownstreamOutcome[Unit]]]#Derived = {
-      willDelete(url = s"$baseUrl/test-support/vendor-state/$vendorId") returns Future.successful(outcome)
-    }
-
-    protected def stubHttpResponseWithNino(outcome: DownstreamOutcome[Unit]): CallHandler[Future[DownstreamOutcome[Unit]]]#Derived = {
-      willDelete(url = s"$baseUrl/test-support/vendor-state/$vendorId?taxableEntityId=$nino") returns Future.successful(outcome)
-    }
-
+    protected val connector = new DeleteVendorStateConnector(httpClientV2, mockAppConfig)
   }
 
   "deleteVendorState" when {
     "the downstream returns a successful response" must {
       "return a successful result" in new StubTest with Test {
-        val outcome = Right(ResponseWrapper(correlationId, ()))
-        stubHttpResponse(outcome)
+        when(DELETE, s"/test-support/vendor-state/$vendorId")
+          .withHeaders(requiredHeaders)
+          .thenReturnNoContent(headers = responseHeaders)
 
-        await(connector.deleteVendorState(request)) shouldBe outcome
+        await(connector.deleteVendorState(request)) shouldBe Right(ResponseWrapper(responseCorrelationId, ()))
       }
-      "return a successful result with nino" in new StubTest with Test {
-        val outcome = Right(ResponseWrapper(correlationId, ()))
-        stubHttpResponseWithNino(outcome)
 
-        await(connector.deleteVendorState(requestWithNino)) shouldBe outcome
+      "return a successful result with nino" in new StubTest with Test {
+        when(DELETE, s"/test-support/vendor-state/$vendorId")
+          .withQueryParams(Map("taxableEntityId" -> nino))
+          .withHeaders(requiredHeaders)
+          .thenReturnNoContent(headers = responseHeaders)
+
+        await(connector.deleteVendorState(requestWithNino)) shouldBe Right(ResponseWrapper(responseCorrelationId, ()))
       }
     }
 
     "the downstream response is an error" must {
       "return a failure result" in new StubTest with Test {
-        val downstreamErrorResponse: DownstreamErrors =
-          DownstreamErrors.single(DownstreamErrorCode("SOME_ERROR"))
-        val outcome = Left(ResponseWrapper(correlationId, downstreamErrorResponse))
+        when(DELETE, s"/test-support/vendor-state/$vendorId")
+          .withHeaders(requiredHeaders)
+          .thenReturn(400, Json.obj("code" -> "SOME_ERROR", "reason" -> "Some message"), responseHeaders)
 
-        stubHttpResponse(outcome)
-
-        await(connector.deleteVendorState(request)) shouldBe outcome
+        await(connector.deleteVendorState(request)) shouldBe Left(
+          ResponseWrapper(responseCorrelationId, DownstreamErrors.single(DownstreamErrorCode("SOME_ERROR"))))
       }
     }
   }

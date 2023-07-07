@@ -16,10 +16,6 @@
 
 package api.connectors
 
-sealed trait DownstreamUri[Resp] {
-  val value: String
-}
+import java.net.URL
 
-object DownstreamUri {
-  final case class StubUri[Resp](value: String)                extends DownstreamUri[Resp]
-}
+case class DownstreamUri[Resp](value: URL)

@@ -23,7 +23,6 @@ import play.api.http.Status.{INTERNAL_SERVER_ERROR, NOT_FOUND, NO_CONTENT, SERVI
 import play.api.libs.json._
 import play.api.libs.ws.{WSRequest, WSResponse}
 import play.api.test.Helpers.AUTHORIZATION
-import stubs.{AuthStub, DownstreamStub}
 import support.IntegrationBaseSpec
 
 class DeleteVendorStateControllerISpec extends IntegrationBaseSpec {
@@ -45,15 +44,15 @@ class DeleteVendorStateControllerISpec extends IntegrationBaseSpec {
         response.status shouldBe NO_CONTENT
         response.header("X-CorrelationId") should not be empty
       }
-
     }
+
     "return a stub error" when {
       def serviceError(stubErrorStatus: Int, stubErrorCode: String, expectedStatus: Int, expectedError: MtdError): Unit = {
         s"stub returns a $stubErrorCode error and status $stubErrorStatus" in new Test {
 
           override def setupStubs(): StubMapping = {
-            AuthStub.authorised()
-            DownstreamStub.onError(DownstreamStub.DELETE, downstreamUri, Map.empty, stubErrorStatus, errorBody(stubErrorCode))
+            authorised()
+            onError(DELETE, downstreamUri, Map.empty, stubErrorStatus, errorBody(stubErrorCode))
           }
 
           val response: WSResponse = await(request().delete())
@@ -83,8 +82,8 @@ class DeleteVendorStateControllerISpec extends IntegrationBaseSpec {
     val downstreamQueryParams: Map[String, String] = Map()
 
     def setupStubs(): StubMapping = {
-      AuthStub.authorised()
-      DownstreamStub.onSuccess(DownstreamStub.DELETE, downstreamUri, downstreamQueryParams, NO_CONTENT, JsObject.empty)
+      authorised()
+      onSuccess(DELETE, downstreamUri, downstreamQueryParams, NO_CONTENT, JsObject.empty)
     }
 
     def request(): WSRequest = {
@@ -98,13 +97,13 @@ class DeleteVendorStateControllerISpec extends IntegrationBaseSpec {
         )
     }
 
-    def errorBody(code: String): String =
+    def errorBody(code: String): JsValue = Json.parse(
       s"""
          |{
          |   "code": "$code",
          |   "reason": "Downstream message"
          |}
-      """.stripMargin
+      """.stripMargin)
 
   }
 

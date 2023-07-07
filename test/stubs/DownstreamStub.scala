@@ -18,9 +18,10 @@ package stubs
 
 import com.github.tomakehurst.wiremock.stubbing.StubMapping
 import play.api.libs.json.JsValue
-import support.WireMockMethods
+import uk.gov.hmrc.http.test.WireMockSupport
 
-object DownstreamStub extends WireMockMethods {
+trait DownstreamStub extends WireMockMethods {
+  _: WireMockSupport =>
 
   def onSuccess(method: HTTPMethod, uri: String, status: Int, body: JsValue): StubMapping = {
     when(method = method, uri = uri)
@@ -32,12 +33,12 @@ object DownstreamStub extends WireMockMethods {
       .thenReturn(status = status, body)
   }
 
-  def onError(method: HTTPMethod, uri: String, errorStatus: Int, errorBody: String): StubMapping = {
+  def onError(method: HTTPMethod, uri: String, errorStatus: Int, errorBody: JsValue): StubMapping = {
     when(method = method, uri = uri)
       .thenReturn(status = errorStatus, errorBody)
   }
 
-  def onError(method: HTTPMethod, uri: String, queryParams: Map[String, String], errorStatus: Int, errorBody: String): StubMapping = {
+  def onError(method: HTTPMethod, uri: String, queryParams: Map[String, String], errorStatus: Int, errorBody: JsValue): StubMapping = {
     when(method = method, uri = uri, queryParams)
       .thenReturn(status = errorStatus, errorBody)
   }

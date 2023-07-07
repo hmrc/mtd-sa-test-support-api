@@ -16,86 +16,75 @@
 
 package api.connectors
 
-
-import api.connectors.DownstreamUri._
-import config.AppConfig
+import config.{AppConfig, DownstreamConfig}
 import play.api.http.{HeaderNames, MimeTypes}
-import play.api.libs.json.Writes
-import uk.gov.hmrc.http.{HeaderCarrier, HttpClient, HttpReads}
+import play.api.libs.json.{Json, Writes}
+import uk.gov.hmrc.http.client.HttpClientV2
+import uk.gov.hmrc.http.{HeaderCarrier, HttpReads}
 import utils.Logging
-import utils.UrlUtils.appendQueryParams
 
 import scala.concurrent.{ExecutionContext, Future}
 
 trait BaseDownstreamConnector extends Logging {
-  val http: HttpClient
+  val http: HttpClientV2
   val appConfig: AppConfig
 
   private val jsonContentTypeHeader = HeaderNames.CONTENT_TYPE -> MimeTypes.JSON
 
-  def post[Body: Writes, Resp](body: Body, uri: DownstreamUri[Resp])(implicit
+  def post[Body: Writes, Resp](downstreamConfig: DownstreamConfig)(body: Body, downstreamUri: DownstreamUri[Resp])(implicit
       ec: ExecutionContext,
       hc: HeaderCarrier,
       httpReads: HttpReads[DownstreamOutcome[Resp]],
       correlationId: String): Future[DownstreamOutcome[Resp]] = {
 
     def doPost(implicit hc: HeaderCarrier): Future[DownstreamOutcome[Resp]] = {
-      http.POST(getBackendUri(uri), body)
+      http.post(downstreamUri.value).withBody(Json.toJson(body)).execute
     }
 
-    doPost(getBackendHeaders(uri, hc, correlationId, jsonContentTypeHeader))
+    doPost(getBackendHeaders(downstreamConfig)(hc, correlationId, jsonContentTypeHeader))
   }
 
-  def get[Resp](uri: DownstreamUri[Resp], queryParams: Seq[(String, String)] = Nil)(implicit
+  def get[Resp](downstreamConfig: DownstreamConfig)(downstreamUri: DownstreamUri[Resp])(implicit
       ec: ExecutionContext,
       hc: HeaderCarrier,
       httpReads: HttpReads[DownstreamOutcome[Resp]],
       correlationId: String): Future[DownstreamOutcome[Resp]] = {
 
     def doGet(implicit hc: HeaderCarrier): Future[DownstreamOutcome[Resp]] = {
-      http.GET(getBackendUri(uri), queryParams)
+      http.get(downstreamUri.value).execute
     }
 
-    doGet(getBackendHeaders(uri, hc, correlationId))
+    doGet(getBackendHeaders(downstreamConfig)(hc, correlationId))
   }
 
-  def put[Body: Writes, Resp](body: Body, uri: DownstreamUri[Resp])(implicit
+  def put[Body: Writes, Resp](downstreamConfig: DownstreamConfig)(body: Body, downstreamUri: DownstreamUri[Resp])(implicit
       ec: ExecutionContext,
       hc: HeaderCarrier,
       httpReads: HttpReads[DownstreamOutcome[Resp]],
       correlationId: String): Future[DownstreamOutcome[Resp]] = {
 
     def doPut(implicit hc: HeaderCarrier): Future[DownstreamOutcome[Resp]] = {
-      http.PUT(getBackendUri(uri), body)
+      http.put(downstreamUri.value).withBody(Json.toJson(body)).execute
     }
 
-    doPut(getBackendHeaders(uri, hc, correlationId, jsonContentTypeHeader))
+    doPut(getBackendHeaders(downstreamConfig)(hc, correlationId, jsonContentTypeHeader))
   }
 
-  def delete[Resp](uri: DownstreamUri[Resp], queryParams: Seq[(String, String)] = Nil)(implicit
+  def delete[Resp](downstreamConfig: DownstreamConfig)(downstreamUri: DownstreamUri[Resp])(implicit
       ec: ExecutionContext,
       hc: HeaderCarrier,
       httpReads: HttpReads[DownstreamOutcome[Resp]],
       correlationId: String): Future[DownstreamOutcome[Resp]] = {
 
     def doDelete(implicit hc: HeaderCarrier): Future[DownstreamOutcome[Resp]] = {
-      // http.DELETE doesn't accept query params (unlike http.GET), so need to construct the query here:
-      val downstreamUri = appendQueryParams(getBackendUri(uri), queryParams)
-      http.DELETE(downstreamUri)
+      http.delete(downstreamUri.value).execute
     }
 
-    doDelete(getBackendHeaders(uri, hc, correlationId))
+    doDelete(getBackendHeaders(downstreamConfig)(hc, correlationId))
   }
 
-  private def getBackendUri[Resp](uri: DownstreamUri[Resp]): String =
-    s"${configFor(uri).baseUrl}/${uri.value}"
-
-  private def getBackendHeaders[Resp](uri: DownstreamUri[Resp],
-                                      hc: HeaderCarrier,
-                                      correlationId: String,
-                                      additionalHeaders: (String, String)*): HeaderCarrier = {
-    val downstreamConfig = configFor(uri)
-
+  private def getBackendHeaders(
+      downstreamConfig: DownstreamConfig)(hc: HeaderCarrier, correlationId: String, additionalHeaders: (String, String)*): HeaderCarrier = {
     val passThroughHeaders = hc
       .headers(downstreamConfig.environmentHeaders.getOrElse(Nil))
       .filterNot(hdr => additionalHeaders.exists(_._1.equalsIgnoreCase(hdr._1)))
@@ -110,10 +99,4 @@ trait BaseDownstreamConnector extends Logging {
         passThroughHeaders
     )
   }
-
-  private def configFor[Resp](uri: DownstreamUri[Resp]) =
-    uri match {
-      case StubUri(_)                => appConfig.stubDownstreamConfig
-    }
-
 }

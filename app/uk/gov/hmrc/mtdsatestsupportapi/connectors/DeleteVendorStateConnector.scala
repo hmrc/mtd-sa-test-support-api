@@ -16,17 +16,20 @@
 
 package uk.gov.hmrc.mtdsatestsupportapi.connectors
 
+import api.connectors.DownstreamUri
+import api.connectors.httpparsers.StandardDownstreamHttpParser
 import api.connectors.{BaseDownstreamConnector, DownstreamOutcome}
 import config.AppConfig
-import uk.gov.hmrc.http.{HeaderCarrier, HttpClient}
-import api.connectors.httpparsers.StandardDownstreamHttpParser.readsEmpty
+import uk.gov.hmrc.http.client.HttpClientV2
+import uk.gov.hmrc.http.{HeaderCarrier, StringContextOps}
+import uk.gov.hmrc.mtdsatestsupportapi.models.request.deleteStatefulTestData.DeleteStatefulTestDataRequest
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
-import api.connectors.DownstreamUri._
-import uk.gov.hmrc.mtdsatestsupportapi.models.request.deleteStatefulTestData.DeleteStatefulTestDataRequest
 
-class DeleteVendorStateConnector @Inject() (val http: HttpClient, val appConfig: AppConfig) extends BaseDownstreamConnector {
+class DeleteVendorStateConnector @Inject() (val http: HttpClientV2, val appConfig: AppConfig)
+    extends BaseDownstreamConnector
+    with StandardDownstreamHttpParser {
 
   def deleteVendorState(request: DeleteStatefulTestDataRequest)(implicit
       hc: HeaderCarrier,
@@ -34,13 +37,14 @@ class DeleteVendorStateConnector @Inject() (val http: HttpClient, val appConfig:
       correlationId: String): Future[DownstreamOutcome[Unit]] = {
     import request._
 
-    val queryParams: Seq[(String, String)] = nino match {
-      case Some(n) => Seq(("taxableEntityId", n.toString))
-      case None    => Seq()
+    val downstreamConfig = appConfig.stubDownstreamConfig
+
+    val url = nino match {
+      case Some(n) => url"${downstreamConfig.baseUrl}/test-support/vendor-state/$vendorClientId?taxableEntityId=${n.value}"
+      case None    => url"${downstreamConfig.baseUrl}/test-support/vendor-state/$vendorClientId"
     }
 
-    val downstreamuri = StubUri[Unit](s"test-support/vendor-state/$vendorClientId")
-    delete(downstreamuri, queryParams)
+    delete(downstreamConfig)(DownstreamUri[Unit](url))
   }
 
 }
