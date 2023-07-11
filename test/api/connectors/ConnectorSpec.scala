@@ -25,7 +25,7 @@ import uk.gov.hmrc.http.test.{HttpClientV2Support, WireMockSupport}
 
 import scala.concurrent.ExecutionContext
 
-trait WiremockConnectorSpec extends UnitSpec with WireMockSupport with DownstreamStub with HttpClientV2Support {
+trait ConnectorSpec extends UnitSpec with WireMockSupport with DownstreamStub with HttpClientV2Support {
   implicit val requestCorrelationId: String = "requestCorrelationId"
   val responseCorrelationId: String         = "responseCorrelationId"
 

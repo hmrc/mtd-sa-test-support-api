@@ -16,14 +16,14 @@
 
 package uk.gov.hmrc.mtdsatestsupportapi.connectors
 
-import api.connectors.WiremockConnectorSpec
+import api.connectors.ConnectorSpec
 import api.models.domain.Nino
 import api.models.errors.{DownstreamErrorCode, DownstreamErrors}
 import api.models.outcomes.ResponseWrapper
 import play.api.libs.json.Json
 import uk.gov.hmrc.mtdsatestsupportapi.models.request.deleteStatefulTestData.DeleteStatefulTestDataRequest
 
-class DeleteVendorStateConnectorSpec extends WiremockConnectorSpec {
+class DeleteVendorStateConnectorSpec extends ConnectorSpec {
   private val vendorId        = "someVendor"
   private val nino            = "AA123456A"
   private val request         = DeleteStatefulTestDataRequest(vendorId, None)

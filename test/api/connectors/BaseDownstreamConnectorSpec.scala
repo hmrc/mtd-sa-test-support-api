@@ -27,7 +27,7 @@ import play.api.libs.json.{JsObject, Json, OWrites, Reads}
 import uk.gov.hmrc.http.client.HttpClientV2
 import uk.gov.hmrc.http.{HeaderCarrier, StringContextOps}
 
-class BaseDownstreamConnectorSpec extends WiremockConnectorSpec {
+class BaseDownstreamConnectorSpec extends ConnectorSpec {
   case class RequestBody(requestValue: String)
 
   object RequestBody {
