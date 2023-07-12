@@ -27,7 +27,10 @@ import uk.gov.hmrc.http.test.WireMockSupport
 trait WireMockMethods {
   _: WireMockSupport =>
 
-  def when(method: HTTPMethod, uri: String, queryParams: Map[String, String] = Map.empty, headers: Map[String, String] = Map.empty): MappingBuilder =
+  def when(method: HTTPMethod,
+           uri: String,
+           queryParams: Seq[(String, String)] = Seq.empty,
+           headers: Seq[(String, String)] = Seq.empty): MappingBuilder =
     when(method, uri).withQueryParams(queryParams).withHeaders(headers)
 
   def when(method: HTTPMethod, uri: String): MappingBuilder =
@@ -36,13 +39,13 @@ trait WireMockMethods {
   // Wrapper for Wiremock's own MappingBuilder
   class MappingBuilder(mappingBuilder: WMappingBuilder) {
 
-    def withQueryParams(queryParams: Map[String, String]): MappingBuilder = {
-      queryParams.foreachEntry { case (key, value) => mappingBuilder.withQueryParam(key, matching(value)) }
+    def withQueryParams(queryParams: Seq[(String, String)]): MappingBuilder = {
+      queryParams.foreach { case (key, value) => mappingBuilder.withQueryParam(key, matching(value)) }
       this
     }
 
-    def withHeaders(headers: Map[String, String]): MappingBuilder = {
-      headers.foreachEntry { case (key, value) => mappingBuilder.withHeader(key, equalTo(value)) }
+    def withHeaders(headers: Seq[(String, String)]): MappingBuilder = {
+      headers.foreach { case (key, value) => mappingBuilder.withHeader(key, equalTo(value)) }
       this
     }
 
@@ -62,16 +65,16 @@ trait WireMockMethods {
       this
     }
 
-    def thenReturn[T](status: Int, body: T, headers: Map[String, String] = Map.empty)(implicit writes: Writes[T]): StubMapping = {
+    def thenReturn[T](status: Int, body: T, headers: Seq[(String, String)] = Seq.empty)(implicit writes: Writes[T]): StubMapping = {
       val stringBody = writes.writes(body).toString()
       thenReturnInternal(status, headers, Some(stringBody))
     }
 
-    def thenReturnNoContent(status: Int = 204, headers: Map[String, String] = Map.empty): StubMapping = {
+    def thenReturnNoContent(status: Int = 204, headers: Seq[(String, String)] = Seq.empty): StubMapping = {
       thenReturnInternal(status, headers, None)
     }
 
-    private def thenReturnInternal(status: Int, headers: Map[String, String], body: Option[String]): StubMapping = {
+    private def thenReturnInternal(status: Int, headers: Seq[(String, String)], body: Option[String]): StubMapping = {
       val response = {
         val statusResponse = aResponse().withStatus(status)
         val responseWithHeaders = headers.foldLeft(statusResponse) { case (res, (key, value)) =>

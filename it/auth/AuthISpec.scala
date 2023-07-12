@@ -50,7 +50,7 @@ class AuthISpec extends IntegrationBaseSpec {
       "return a 204 response" in new Test {
         override def setupStubs(): StubMapping = {
           authorised()
-          onSuccess(DELETE, stubUri, Map.empty, NO_CONTENT, JsObject.empty)
+          onSuccess(DELETE, stubUri, Seq.empty, NO_CONTENT, JsObject.empty)
         }
 
         val response: WSResponse = await(request().delete())

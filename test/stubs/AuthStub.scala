@@ -44,12 +44,12 @@ trait AuthStub extends WireMockMethods {
 
   def unauthorisedNotLoggedIn(): StubMapping = {
     when(method = POST, uri = authoriseUri)
-      .thenReturnNoContent(status = UNAUTHORIZED, headers = Map("WWW-Authenticate" -> """MDTP detail="MissingBearerToken""""))
+      .thenReturnNoContent(status = UNAUTHORIZED, headers = Seq("WWW-Authenticate" -> """MDTP detail="MissingBearerToken""""))
   }
 
   def unauthorisedOther(): StubMapping = {
     when(method = POST, uri = authoriseUri)
-      .thenReturnNoContent(status = UNAUTHORIZED, headers = Map("WWW-Authenticate" -> """MDTP detail="InvalidBearerToken""""))
+      .thenReturnNoContent(status = UNAUTHORIZED, headers = Seq("WWW-Authenticate" -> """MDTP detail="InvalidBearerToken""""))
   }
 
   private def successfulAuthResponse(enrolments: JsObject*): JsObject = {

@@ -47,7 +47,7 @@ class DeleteVendorStateConnectorSpec extends ConnectorSpec {
 
       "return a successful result with nino" in new StubTest with Test {
         when(DELETE, s"/test-support/vendor-state/$vendorId")
-          .withQueryParams(Map("taxableEntityId" -> nino))
+          .withQueryParams(Seq("taxableEntityId" -> nino))
           .withHeaders(requiredHeaders)
           .thenReturnNoContent(headers = responseHeaders)
 

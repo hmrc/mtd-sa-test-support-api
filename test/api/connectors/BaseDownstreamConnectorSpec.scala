@@ -75,9 +75,9 @@ class BaseDownstreamConnectorSpec extends ConnectorSpec {
   "for the stub" when {
     "post" must {
       "posts with the required headers and returns the result" in new Test {
-        implicit val hc: HeaderCarrier = HeaderCarrier(otherHeaders = otherHeaders.toSeq :+ ("Content-Type" -> "application/json"))
+        implicit val hc: HeaderCarrier = HeaderCarrier(otherHeaders = otherHeaders :+ ("Content-Type" -> "application/json"))
 
-        val requiredStubHeadersPost: Map[String, String] = requiredHeaders + ("Content-Type" -> "application/json")
+        val requiredStubHeadersPost: Seq[(String, String)] = requiredHeaders ++ Seq("Content-Type" -> "application/json")
 
         when(POST, url)
           .withHeaders(requiredStubHeadersPost)
@@ -91,7 +91,7 @@ class BaseDownstreamConnectorSpec extends ConnectorSpec {
 
     "get" must {
       "get with the required headers and return the result" in new Test {
-        implicit val hc: HeaderCarrier = HeaderCarrier(otherHeaders = otherHeaders.toSeq :+ ("Content-Type" -> "application/json"))
+        implicit val hc: HeaderCarrier = HeaderCarrier(otherHeaders = otherHeaders :+ ("Content-Type" -> "application/json"))
 
         when(GET, url)
           .withHeaders(requiredHeaders)
@@ -104,7 +104,7 @@ class BaseDownstreamConnectorSpec extends ConnectorSpec {
 
     "delete" must {
       "delete with the required headers and return the result" in new Test {
-        implicit val hc: HeaderCarrier = HeaderCarrier(otherHeaders = otherHeaders.toSeq :+ ("Content-Type" -> "application/json"))
+        implicit val hc: HeaderCarrier = HeaderCarrier(otherHeaders = otherHeaders :+ ("Content-Type" -> "application/json"))
 
         when(DELETE, url)
           .withHeaders(requiredHeaders)
@@ -117,9 +117,9 @@ class BaseDownstreamConnectorSpec extends ConnectorSpec {
 
     "put" must {
       "put with the required headers and return result" in new Test {
-        implicit val hc: HeaderCarrier = HeaderCarrier(otherHeaders = otherHeaders.toSeq ++ Seq("Content-Type" -> "application/json"))
+        implicit val hc: HeaderCarrier = HeaderCarrier(otherHeaders = otherHeaders ++ Seq("Content-Type" -> "application/json"))
 
-        val requiredStubHeadersPut: Map[String, String] = requiredHeaders + ("Content-Type" -> "application/json")
+        val requiredStubHeadersPut: Seq[(String, String)] = requiredHeaders ++ Seq("Content-Type" -> "application/json")
 
         when(PUT, url)
           .withHeaders(requiredStubHeadersPut)
@@ -138,10 +138,10 @@ class BaseDownstreamConnectorSpec extends ConnectorSpec {
 
         def testNoDuplicatedContentType(userContentType: (String, String)): Unit =
           s"for user content type header $userContentType" in new Test {
-            implicit val hc: HeaderCarrier = HeaderCarrier(otherHeaders = otherHeaders.toSeq :+ userContentType)
+            implicit val hc: HeaderCarrier = HeaderCarrier(otherHeaders = otherHeaders :+ userContentType)
 
             when(PUT, url)
-              .withHeaders(requiredHeaders + ("Content-Type" -> "application/json"))
+              .withHeaders(requiredHeaders ++ Seq("Content-Type" -> "application/json"))
               .withCustomMatcher(singleValuedHeader("Content-Type", "application/json"))
               .withRequestBody(requestBody)
               .thenReturn(OK, responseBodyJson, responseHeaders)

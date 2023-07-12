@@ -37,8 +37,8 @@ class DeleteVendorStateControllerISpec extends IntegrationBaseSpec {
       }
 
       "a valid request with nino is made" in new Test {
-        override val mtdQueryParams: Seq[(String, String)]      = Seq(("nino", nino))
-        override val downstreamQueryParams: Map[String, String] = Map("taxableEntityId" -> nino)
+        override val mtdQueryParams: Seq[(String, String)]      = Seq("nino" -> nino)
+        override val downstreamQueryParams: Seq[(String, String)] = Seq("taxableEntityId" -> nino)
 
         val response: WSResponse = await(request().delete())
         response.status shouldBe NO_CONTENT
@@ -52,7 +52,7 @@ class DeleteVendorStateControllerISpec extends IntegrationBaseSpec {
 
           override def setupStubs(): StubMapping = {
             authorised()
-            onError(DELETE, downstreamUri, Map.empty, stubErrorStatus, errorBody(stubErrorCode))
+            onError(DELETE, downstreamUri, Seq.empty, stubErrorStatus, errorBody(stubErrorCode))
           }
 
           val response: WSResponse = await(request().delete())
@@ -76,10 +76,10 @@ class DeleteVendorStateControllerISpec extends IntegrationBaseSpec {
     val vendorClientId = "some_id"
 
     val mtdUri                                = "/vendor-state"
-    val mtdQueryParams: Seq[(String, String)] = Seq()
+    val mtdQueryParams: Seq[(String, String)] = Seq.empty
 
     val downstreamUri                              = s"/test-support/vendor-state/$vendorClientId"
-    val downstreamQueryParams: Map[String, String] = Map()
+    val downstreamQueryParams: Seq[(String, String)] = Seq.empty
 
     def setupStubs(): StubMapping = {
       authorised()
