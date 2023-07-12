@@ -17,7 +17,7 @@
 package api.connectors
 
 import config.DownstreamConfig
-import mocks.{MockAppConfig, MockHttpClient}
+import mocks.MockAppConfig
 import stubs.DownstreamStub
 import support.UnitSpec
 import uk.gov.hmrc.http.HeaderCarrier
@@ -34,9 +34,9 @@ trait ConnectorSpec extends UnitSpec with WireMockSupport with DownstreamStub wi
   protected val notPassedThroughHeader: (String, String) = "NotPassedThroughHeader" -> "NotPassedThroughValue"
   protected val passedThroughHeader: (String, String)    = "PassedThroughHeader"    -> "PassedThroughValue"
 
-  val otherHeaders: Seq[(String, String)] = Seq(passedThroughHeader, notPassedThroughHeader)
+  val headersInRequest: Seq[(String, String)] = Seq(passedThroughHeader, notPassedThroughHeader)
 
-  implicit val hc: HeaderCarrier    = HeaderCarrier(otherHeaders = otherHeaders)
+  implicit val hc: HeaderCarrier    = HeaderCarrier(otherHeaders = headersInRequest)
   implicit val ec: ExecutionContext = scala.concurrent.ExecutionContext.global
 
   val responseHeaders: Seq[(String, String)] = Seq("correlationId" -> responseCorrelationId)
@@ -53,7 +53,7 @@ trait ConnectorSpec extends UnitSpec with WireMockSupport with DownstreamStub wi
 
   val downstreamConfig: DownstreamConfig = DownstreamConfig(baseUrl, Some(allowedHeaderNames))
 
-  protected trait ConnectorTest extends MockHttpClient with MockAppConfig
+  protected trait ConnectorTest extends MockAppConfig
 
   protected trait StubTest extends ConnectorTest {
     MockAppConfig.stubDownstreamConfig returns downstreamConfig

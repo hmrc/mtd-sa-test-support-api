@@ -21,7 +21,7 @@ import api.models.outcomes.ResponseWrapper
 import com.github.tomakehurst.wiremock.http.Request
 import com.github.tomakehurst.wiremock.matching.{MatchResult, ValueMatcher}
 import config.AppConfig
-import mocks.{MockAppConfig, MockHttpClient}
+import mocks.MockAppConfig
 import play.api.http.Status.OK
 import play.api.libs.json.{JsObject, Json, OWrites, Reads}
 import uk.gov.hmrc.http.client.HttpClientV2
@@ -50,7 +50,7 @@ class BaseDownstreamConnectorSpec extends ConnectorSpec {
   val downstreamUri: DownstreamUri[ResponseBody]             = DownstreamUri[ResponseBody](url"$baseUrl/some/path")
   val url                                                    = "/some/path"
 
-  class Test extends MockHttpClient with MockAppConfig with StandardDownstreamHttpParser {
+  class Test extends MockAppConfig with StandardDownstreamHttpParser {
 
     val connector: BaseDownstreamConnector = new BaseDownstreamConnector {
       val http: HttpClientV2   = httpClientV2
@@ -75,7 +75,7 @@ class BaseDownstreamConnectorSpec extends ConnectorSpec {
   "for the stub" when {
     "post" must {
       "posts with the required headers and returns the result" in new Test {
-        implicit val hc: HeaderCarrier = HeaderCarrier(otherHeaders = otherHeaders :+ ("Content-Type" -> "application/json"))
+        implicit val hc: HeaderCarrier = HeaderCarrier(otherHeaders = headersInRequest :+ ("Content-Type" -> "application/json"))
 
         val requiredStubHeadersPost: Seq[(String, String)] = requiredHeaders ++ Seq("Content-Type" -> "application/json")
 
@@ -91,7 +91,7 @@ class BaseDownstreamConnectorSpec extends ConnectorSpec {
 
     "get" must {
       "get with the required headers and return the result" in new Test {
-        implicit val hc: HeaderCarrier = HeaderCarrier(otherHeaders = otherHeaders :+ ("Content-Type" -> "application/json"))
+        implicit val hc: HeaderCarrier = HeaderCarrier(otherHeaders = headersInRequest :+ ("Content-Type" -> "application/json"))
 
         when(GET, url)
           .withHeaders(requiredHeaders)
@@ -104,7 +104,7 @@ class BaseDownstreamConnectorSpec extends ConnectorSpec {
 
     "delete" must {
       "delete with the required headers and return the result" in new Test {
-        implicit val hc: HeaderCarrier = HeaderCarrier(otherHeaders = otherHeaders :+ ("Content-Type" -> "application/json"))
+        implicit val hc: HeaderCarrier = HeaderCarrier(otherHeaders = headersInRequest :+ ("Content-Type" -> "application/json"))
 
         when(DELETE, url)
           .withHeaders(requiredHeaders)
@@ -117,7 +117,7 @@ class BaseDownstreamConnectorSpec extends ConnectorSpec {
 
     "put" must {
       "put with the required headers and return result" in new Test {
-        implicit val hc: HeaderCarrier = HeaderCarrier(otherHeaders = otherHeaders ++ Seq("Content-Type" -> "application/json"))
+        implicit val hc: HeaderCarrier = HeaderCarrier(otherHeaders = headersInRequest ++ Seq("Content-Type" -> "application/json"))
 
         val requiredStubHeadersPut: Seq[(String, String)] = requiredHeaders ++ Seq("Content-Type" -> "application/json")
 
@@ -138,7 +138,7 @@ class BaseDownstreamConnectorSpec extends ConnectorSpec {
 
         def testNoDuplicatedContentType(userContentType: (String, String)): Unit =
           s"for user content type header $userContentType" in new Test {
-            implicit val hc: HeaderCarrier = HeaderCarrier(otherHeaders = otherHeaders :+ userContentType)
+            implicit val hc: HeaderCarrier = HeaderCarrier(otherHeaders = headersInRequest :+ userContentType)
 
             when(PUT, url)
               .withHeaders(requiredHeaders ++ Seq("Content-Type" -> "application/json"))
