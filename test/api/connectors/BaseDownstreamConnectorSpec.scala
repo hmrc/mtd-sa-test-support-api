@@ -75,7 +75,8 @@ class BaseDownstreamConnectorSpec extends ConnectorSpec {
   "for the stub" when {
     "post" must {
       "posts with the required headers and returns the result" in new Test {
-        implicit val hc: HeaderCarrier = HeaderCarrier(otherHeaders = headersInRequest :+ ("Content-Type" -> "application/json"))
+        implicit val hc: HeaderCarrier                   = HeaderCarrier(otherHeaders = headersInRequest :+ ("Content-Type" -> "application/json"))
+        implicit val context: connector.ConnectorContext = connector.ConnectorContext(downstreamConfig)
 
         val requiredStubHeadersPost: Seq[(String, String)] = requiredHeaders ++ Seq("Content-Type" -> "application/json")
 
@@ -85,39 +86,42 @@ class BaseDownstreamConnectorSpec extends ConnectorSpec {
           .withRequestBody(requestBodyJson)
           .thenReturn(OK, responseBodyJson, responseHeaders)
 
-        await(connector.post(downstreamConfig)(requestBody, downstreamUri)) shouldBe outcome
+        await(connector.post(requestBody, downstreamUri)) shouldBe outcome
       }
     }
 
     "get" must {
       "get with the required headers and return the result" in new Test {
-        implicit val hc: HeaderCarrier = HeaderCarrier(otherHeaders = headersInRequest :+ ("Content-Type" -> "application/json"))
+        implicit val hc: HeaderCarrier                   = HeaderCarrier(otherHeaders = headersInRequest :+ ("Content-Type" -> "application/json"))
+        implicit val context: connector.ConnectorContext = connector.ConnectorContext(downstreamConfig)
 
         when(GET, url)
           .withHeaders(requiredHeaders)
           .withCustomMatcher(excludedRequestHeadersNames("NotPassedThroughHeader"))
           .thenReturn(OK, responseBodyJson, responseHeaders)
 
-        await(connector.get(downstreamConfig)(downstreamUri)) shouldBe outcome
+        await(connector.get(downstreamUri)) shouldBe outcome
       }
     }
 
     "delete" must {
       "delete with the required headers and return the result" in new Test {
-        implicit val hc: HeaderCarrier = HeaderCarrier(otherHeaders = headersInRequest :+ ("Content-Type" -> "application/json"))
+        implicit val hc: HeaderCarrier                   = HeaderCarrier(otherHeaders = headersInRequest :+ ("Content-Type" -> "application/json"))
+        implicit val context: connector.ConnectorContext = connector.ConnectorContext(downstreamConfig)
 
         when(DELETE, url)
           .withHeaders(requiredHeaders)
           .withCustomMatcher(excludedRequestHeadersNames("NotPassedThroughHeader"))
           .thenReturn(OK, responseBodyJson, responseHeaders)
 
-        await(connector.delete(downstreamConfig)(downstreamUri)) shouldBe outcome
+        await(connector.delete(downstreamUri)) shouldBe outcome
       }
     }
 
     "put" must {
       "put with the required headers and return result" in new Test {
-        implicit val hc: HeaderCarrier = HeaderCarrier(otherHeaders = headersInRequest ++ Seq("Content-Type" -> "application/json"))
+        implicit val hc: HeaderCarrier                   = HeaderCarrier(otherHeaders = headersInRequest ++ Seq("Content-Type" -> "application/json"))
+        implicit val context: connector.ConnectorContext = connector.ConnectorContext(downstreamConfig)
 
         val requiredStubHeadersPut: Seq[(String, String)] = requiredHeaders ++ Seq("Content-Type" -> "application/json")
 
@@ -127,7 +131,7 @@ class BaseDownstreamConnectorSpec extends ConnectorSpec {
           .withRequestBody(requestBodyJson)
           .thenReturn(OK, responseBodyJson, responseHeaders)
 
-        await(connector.put(downstreamConfig)(requestBody, downstreamUri)) shouldBe outcome
+        await(connector.put(requestBody, downstreamUri)) shouldBe outcome
       }
     }
 
@@ -138,7 +142,8 @@ class BaseDownstreamConnectorSpec extends ConnectorSpec {
 
         def testNoDuplicatedContentType(userContentType: (String, String)): Unit =
           s"for user content type header $userContentType" in new Test {
-            implicit val hc: HeaderCarrier = HeaderCarrier(otherHeaders = headersInRequest :+ userContentType)
+            implicit val hc: HeaderCarrier                   = HeaderCarrier(otherHeaders = headersInRequest :+ userContentType)
+            implicit val context: connector.ConnectorContext = connector.ConnectorContext(downstreamConfig)
 
             when(PUT, url)
               .withHeaders(requiredHeaders ++ Seq("Content-Type" -> "application/json"))
@@ -146,7 +151,7 @@ class BaseDownstreamConnectorSpec extends ConnectorSpec {
               .withRequestBody(requestBody)
               .thenReturn(OK, responseBodyJson, responseHeaders)
 
-            await(connector.put(downstreamConfig)(requestBody, downstreamUri)) shouldBe outcome
+            await(connector.put(requestBody, downstreamUri)) shouldBe outcome
           }
       }
     }

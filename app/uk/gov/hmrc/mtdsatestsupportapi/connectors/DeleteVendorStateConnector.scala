@@ -37,14 +37,14 @@ class DeleteVendorStateConnector @Inject() (val http: HttpClientV2, val appConfi
       correlationId: String): Future[DownstreamOutcome[Unit]] = {
     import request._
 
-    val downstreamConfig = appConfig.stubDownstreamConfig
+    implicit val context: ConnectorContext = ConnectorContext(appConfig.stubDownstreamConfig)
 
     val url = nino match {
-      case Some(n) => url"${downstreamConfig.baseUrl}/test-support/vendor-state/$vendorClientId?taxableEntityId=${n.value}"
-      case None    => url"${downstreamConfig.baseUrl}/test-support/vendor-state/$vendorClientId"
+      case Some(n) => url"${context.baseUrl}/test-support/vendor-state/$vendorClientId?taxableEntityId=${n.value}"
+      case None    => url"${context.baseUrl}/test-support/vendor-state/$vendorClientId"
     }
 
-    delete(downstreamConfig)(DownstreamUri[Unit](url))
+    delete(DownstreamUri[Unit](url))
   }
 
 }
