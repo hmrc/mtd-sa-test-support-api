@@ -22,7 +22,6 @@ import play.api.http.Status._
 import play.api.libs.json.JsObject
 import play.api.libs.ws.{WSRequest, WSResponse}
 import play.api.test.Helpers.AUTHORIZATION
-import stubs.{AuthStub, DownstreamStub}
 import support.IntegrationBaseSpec
 
 class AuthISpec extends IntegrationBaseSpec {
@@ -51,7 +50,7 @@ class AuthISpec extends IntegrationBaseSpec {
       "return a 204 response" in new Test {
         override def setupStubs(): StubMapping = {
           AuthStub.authorised()
-          DownstreamStub.onSuccess(DownstreamStub.DELETE, stubUri, Map.empty, NO_CONTENT, JsObject.empty)
+          DownstreamStub.onSuccess(DELETE, stubUri, Seq.empty, NO_CONTENT, JsObject.empty)
         }
 
         val response: WSResponse = await(request().delete())

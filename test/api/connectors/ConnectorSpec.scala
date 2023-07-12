@@ -16,106 +16,47 @@
 
 package api.connectors
 
-import mocks.{MockAppConfig, MockHttpClient}
-import org.scalamock.handlers.CallHandler
-import play.api.http.{HeaderNames, MimeTypes, Status}
+import config.DownstreamConfig
+import mocks.MockAppConfig
+import stubs.DownstreamStub
 import support.UnitSpec
 import uk.gov.hmrc.http.HeaderCarrier
-import utils.UrlUtils
+import uk.gov.hmrc.http.test.{HttpClientV2Support, WireMockSupport}
 
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.ExecutionContext
 
-trait ConnectorSpec extends UnitSpec with Status with MimeTypes with HeaderNames {
+trait ConnectorSpec extends UnitSpec with WireMockSupport with DownstreamStub with HttpClientV2Support {
+  implicit val requestCorrelationId: String = "requestCorrelationId"
+  val responseCorrelationId: String         = "responseCorrelationId"
 
-  lazy val baseUrl                   = "http://test-BaseUrl"
-  implicit val correlationId: String = "a1e8057e-fbbc-47a8-a8b4-78d9f015c253"
+  protected val baseUrl: String = s"http://localhost:$wireMockPort"
 
   protected val notPassedThroughHeader: (String, String) = "NotPassedThroughHeader" -> "NotPassedThroughValue"
-  protected val passedThroughHeader: (String, String) = "PassedThroughHeader"    -> "PassedThroughValue"
+  protected val passedThroughHeader: (String, String)    = "PassedThroughHeader"    -> "PassedThroughValue"
 
-  val otherHeaders: Seq[(String, String)] = Seq(passedThroughHeader, notPassedThroughHeader)
+  val headersInRequest: Seq[(String, String)] = Seq(passedThroughHeader, notPassedThroughHeader)
 
-  implicit val hc: HeaderCarrier    = HeaderCarrier(otherHeaders = otherHeaders)
+  implicit val hc: HeaderCarrier    = HeaderCarrier(otherHeaders = headersInRequest)
   implicit val ec: ExecutionContext = scala.concurrent.ExecutionContext.global
 
-  val dummyHeaderCarrierConfig: HeaderCarrier.Config =
-    HeaderCarrier.Config(
-      Seq("^not-test-BaseUrl?$".r),
-      Seq.empty[String],
-      Some("this-api")
-    )
+  val responseHeaders: Seq[(String, String)] = Seq("correlationId" -> responseCorrelationId)
 
-  val requiredStubHeaders: Seq[(String, String)] = Seq(
-    "CorrelationId" -> correlationId,
+  val requiredHeaders: Seq[(String, String)] = Seq(
+    "CorrelationId" -> requestCorrelationId,
     passedThroughHeader
   )
 
-  val allowedStubHeaders: Seq[String] = Seq(
+  val allowedHeaderNames: Seq[String] = Seq(
     "Content-Type",
     "PassedThroughHeader"
   )
 
-  protected trait ConnectorTest extends MockHttpClient with MockAppConfig {
-    protected val baseUrl: String = "http://test-BaseUrl"
+  val downstreamConfig: DownstreamConfig = DownstreamConfig(baseUrl, Some(allowedHeaderNames))
 
-    implicit protected val hc: HeaderCarrier = HeaderCarrier(otherHeaders = otherHeaders)
-
-    protected val requiredHeaders: Seq[(String, String)]
-
-    protected def willGet[T](url: String, parameters: Seq[(String, String)] = Nil): CallHandler[Future[T]] = {
-      MockHttpClient
-        .get(
-          url = url,
-          parameters = parameters,
-          config = dummyHeaderCarrierConfig,
-          requiredHeaders = requiredHeaders,
-          excludedHeaders = Seq(notPassedThroughHeader)
-        )
-    }
-
-    protected def willPost[BODY, T](url: String, body: BODY): CallHandler[Future[T]] = {
-      MockHttpClient
-        .post(
-          url = url,
-          config = dummyHeaderCarrierConfig,
-          body = body,
-          requiredHeaders = requiredHeaders ++ Seq("Content-Type" -> "application/json"),
-          excludedHeaders = Seq(notPassedThroughHeader)
-        )
-    }
-
-    protected def willPut[BODY, T](url: String, body: BODY): CallHandler[Future[T]] = {
-      MockHttpClient
-        .put(
-          url = url,
-          config = dummyHeaderCarrierConfig,
-          body = body,
-          requiredHeaders = requiredHeaders ++ Seq("Content-Type" -> "application/json"),
-          excludedHeaders = Seq(notPassedThroughHeader)
-        )
-    }
-
-    protected def willDelete[T](url: String, parameters: Seq[(String, String)] = Nil): CallHandler[Future[T]] = {
-      val fullUrl = UrlUtils.appendQueryParams(url, parameters)
-
-      MockHttpClient
-        .delete(
-          url = fullUrl,
-          config = dummyHeaderCarrierConfig,
-          requiredHeaders = requiredHeaders,
-          excludedHeaders = Seq(notPassedThroughHeader)
-        )
-    }
-
-  }
+  protected trait ConnectorTest extends MockAppConfig
 
   protected trait StubTest extends ConnectorTest {
-
-    protected lazy val requiredHeaders: Seq[(String, String)] = requiredStubHeaders
-
-    MockAppConfig.stubBaseUrl returns baseUrl
-    MockAppConfig.stubEnvironmentHeaders returns Some(allowedStubHeaders)
-
+    MockAppConfig.stubDownstreamConfig returns downstreamConfig
   }
 
 }
