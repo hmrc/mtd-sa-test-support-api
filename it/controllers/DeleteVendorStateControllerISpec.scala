@@ -51,8 +51,8 @@ class DeleteVendorStateControllerISpec extends IntegrationBaseSpec {
         s"stub returns a $stubErrorCode error and status $stubErrorStatus" in new Test {
 
           override def setupStubs(): StubMapping = {
-            authorised()
-            onError(DELETE, downstreamUri, Seq.empty, stubErrorStatus, errorBody(stubErrorCode))
+            AuthStub.authorised()
+            DownstreamStub.onError(DELETE, downstreamUri, Seq.empty, stubErrorStatus, errorBody(stubErrorCode))
           }
 
           val response: WSResponse = await(request().delete())
@@ -82,8 +82,8 @@ class DeleteVendorStateControllerISpec extends IntegrationBaseSpec {
     val downstreamQueryParams: Seq[(String, String)] = Seq.empty
 
     def setupStubs(): StubMapping = {
-      authorised()
-      onSuccess(DELETE, downstreamUri, downstreamQueryParams, NO_CONTENT, JsObject.empty)
+      AuthStub.authorised()
+      DownstreamStub.onSuccess(DELETE, downstreamUri, downstreamQueryParams, NO_CONTENT, JsObject.empty)
     }
 
     def request(): WSRequest = {

@@ -21,7 +21,6 @@ import play.api.http.Status.{OK, UNAUTHORIZED}
 import play.api.libs.json.{JsObject, Json}
 import uk.gov.hmrc.http.test.WireMockSupport
 
-
 trait AuthStub extends WireMockMethods {
   _: WireMockSupport =>
 
@@ -37,22 +36,27 @@ trait AuthStub extends WireMockMethods {
     )
   )
 
-  def authorised(): StubMapping = {
-    when(method = POST, uri = authoriseUri)
-      .thenReturn(status = OK, body = successfulAuthResponse(mtdEnrolment))
+  object AuthStub {
+
+    def authorised(): StubMapping = {
+      when(method = POST, uri = authoriseUri)
+        .thenReturn(status = OK, body = successfulAuthResponse(mtdEnrolment))
+    }
+
+    def unauthorisedNotLoggedIn(): StubMapping = {
+      when(method = POST, uri = authoriseUri)
+        .thenReturnNoContent(status = UNAUTHORIZED, headers = Seq("WWW-Authenticate" -> """MDTP detail="MissingBearerToken""""))
+    }
+
+    def unauthorisedOther(): StubMapping = {
+      when(method = POST, uri = authoriseUri)
+        .thenReturnNoContent(status = UNAUTHORIZED, headers = Seq("WWW-Authenticate" -> """MDTP detail="InvalidBearerToken""""))
+    }
+
+    private def successfulAuthResponse(enrolments: JsObject*): JsObject = {
+      Json.obj("authorisedEnrolments" -> enrolments, "affinityGroup" -> "Individual")
+    }
+
   }
 
-  def unauthorisedNotLoggedIn(): StubMapping = {
-    when(method = POST, uri = authoriseUri)
-      .thenReturnNoContent(status = UNAUTHORIZED, headers = Seq("WWW-Authenticate" -> """MDTP detail="MissingBearerToken""""))
-  }
-
-  def unauthorisedOther(): StubMapping = {
-    when(method = POST, uri = authoriseUri)
-      .thenReturnNoContent(status = UNAUTHORIZED, headers = Seq("WWW-Authenticate" -> """MDTP detail="InvalidBearerToken""""))
-  }
-
-  private def successfulAuthResponse(enrolments: JsObject*): JsObject = {
-    Json.obj("authorisedEnrolments" -> enrolments, "affinityGroup" -> "Individual")
-  }
 }
