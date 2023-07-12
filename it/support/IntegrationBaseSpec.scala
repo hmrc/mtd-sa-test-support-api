@@ -50,4 +50,12 @@ trait IntegrationBaseSpec extends UnitSpec with WireMockSupport with DownstreamS
   def buildRequest(path: String): WSRequest = client.url(s"http://localhost:$port$path").withFollowRedirects(false)
 
   def document(response: WSResponse): JsValue = Json.parse(response.body)
+
+  override def beforeEach(): Unit = {
+    super.beforeEach()
+
+    // To silence errors about implicit audits
+    when(POST, "/write/audit/merged").thenReturnNoContent()
+    when(POST, "/write/audit").thenReturnNoContent()
+  }
 }
