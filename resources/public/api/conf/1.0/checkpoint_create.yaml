@@ -1,0 +1,49 @@
+summary: Create a Checkpoint
+description: |
+  This endpoint allows a developer to set up a checkpoint for the stateful data in the sandbox environment for a particular NINO. 
+  A National insurance number must be provided.
+  The developer will be able to reset the data back to checkpoint created for a particular NINO using the reset endpoint.
+
+security:
+  - User-Restricted:
+      - write:self-assessment
+
+responses:
+  201:
+    description: Success
+    headers:
+      X-CorrelationId:
+        $ref: './common/headers.yaml#/components/parameters/correlationId'
+  400:
+    description: Bad Request
+    content:
+      application/json:
+        schema:
+          $ref: './schemas/error_response.yaml'
+        examples:
+          FORMAT_NINO:
+            $ref: './common/errors.yaml#/components/examples/formatNino'
+          RULE_DUPLICATE_SUBMISSION:
+            $ref: './common/errors.yaml#/components/examples/ruleDuplicateSubmission'
+
+  403:
+    description: Forbidden
+    content:
+      application/json:
+        schema:
+          $ref: './schemas/error_response.yaml'
+        examples:
+          CLIENT_OR_AGENT_NOT_AUTHORISED:
+            $ref: './common/errors.yaml#/components/examples/clientOrAgentNotAuthorised'
+
+  404:
+    description: Not Found
+    content:
+      application/json:
+        schema:
+          $ref: './schemas/error_response.yaml'
+        examples:
+          MATCHING_RESOURCE_NOT_FOUND:
+            $ref: './common/errors.yaml#/components/examples/incomeSourceNotFound'
+
+

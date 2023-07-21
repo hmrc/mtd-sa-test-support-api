@@ -9,6 +9,12 @@ components:
         code: FORMAT_NINO
         message: The provided NINO is invalid
 
+    ruleDuplicateSubmission:
+      description: A checkpoint already exists for the NINO passed in the request.
+      value:
+        code: RULE_DUPLICATE_SUBMISSION
+        message: Checkpoint already exists for the NINO (TBC)
+
     # 403
 
     clientOrAgentNotAuthorised:
@@ -23,6 +29,12 @@ components:
 
     notFound:
       description: The remote endpoint has indicated that no data can be found for the given vendor.
+      value:
+        code: MATCHING_RESOURCE_NOT_FOUND
+        message: Matching resource not found
+
+    incomeSourceNotFound:
+      description: The supplied income source could not be found. No records found for the passed NINO to create a checkpoint.
       value:
         code: MATCHING_RESOURCE_NOT_FOUND
         message: Matching resource not found

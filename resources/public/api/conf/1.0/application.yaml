@@ -34,5 +34,13 @@ components:
 paths:
   /individuals/self-assessment-test-support/vendor-state:
     $ref: "./vendor_state.yaml"
-
+  /individuals/self-assessment-test-support/vendor-state/checkpoints?nino={nino}:
+    post:
+      $ref: "./checkpoint_create.yaml"
+      security:
+        - User-Restricted:
+            - write:self-assessment
+      parameters:
+        - $ref: './common/headers.yaml#/components/parameters/acceptHeader'
+        - $ref: './common/headers.yaml#/components/parameters/authorizationWriteScopeHeader'
 
