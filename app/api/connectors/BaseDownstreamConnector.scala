@@ -16,104 +16,88 @@
 
 package api.connectors
 
-
-import api.connectors.DownstreamUri._
-import config.AppConfig
+import config.{AppConfig, DownstreamConfig}
 import play.api.http.{HeaderNames, MimeTypes}
-import play.api.libs.json.Writes
-import uk.gov.hmrc.http.{HeaderCarrier, HttpClient, HttpReads}
+import play.api.libs.json.{Json, Writes}
+import uk.gov.hmrc.http.client.HttpClientV2
+import uk.gov.hmrc.http.{HeaderCarrier, HttpReads}
 import utils.Logging
-import utils.UrlUtils.appendQueryParams
 
+import java.net.URL
 import scala.concurrent.{ExecutionContext, Future}
 
 trait BaseDownstreamConnector extends Logging {
-  val http: HttpClient
+  val http: HttpClientV2
   val appConfig: AppConfig
 
   private val jsonContentTypeHeader = HeaderNames.CONTENT_TYPE -> MimeTypes.JSON
 
-  def post[Body: Writes, Resp](body: Body, uri: DownstreamUri[Resp])(implicit
-      ec: ExecutionContext,
-      hc: HeaderCarrier,
-      httpReads: HttpReads[DownstreamOutcome[Resp]],
-      correlationId: String): Future[DownstreamOutcome[Resp]] = {
-
-    def doPost(implicit hc: HeaderCarrier): Future[DownstreamOutcome[Resp]] = {
-      http.POST(getBackendUri(uri), body)
-    }
-
-    doPost(getBackendHeaders(uri, hc, correlationId, jsonContentTypeHeader))
+  case class ConnectorContext(downstreamConfig: DownstreamConfig)(implicit
+      val ec: ExecutionContext,
+      val hc: HeaderCarrier,
+      val correlationId: String) {
+    def baseUrl: String = downstreamConfig.baseUrl
   }
 
-  def get[Resp](uri: DownstreamUri[Resp], queryParams: Seq[(String, String)] = Nil)(implicit
-      ec: ExecutionContext,
-      hc: HeaderCarrier,
+  def post[Body: Writes, Resp](body: Body, downstreamUri: DownstreamUri[Resp])(implicit
       httpReads: HttpReads[DownstreamOutcome[Resp]],
-      correlationId: String): Future[DownstreamOutcome[Resp]] = {
+      connectorContext: ConnectorContext): Future[DownstreamOutcome[Resp]] = {
 
-    def doGet(implicit hc: HeaderCarrier): Future[DownstreamOutcome[Resp]] = {
-      http.GET(getBackendUri(uri), queryParams)
-    }
+    implicit val hc: HeaderCarrier    = downstreamHeaderCarrier(jsonContentTypeHeader)
+    implicit val ec: ExecutionContext = connectorContext.ec
 
-    doGet(getBackendHeaders(uri, hc, correlationId))
+    http.post(url(downstreamUri)).withBody(Json.toJson(body)).execute
   }
 
-  def put[Body: Writes, Resp](body: Body, uri: DownstreamUri[Resp])(implicit
-      ec: ExecutionContext,
-      hc: HeaderCarrier,
+  def get[Resp](downstreamUri: DownstreamUri[Resp])(implicit
       httpReads: HttpReads[DownstreamOutcome[Resp]],
-      correlationId: String): Future[DownstreamOutcome[Resp]] = {
+      connectorContext: ConnectorContext): Future[DownstreamOutcome[Resp]] = {
 
-    def doPut(implicit hc: HeaderCarrier): Future[DownstreamOutcome[Resp]] = {
-      http.PUT(getBackendUri(uri), body)
-    }
+    implicit val hc: HeaderCarrier    = downstreamHeaderCarrier()
+    implicit val ec: ExecutionContext = connectorContext.ec
 
-    doPut(getBackendHeaders(uri, hc, correlationId, jsonContentTypeHeader))
+    http.get(url(downstreamUri)).execute
   }
 
-  def delete[Resp](uri: DownstreamUri[Resp], queryParams: Seq[(String, String)] = Nil)(implicit
-      ec: ExecutionContext,
-      hc: HeaderCarrier,
+  def put[Body: Writes, Resp](body: Body, downstreamUri: DownstreamUri[Resp])(implicit
       httpReads: HttpReads[DownstreamOutcome[Resp]],
-      correlationId: String): Future[DownstreamOutcome[Resp]] = {
+      connectorContext: ConnectorContext): Future[DownstreamOutcome[Resp]] = {
 
-    def doDelete(implicit hc: HeaderCarrier): Future[DownstreamOutcome[Resp]] = {
-      // http.DELETE doesn't accept query params (unlike http.GET), so need to construct the query here:
-      val downstreamUri = appendQueryParams(getBackendUri(uri), queryParams)
-      http.DELETE(downstreamUri)
-    }
+    implicit val hc: HeaderCarrier    = downstreamHeaderCarrier(jsonContentTypeHeader)
+    implicit val ec: ExecutionContext = connectorContext.ec
 
-    doDelete(getBackendHeaders(uri, hc, correlationId))
+    http.put(url(downstreamUri)).withBody(Json.toJson(body)).execute
   }
 
-  private def getBackendUri[Resp](uri: DownstreamUri[Resp]): String =
-    s"${configFor(uri).baseUrl}/${uri.value}"
+  def delete[Resp](downstreamUri: DownstreamUri[Resp])(implicit
+      httpReads: HttpReads[DownstreamOutcome[Resp]],
+      connectorContext: ConnectorContext): Future[DownstreamOutcome[Resp]] = {
 
-  private def getBackendHeaders[Resp](uri: DownstreamUri[Resp],
-                                      hc: HeaderCarrier,
-                                      correlationId: String,
-                                      additionalHeaders: (String, String)*): HeaderCarrier = {
-    val downstreamConfig = configFor(uri)
+    implicit val hc: HeaderCarrier    = downstreamHeaderCarrier()
+    implicit val ec: ExecutionContext = connectorContext.ec
 
-    val passThroughHeaders = hc
-      .headers(downstreamConfig.environmentHeaders.getOrElse(Nil))
+    http.delete(url(downstreamUri)).execute
+  }
+
+  private def downstreamHeaderCarrier(additionalHeaders: (String, String)*)(implicit connectorContext: ConnectorContext): HeaderCarrier = {
+    val passThroughHeaders = connectorContext.hc
+      .headers(connectorContext.downstreamConfig.environmentHeaders.getOrElse(Nil))
       .filterNot(hdr => additionalHeaders.exists(_._1.equalsIgnoreCase(hdr._1)))
 
     HeaderCarrier(
-      extraHeaders = hc.extraHeaders ++
+      extraHeaders = connectorContext.hc.extraHeaders ++
         // Contract headers
         List(
-          "CorrelationId" -> correlationId
+          "CorrelationId" -> connectorContext.correlationId
         ) ++
         additionalHeaders ++
         passThroughHeaders
     )
   }
 
-  private def configFor[Resp](uri: DownstreamUri[Resp]) =
-    uri match {
-      case StubUri(_)                => appConfig.stubDownstreamConfig
-    }
+  private def url(downstreamUri: DownstreamUri[_])(implicit connectorContext: ConnectorContext): URL = {
+    val context = new URL(connectorContext.baseUrl)
+    new URL(context, downstreamUri.path)
+  }
 
 }

@@ -25,11 +25,7 @@ import javax.inject.{Inject, Singleton}
 
 trait AppConfig {
 
-  def stubBaseUrl: String
-  def stubEnvironmentHeaders: Option[Seq[String]]
-
-  lazy val stubDownstreamConfig: DownstreamConfig =
-    DownstreamConfig(baseUrl = stubBaseUrl, environmentHeaders = stubEnvironmentHeaders)
+  def stubDownstreamConfig: DownstreamConfig
 
   // API Config
   def apiGatewayContext: String
@@ -43,8 +39,12 @@ trait AppConfig {
 @Singleton
 class AppConfigImpl @Inject() (config: ServicesConfig, configuration: Configuration) extends AppConfig {
 
-  val stubBaseUrl: String                         = config.baseUrl("stub")
-  val stubEnvironmentHeaders: Option[Seq[String]] = configuration.getOptional[Seq[String]]("microservice.services.stub.environmentHeaders")
+  lazy val stubDownstreamConfig: DownstreamConfig = {
+    val stubBaseUrl            = config.baseUrl("stub")
+    val stubEnvironmentHeaders = configuration.getOptional[Seq[String]]("microservice.services.stub.environmentHeaders")
+
+    DownstreamConfig(baseUrl = stubBaseUrl, environmentHeaders = stubEnvironmentHeaders)
+  }
 
   // API Config
   val apiGatewayContext: String                    = config.getString("api.gateway.context")

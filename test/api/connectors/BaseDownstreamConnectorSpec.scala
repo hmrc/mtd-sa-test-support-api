@@ -16,108 +16,122 @@
 
 package api.connectors
 
-
-import api.connectors.DownstreamUri._
+import api.connectors.httpparsers.StandardDownstreamHttpParser
 import api.models.outcomes.ResponseWrapper
+import com.github.tomakehurst.wiremock.http.Request
+import com.github.tomakehurst.wiremock.matching.{MatchResult, ValueMatcher}
 import config.AppConfig
-import mocks.{MockAppConfig, MockHttpClient}
-import uk.gov.hmrc.http.{HeaderCarrier, HttpClient, HttpReads}
-
-import scala.concurrent.Future
+import mocks.MockAppConfig
+import play.api.http.Status.OK
+import play.api.libs.json.{JsObject, Json, OWrites, Reads}
+import uk.gov.hmrc.http.HeaderCarrier
+import uk.gov.hmrc.http.client.HttpClientV2
 
 class BaseDownstreamConnectorSpec extends ConnectorSpec {
-  // WLOG
-  val body        = "body"
-  val outcome     = Right(ResponseWrapper(correlationId, Result(2)))
-  val url         = "some/url?param=value"
-  val absoluteUrl = s"$baseUrl/$url"
+  case class RequestBody(requestValue: String)
 
-  // WLOG
-  case class Result(value: Int)
+  object RequestBody {
+    implicit val writes: OWrites[RequestBody] = Json.writes
+  }
 
-  implicit val httpReads: HttpReads[DownstreamOutcome[Result]] = mock[HttpReads[DownstreamOutcome[Result]]]
+  case class ResponseBody(responseValue: String)
 
+  object ResponseBody {
+    implicit val reads: Reads[ResponseBody] = Json.reads
+  }
 
-  class Test extends MockHttpClient with MockAppConfig {
+  val requestBody: RequestBody  = RequestBody("request value")
+  val requestBodyJson: JsObject = Json.obj("requestValue" -> "request value")
+
+  val responseBody: ResponseBody = ResponseBody("response value")
+  val responseBodyJson: JsObject = Json.obj("responseValue" -> "response value")
+
+  val outcome: Right[Nothing, ResponseWrapper[ResponseBody]] = Right(ResponseWrapper(responseCorrelationId, responseBody))
+  val downstreamUri: DownstreamUri[ResponseBody]             = DownstreamUri[ResponseBody](s"some/path")
+  val url                                                    = "/some/path"
+
+  class Test extends MockAppConfig with StandardDownstreamHttpParser {
 
     val connector: BaseDownstreamConnector = new BaseDownstreamConnector {
-      val http: HttpClient     = mockHttpClient
+      val http: HttpClientV2   = httpClientV2
       val appConfig: AppConfig = mockAppConfig
     }
 
-    MockAppConfig.stubBaseUrl returns baseUrl
-    MockAppConfig.stubEnvironmentHeaders returns Some(allowedStubHeaders)
+    MockAppConfig.stubDownstreamConfig returns downstreamConfig
 
-    val qps = Seq("param1" -> "value1")
+    def excludedRequestHeadersNames(excludedHeaderNames: String*): ValueMatcher[Request] = { request: Request =>
+      val containsHeader = excludedHeaderNames.exists(headerName => request.containsHeader(headerName))
+      MatchResult.of(!containsHeader)
+    }
+
+    def singleValuedHeader(name: String, value: String): ValueMatcher[Request] = { request: Request =>
+      val header = request.getHeaders.getHeader(name)
+
+      MatchResult.of(header.values().size() == 1 && header.values().get(0) == value)
+    }
+
   }
 
   "for the stub" when {
     "post" must {
       "posts with the required headers and returns the result" in new Test {
-        implicit val hc: HeaderCarrier                    = HeaderCarrier(otherHeaders = otherHeaders ++ Seq("Content-Type" -> "application/json"))
-        val requiredStubHeadersPost: Seq[(String, String)] = requiredStubHeaders ++ Seq("Content-Type" -> "application/json")
+        implicit val hc: HeaderCarrier                   = HeaderCarrier(otherHeaders = headersInRequest :+ ("Content-Type" -> "application/json"))
+        implicit val context: connector.ConnectorContext = connector.ConnectorContext(downstreamConfig)
 
-        MockHttpClient
-          .post(
-            absoluteUrl,
-            config = dummyHeaderCarrierConfig,
-            body,
-            requiredHeaders = requiredStubHeadersPost,
-            excludedHeaders = Seq(notPassedThroughHeader))
-          .returns(Future.successful(outcome))
+        val requiredStubHeadersPost: Seq[(String, String)] = requiredHeaders ++ Seq("Content-Type" -> "application/json")
 
-        await(connector.post(body, StubUri[Result](url))) shouldBe outcome
+        when(POST, url)
+          .withHeaders(requiredStubHeadersPost)
+          .withCustomMatcher(excludedRequestHeadersNames("NotPassedThroughHeader"))
+          .withRequestBody(requestBodyJson)
+          .thenReturn(OK, responseBodyJson, responseHeaders)
+
+        await(connector.post(requestBody, downstreamUri)) shouldBe outcome
       }
     }
 
     "get" must {
       "get with the required headers and return the result" in new Test {
-        implicit val hc: HeaderCarrier = HeaderCarrier(otherHeaders = otherHeaders ++ Seq("Content-Type" -> "application/json"))
+        implicit val hc: HeaderCarrier                   = HeaderCarrier(otherHeaders = headersInRequest :+ ("Content-Type" -> "application/json"))
+        implicit val context: connector.ConnectorContext = connector.ConnectorContext(downstreamConfig)
 
-        MockHttpClient
-          .get(
-            absoluteUrl,
-            config = dummyHeaderCarrierConfig,
-            parameters = qps,
-            requiredHeaders = requiredStubHeaders,
-            excludedHeaders = Seq(notPassedThroughHeader))
-          .returns(Future.successful(outcome))
+        when(GET, url)
+          .withHeaders(requiredHeaders)
+          .withCustomMatcher(excludedRequestHeadersNames("NotPassedThroughHeader"))
+          .thenReturn(OK, responseBodyJson, responseHeaders)
 
-        await(connector.get(StubUri[Result](url), queryParams = qps)) shouldBe outcome
+        await(connector.get(downstreamUri)) shouldBe outcome
       }
     }
 
     "delete" must {
       "delete with the required headers and return the result" in new Test {
-        implicit val hc: HeaderCarrier = HeaderCarrier(otherHeaders = otherHeaders ++ Seq("Content-Type" -> "application/json"))
+        implicit val hc: HeaderCarrier                   = HeaderCarrier(otherHeaders = headersInRequest :+ ("Content-Type" -> "application/json"))
+        implicit val context: connector.ConnectorContext = connector.ConnectorContext(downstreamConfig)
 
-        MockHttpClient
-          .delete(
-            absoluteUrl,
-            config = dummyHeaderCarrierConfig,
-            requiredHeaders = requiredStubHeaders,
-            excludedHeaders = Seq(notPassedThroughHeader))
-          .returns(Future.successful(outcome))
+        when(DELETE, url)
+          .withHeaders(requiredHeaders)
+          .withCustomMatcher(excludedRequestHeadersNames("NotPassedThroughHeader"))
+          .thenReturn(OK, responseBodyJson, responseHeaders)
 
-        await(connector.delete(StubUri[Result](url))) shouldBe outcome
+        await(connector.delete(downstreamUri)) shouldBe outcome
       }
     }
 
     "put" must {
       "put with the required headers and return result" in new Test {
-        implicit val hc: HeaderCarrier                   = HeaderCarrier(otherHeaders = otherHeaders ++ Seq("Content-Type" -> "application/json"))
-        val requiredStubHeadersPut: Seq[(String, String)] = requiredStubHeaders ++ Seq("Content-Type" -> "application/json")
+        implicit val hc: HeaderCarrier                   = HeaderCarrier(otherHeaders = headersInRequest ++ Seq("Content-Type" -> "application/json"))
+        implicit val context: connector.ConnectorContext = connector.ConnectorContext(downstreamConfig)
 
-        MockHttpClient
-          .put(
-            absoluteUrl,
-            config = dummyHeaderCarrierConfig,
-            body,
-            requiredHeaders = requiredStubHeadersPut,
-            excludedHeaders = Seq(notPassedThroughHeader))
-          .returns(Future.successful(outcome))
+        val requiredStubHeadersPut: Seq[(String, String)] = requiredHeaders ++ Seq("Content-Type" -> "application/json")
 
-        await(connector.put(body, StubUri[Result](url))) shouldBe outcome
+        when(PUT, url)
+          .withHeaders(requiredStubHeadersPut)
+          .withCustomMatcher(excludedRequestHeadersNames("NotPassedThroughHeader"))
+          .withRequestBody(requestBodyJson)
+          .thenReturn(OK, responseBodyJson, responseHeaders)
+
+        await(connector.put(requestBody, downstreamUri)) shouldBe outcome
       }
     }
 
@@ -127,21 +141,17 @@ class BaseDownstreamConnectorSpec extends ConnectorSpec {
         testNoDuplicatedContentType("content-type" -> "application/user-type")
 
         def testNoDuplicatedContentType(userContentType: (String, String)): Unit =
-
           s"for user content type header $userContentType" in new Test {
-            implicit val hc: HeaderCarrier = HeaderCarrier(otherHeaders = otherHeaders ++ Seq(userContentType))
+            implicit val hc: HeaderCarrier                   = HeaderCarrier(otherHeaders = headersInRequest :+ userContentType)
+            implicit val context: connector.ConnectorContext = connector.ConnectorContext(downstreamConfig)
 
-            MockHttpClient
-              .put(
-                absoluteUrl,
-                config = dummyHeaderCarrierConfig,
-                body,
-                requiredHeaders = requiredStubHeaders ++ Seq("Content-Type" -> "application/json"),
-                excludedHeaders = Seq(userContentType)
-              )
-              .returns(Future.successful(outcome))
+            when(PUT, url)
+              .withHeaders(requiredHeaders ++ Seq("Content-Type" -> "application/json"))
+              .withCustomMatcher(singleValuedHeader("Content-Type", "application/json"))
+              .withRequestBody(requestBody)
+              .thenReturn(OK, responseBodyJson, responseHeaders)
 
-            await(connector.put(body, StubUri[Result](url))) shouldBe outcome
+            await(connector.put(requestBody, downstreamUri)) shouldBe outcome
           }
       }
     }

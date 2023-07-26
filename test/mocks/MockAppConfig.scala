@@ -16,7 +16,7 @@
 
 package mocks
 
-import config.{AppConfig, ConfidenceLevelConfig}
+import config.{AppConfig, ConfidenceLevelConfig, DownstreamConfig}
 import org.scalamock.handlers.CallHandler
 import org.scalamock.scalatest.MockFactory
 import play.api.Configuration
@@ -27,17 +27,16 @@ trait MockAppConfig extends MockFactory {
 
   object MockAppConfig {
     // Stub Config
-    def stubBaseUrl: CallHandler[String]                         = (()=>mockAppConfig.stubBaseUrl).expects()
-    def stubEnvironmentHeaders: CallHandler[Option[Seq[String]]] = (()=>mockAppConfig.stubEnvironmentHeaders).expects()
+    def stubDownstreamConfig: CallHandler[DownstreamConfig] = (() => mockAppConfig.stubDownstreamConfig).expects()
 
     // API Config
-    def featureSwitches: CallHandler[Configuration]             = (()=> mockAppConfig.featureSwitches).expects()
-    def apiGatewayContext: CallHandler[String]                  = (()=> mockAppConfig.apiGatewayContext).expects()
+    def featureSwitches: CallHandler[Configuration]             = (() => mockAppConfig.featureSwitches).expects()
+    def apiGatewayContext: CallHandler[String]                  = (() => mockAppConfig.apiGatewayContext).expects()
     def apiStatus(status: String): CallHandler[String]          = (mockAppConfig.apiStatus: String => String).expects(status)
     def endpointsEnabled(version: String): CallHandler[Boolean] = (mockAppConfig.endpointsEnabled: String => Boolean).expects(version)
 
     def confidenceLevelCheckEnabled: CallHandler[ConfidenceLevelConfig] =
-      (()=> mockAppConfig.confidenceLevelConfig).expects()
+      (() => mockAppConfig.confidenceLevelConfig).expects()
 
   }
 
