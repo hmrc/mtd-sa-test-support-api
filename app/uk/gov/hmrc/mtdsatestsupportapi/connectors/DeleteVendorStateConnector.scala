@@ -16,12 +16,11 @@
 
 package uk.gov.hmrc.mtdsatestsupportapi.connectors
 
-import api.connectors.DownstreamUri
 import api.connectors.httpparsers.StandardDownstreamHttpParser
-import api.connectors.{BaseDownstreamConnector, DownstreamOutcome}
+import api.connectors.{BaseDownstreamConnector, DownstreamOutcome, DownstreamUri}
 import config.AppConfig
+import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.http.client.HttpClientV2
-import uk.gov.hmrc.http.{HeaderCarrier, StringContextOps}
 import uk.gov.hmrc.mtdsatestsupportapi.models.request.deleteStatefulTestData.DeleteStatefulTestDataRequest
 
 import javax.inject.Inject
@@ -39,12 +38,12 @@ class DeleteVendorStateConnector @Inject() (val http: HttpClientV2, val appConfi
 
     implicit val context: ConnectorContext = ConnectorContext(appConfig.stubDownstreamConfig)
 
-    val url = nino match {
-      case Some(n) => url"${context.baseUrl}/test-support/vendor-state/$vendorClientId?taxableEntityId=${n.value}"
-      case None    => url"${context.baseUrl}/test-support/vendor-state/$vendorClientId"
+    val path = nino match {
+      case Some(n) => s"test-support/vendor-state/$vendorClientId?taxableEntityId=${n.value}"
+      case None    => s"test-support/vendor-state/$vendorClientId"
     }
 
-    delete(DownstreamUri[Unit](url))
+    delete(DownstreamUri[Unit](path))
   }
 
 }

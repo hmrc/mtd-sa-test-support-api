@@ -16,6 +16,4 @@
 
 package api.connectors
 
-import java.net.URL
-
-case class DownstreamUri[Resp](value: URL)
+case class DownstreamUri[Resp](path: String)

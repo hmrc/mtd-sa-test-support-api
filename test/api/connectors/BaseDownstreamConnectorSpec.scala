@@ -24,8 +24,8 @@ import config.AppConfig
 import mocks.MockAppConfig
 import play.api.http.Status.OK
 import play.api.libs.json.{JsObject, Json, OWrites, Reads}
+import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.http.client.HttpClientV2
-import uk.gov.hmrc.http.{HeaderCarrier, StringContextOps}
 
 class BaseDownstreamConnectorSpec extends ConnectorSpec {
   case class RequestBody(requestValue: String)
@@ -47,7 +47,7 @@ class BaseDownstreamConnectorSpec extends ConnectorSpec {
   val responseBodyJson: JsObject = Json.obj("responseValue" -> "response value")
 
   val outcome: Right[Nothing, ResponseWrapper[ResponseBody]] = Right(ResponseWrapper(responseCorrelationId, responseBody))
-  val downstreamUri: DownstreamUri[ResponseBody]             = DownstreamUri[ResponseBody](url"$baseUrl/some/path")
+  val downstreamUri: DownstreamUri[ResponseBody]             = DownstreamUri[ResponseBody](s"some/path")
   val url                                                    = "/some/path"
 
   class Test extends MockAppConfig with StandardDownstreamHttpParser {

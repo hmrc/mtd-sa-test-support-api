@@ -23,6 +23,7 @@ import uk.gov.hmrc.http.client.HttpClientV2
 import uk.gov.hmrc.http.{HeaderCarrier, HttpReads}
 import utils.Logging
 
+import java.net.URL
 import scala.concurrent.{ExecutionContext, Future}
 
 trait BaseDownstreamConnector extends Logging {
@@ -45,7 +46,7 @@ trait BaseDownstreamConnector extends Logging {
     implicit val hc: HeaderCarrier    = downstreamHeaderCarrier(jsonContentTypeHeader)
     implicit val ec: ExecutionContext = connectorContext.ec
 
-    http.post(downstreamUri.value).withBody(Json.toJson(body)).execute
+    http.post(url(downstreamUri)).withBody(Json.toJson(body)).execute
   }
 
   def get[Resp](downstreamUri: DownstreamUri[Resp])(implicit
@@ -55,7 +56,7 @@ trait BaseDownstreamConnector extends Logging {
     implicit val hc: HeaderCarrier    = downstreamHeaderCarrier()
     implicit val ec: ExecutionContext = connectorContext.ec
 
-    http.get(downstreamUri.value).execute
+    http.get(url(downstreamUri)).execute
   }
 
   def put[Body: Writes, Resp](body: Body, downstreamUri: DownstreamUri[Resp])(implicit
@@ -65,7 +66,7 @@ trait BaseDownstreamConnector extends Logging {
     implicit val hc: HeaderCarrier    = downstreamHeaderCarrier(jsonContentTypeHeader)
     implicit val ec: ExecutionContext = connectorContext.ec
 
-    http.put(downstreamUri.value).withBody(Json.toJson(body)).execute
+    http.put(url(downstreamUri)).withBody(Json.toJson(body)).execute
   }
 
   def delete[Resp](downstreamUri: DownstreamUri[Resp])(implicit
@@ -75,7 +76,7 @@ trait BaseDownstreamConnector extends Logging {
     implicit val hc: HeaderCarrier    = downstreamHeaderCarrier()
     implicit val ec: ExecutionContext = connectorContext.ec
 
-    http.delete(downstreamUri.value).execute
+    http.delete(url(downstreamUri)).execute
   }
 
   private def downstreamHeaderCarrier(additionalHeaders: (String, String)*)(implicit connectorContext: ConnectorContext): HeaderCarrier = {
@@ -92,6 +93,11 @@ trait BaseDownstreamConnector extends Logging {
         additionalHeaders ++
         passThroughHeaders
     )
+  }
+
+  private def url(downstreamUri: DownstreamUri[_])(implicit connectorContext: ConnectorContext): URL = {
+    val context = new URL(connectorContext.baseUrl)
+    new URL(context, downstreamUri.path)
   }
 
 }
