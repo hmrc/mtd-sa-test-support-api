@@ -4,7 +4,7 @@ components:
     # 400
 
     formatNino:
-      description: The format of the supplied NINO field is not valid.
+      description: The format of the supplied NINO is not valid.
       value:
         code: FORMAT_NINO
         message: The provided NINO is invalid
@@ -23,6 +23,13 @@ components:
 
     notFound:
       description: The remote endpoint has indicated that no data can be found for the given vendor.
+      value:
+        code: MATCHING_RESOURCE_NOT_FOUND
+        message: Matching resource not found
+
+
+    notFoundCreateCheckpoint:
+      description: No records were found for the passed NINO to create a checkpoint.
       value:
         code: MATCHING_RESOURCE_NOT_FOUND
         message: Matching resource not found

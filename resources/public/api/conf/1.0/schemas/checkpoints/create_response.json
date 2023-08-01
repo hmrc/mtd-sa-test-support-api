@@ -1,0 +1,13 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "title": "Create a checkpoint",
+  "type": "object",
+  "properties": {
+    "checkpointId": {
+      "type": "string",
+      "description": "The unique ID of the checkpoint.",
+      "pattern": "^[A-Za-z0-9\\-]{36}$"
+    }
+  },
+  "additionalProperties": false
+}
