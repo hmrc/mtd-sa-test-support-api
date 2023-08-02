@@ -90,6 +90,20 @@ class BaseDownstreamConnectorSpec extends ConnectorSpec {
       }
     }
 
+    "post empty body" must {
+      "posts with the required headers and returns the result" in new Test {
+        implicit val hc: HeaderCarrier                   = HeaderCarrier(otherHeaders = headersInRequest :+ ("Content-Type" -> "application/json"))
+        implicit val context: connector.ConnectorContext = connector.ConnectorContext(downstreamConfig)
+
+        when(POST, url)
+          .withHeaders(requiredHeaders)
+          .withCustomMatcher(excludedRequestHeadersNames("NotPassedThroughHeader"))
+          .thenReturn(OK, responseBodyJson, responseHeaders)
+
+        await(connector.postEmpty(downstreamUri)) shouldBe outcome
+      }
+    }
+
     "get" must {
       "get with the required headers and return the result" in new Test {
         implicit val hc: HeaderCarrier                   = HeaderCarrier(otherHeaders = headersInRequest :+ ("Content-Type" -> "application/json"))
@@ -132,6 +146,20 @@ class BaseDownstreamConnectorSpec extends ConnectorSpec {
           .thenReturn(OK, responseBodyJson, responseHeaders)
 
         await(connector.put(requestBody, downstreamUri)) shouldBe outcome
+      }
+    }
+
+    "put empty body" must {
+      "puts with the required headers and returns the result" in new Test {
+        implicit val hc: HeaderCarrier = HeaderCarrier(otherHeaders = headersInRequest :+ ("Content-Type" -> "application/json"))
+        implicit val context: connector.ConnectorContext = connector.ConnectorContext(downstreamConfig)
+
+        when(PUT, url)
+          .withHeaders(requiredHeaders)
+          .withCustomMatcher(excludedRequestHeadersNames("NotPassedThroughHeader"))
+          .thenReturn(OK, responseBodyJson, responseHeaders)
+
+        await(connector.putEmpty(downstreamUri)) shouldBe outcome
       }
     }
 

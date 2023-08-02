@@ -49,6 +49,16 @@ trait BaseDownstreamConnector extends Logging {
     http.post(url(downstreamUri)).withBody(Json.toJson(body)).execute
   }
 
+  def postEmpty[Resp](downstreamUri: DownstreamUri[Resp])(implicit
+      httpReads: HttpReads[DownstreamOutcome[Resp]],
+      connectorContext: ConnectorContext): Future[DownstreamOutcome[Resp]] = {
+
+    implicit val hc: HeaderCarrier    = downstreamHeaderCarrier()
+    implicit val ec: ExecutionContext = connectorContext.ec
+
+    http.post(url(downstreamUri)).execute
+  }
+
   def get[Resp](downstreamUri: DownstreamUri[Resp])(implicit
       httpReads: HttpReads[DownstreamOutcome[Resp]],
       connectorContext: ConnectorContext): Future[DownstreamOutcome[Resp]] = {
@@ -67,6 +77,16 @@ trait BaseDownstreamConnector extends Logging {
     implicit val ec: ExecutionContext = connectorContext.ec
 
     http.put(url(downstreamUri)).withBody(Json.toJson(body)).execute
+  }
+
+  def putEmpty[Resp](downstreamUri: DownstreamUri[Resp])(implicit
+      httpReads: HttpReads[DownstreamOutcome[Resp]],
+      connectorContext: ConnectorContext): Future[DownstreamOutcome[Resp]] = {
+
+    implicit val hc: HeaderCarrier    = downstreamHeaderCarrier()
+    implicit val ec: ExecutionContext = connectorContext.ec
+
+    http.put(url(downstreamUri)).execute
   }
 
   def delete[Resp](downstreamUri: DownstreamUri[Resp])(implicit
