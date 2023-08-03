@@ -17,27 +17,37 @@
 package api.controllers
 
 import api.controllers.requestParsers.RequestParser
-import api.services.ServiceOutcome
-import api.mocks.services.MockAuditService
+import api.hateoas._
 import api.mocks.MockIdGenerator
+import api.mocks.services.MockAuditService
 import api.models.audit.{AuditError, AuditEvent, AuditResponse, GenericAuditDetail}
 import api.models.auth.UserDetails
 import api.models.errors.{ErrorWrapper, NinoFormatError}
 import api.models.outcomes.ResponseWrapper
 import api.models.request.RawData
+import api.services.ServiceOutcome
+import config.AppConfig
 import org.scalamock.handlers.CallHandler
 import play.api.http.{HeaderNames, Status}
-import play.api.libs.json.{Json, JsString, OWrites}
+import play.api.libs.json.{JsString, Json, OWrites}
 import play.api.mvc.AnyContent
 import play.api.test.{FakeRequest, ResultExtractors}
 import support.UnitSpec
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.audit.http.connector.AuditResult
 
-import scala.concurrent.{ExecutionContext, Future}
 import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.{ExecutionContext, Future}
 
-class RequestHandlerSpec extends UnitSpec with MockAuditService with MockIdGenerator with Status with HeaderNames with ResultExtractors {
+class RequestHandlerSpec
+  extends UnitSpec
+    with MockAuditService
+    with MockHateoasFactory
+    with MockIdGenerator
+    with Status
+    with HeaderNames
+    with ResultExtractors
+    with ControllerSpecHateoasSupport {
 
   private val successResponseJson = Json.obj("result" -> "SUCCESS!")
   private val successCode         = Status.ACCEPTED
@@ -48,6 +58,11 @@ class RequestHandlerSpec extends UnitSpec with MockAuditService with MockIdGener
   case object InputRaw extends RawData
   case object Input
   case object Output { implicit val writes: OWrites[Output.type] = _ => successResponseJson }
+  case object HData extends HateoasData
+
+  implicit object HLinksFactory extends HateoasLinksFactory[Output.type, HData.type] {
+    override def links(appConfig: AppConfig, data: HData.type): Seq[Link] = hateoaslinks
+  }
 
   MockIdGenerator.getCorrelationId.returns(generatedCorrelationId).anyNumberOfTimes()
 
@@ -107,6 +122,23 @@ class RequestHandlerSpec extends UnitSpec with MockAuditService with MockIdGener
         status(result) shouldBe NO_CONTENT
       }
 
+      "wrap the response with hateoas links if required" in {
+        val requestHandler = RequestHandler
+          .withParser(mockParser)
+          .withService(mockService.service)
+          .withHateoasResult(mockHateoasFactory)(HData, successCode)
+
+        parseRequest returns Right(Input)
+        service returns Future.successful(Right(ResponseWrapper(serviceCorrelationId, Output)))
+
+        MockHateoasFactory.wrap(Output, HData) returns HateoasWrapper(Output, hateoaslinks)
+
+        val result = requestHandler.handleRequest(InputRaw)
+
+        contentAsJson(result) shouldBe successResponseJson ++ hateoaslinksJson
+        header("X-CorrelationId", result) shouldBe Some(serviceCorrelationId)
+        status(result) shouldBe successCode
+      }
     }
 
     "a request fails with validation errors" must {

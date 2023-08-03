@@ -23,8 +23,8 @@ import api.models.errors.MtdError
 import play.api.http.{HeaderNames, MimeTypes, Status}
 import play.api.libs.json.JsValue
 import play.api.mvc.{AnyContentAsEmpty, ControllerComponents, Result}
-import play.api.test.{FakeRequest, ResultExtractors}
 import play.api.test.Helpers.stubControllerComponents
+import play.api.test.{FakeRequest, ResultExtractors}
 import support.UnitSpec
 import uk.gov.hmrc.http.HeaderCarrier
 

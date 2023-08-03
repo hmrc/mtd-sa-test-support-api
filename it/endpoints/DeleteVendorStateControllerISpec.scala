@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package controllers
+package endpoints
 
 import api.models.errors._
 import com.github.tomakehurst.wiremock.stubbing.StubMapping
@@ -37,7 +37,7 @@ class DeleteVendorStateControllerISpec extends IntegrationBaseSpec {
       }
 
       "a valid request with nino is made" in new Test {
-        override val mtdQueryParams: Seq[(String, String)]      = Seq("nino" -> nino)
+        override val mtdQueryParams: Seq[(String, String)]        = Seq("nino" -> nino)
         override val downstreamQueryParams: Seq[(String, String)] = Seq("taxableEntityId" -> nino)
 
         val response: WSResponse = await(request().delete())
@@ -52,7 +52,7 @@ class DeleteVendorStateControllerISpec extends IntegrationBaseSpec {
 
           override def setupStubs(): StubMapping = {
             AuthStub.authorised()
-            DownstreamStub.onError(DELETE, downstreamUri, Seq.empty, stubErrorStatus, errorBody(stubErrorCode))
+            DownstreamStub.onError(DELETE, downstreamUri, Seq.empty, stubErrorStatus, downstreamErrorBody(stubErrorCode))
           }
 
           val response: WSResponse = await(request().delete())
@@ -78,7 +78,7 @@ class DeleteVendorStateControllerISpec extends IntegrationBaseSpec {
     val mtdUri                                = "/vendor-state"
     val mtdQueryParams: Seq[(String, String)] = Seq.empty
 
-    val downstreamUri                              = s"/test-support/vendor-state/$vendorClientId"
+    val downstreamUri                                = s"/test-support/vendor-state/$vendorClientId"
     val downstreamQueryParams: Seq[(String, String)] = Seq.empty
 
     def setupStubs(): StubMapping = {
@@ -96,14 +96,6 @@ class DeleteVendorStateControllerISpec extends IntegrationBaseSpec {
           ("X-Client-Id", vendorClientId)
         )
     }
-
-    def errorBody(code: String): JsValue = Json.parse(
-      s"""
-         |{
-         |   "code": "$code",
-         |   "reason": "Downstream message"
-         |}
-      """.stripMargin)
 
   }
 
