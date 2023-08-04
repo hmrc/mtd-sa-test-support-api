@@ -20,7 +20,7 @@ import api.controllers.{ControllerBaseSpec, ControllerSpecHateoasSupport, Contro
 import api.hateoas.{HateoasWrapper, MockHateoasFactory}
 import api.mocks.MockIdGenerator
 import api.mocks.services.MockEnrolmentsAuthService
-import api.models.domain.Nino
+import api.models.domain.{CheckpointId, Nino}
 import api.models.errors._
 import api.models.outcomes.ResponseWrapper
 import play.api.http.HeaderNames
@@ -28,7 +28,6 @@ import play.api.libs.json.{JsObject, Json}
 import play.api.mvc.Result
 import uk.gov.hmrc.mtdsatestsupportapi.mocks.requestParsers.MockCreateCheckpointRequestParser
 import uk.gov.hmrc.mtdsatestsupportapi.mocks.services.MockCreateCheckpointService
-import uk.gov.hmrc.mtdsatestsupportapi.models.common.CheckpointId
 import uk.gov.hmrc.mtdsatestsupportapi.models.request.createCheckpoint.{CreateCheckpointRawData, CreateCheckpointRequest}
 import uk.gov.hmrc.mtdsatestsupportapi.models.response.createCheckpoint.{CreateCheckpointHateoasData, CreateCheckpointResponse}
 
@@ -71,7 +70,7 @@ class CreateCheckpointControllerSpec
 
   "handleRequest" should {
     "return CREATED with the checkpointId" when {
-      "a valid request is processes successfully" in new Test {
+      "a valid request is processed successfully" in new Test {
         override protected def callController(): Future[Result] =
           controller.handleRequest(maybeNino)(fakeDeleteRequestWithHeaders(HeaderNames.AUTHORIZATION -> "Bearer Token", "X-Client-Id" -> "some_id"))
 

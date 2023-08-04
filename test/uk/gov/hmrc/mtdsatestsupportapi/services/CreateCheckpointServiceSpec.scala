@@ -16,12 +16,11 @@
 
 package uk.gov.hmrc.mtdsatestsupportapi.services
 
-import api.models.domain.Nino
+import api.models.domain.{CheckpointId, Nino}
 import api.models.errors._
 import api.models.outcomes.ResponseWrapper
 import api.services.ServiceSpec
-import uk.gov.hmrc.mtdsatestsupportapi.connectors.MockCreateCheckpointConnector
-import uk.gov.hmrc.mtdsatestsupportapi.models.common.CheckpointId
+import uk.gov.hmrc.mtdsatestsupportapi.mocks.connectors.MockCreateCheckpointConnector
 import uk.gov.hmrc.mtdsatestsupportapi.models.request.createCheckpoint.CreateCheckpointRequest
 import uk.gov.hmrc.mtdsatestsupportapi.models.response.createCheckpoint.CreateCheckpointResponse
 

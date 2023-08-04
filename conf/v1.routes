@@ -1,7 +1,9 @@
 # microservice specific routes
 
 # State deletion routes
-DELETE        /vendor-state                    uk.gov.hmrc.mtdsatestsupportapi.controllers.DeleteVendorStateController.handleRequest(nino: Option[String])
+DELETE        /vendor-state                             uk.gov.hmrc.mtdsatestsupportapi.controllers.DeleteVendorStateController.handleRequest(nino: Option[String])
 
 # Checkpointing routes
-POST          /vendor-state/checkpoints        uk.gov.hmrc.mtdsatestsupportapi.controllers.CreateCheckpointController.handleRequest(nino: Option[String])
+POST          /vendor-state/checkpoints                 uk.gov.hmrc.mtdsatestsupportapi.controllers.CreateCheckpointController.handleRequest(nino: Option[String])
+
+DELETE        /vendor-state/checkpoints/:checkpointId   uk.gov.hmrc.mtdsatestsupportapi.controllers.DeleteCheckpointController.handleRequest(checkpointId: String)

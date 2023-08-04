@@ -17,12 +17,11 @@
 package uk.gov.hmrc.mtdsatestsupportapi.connectors
 
 import api.connectors.ConnectorSpec
-import api.models.domain.Nino
+import api.models.domain.{CheckpointId, Nino}
 import api.models.errors.{DownstreamErrorCode, DownstreamErrors}
 import api.models.outcomes.ResponseWrapper
 import play.api.http.Status.CREATED
 import play.api.libs.json.{JsValue, Json}
-import uk.gov.hmrc.mtdsatestsupportapi.models.common.CheckpointId
 import uk.gov.hmrc.mtdsatestsupportapi.models.request.createCheckpoint.CreateCheckpointRequest
 import uk.gov.hmrc.mtdsatestsupportapi.models.response.createCheckpoint.CreateCheckpointResponse
 
@@ -37,7 +36,7 @@ class CreateCheckpointConnectorSpec extends ConnectorSpec {
     protected val connector = new CreateCheckpointConnector(httpClientV2, mockAppConfig)
   }
 
-  "createCheckpoint" when {
+  "CreateCheckpoint connector" when {
     "the downstream returns a successful 201 response" must {
       "return a successful result with the checkpointId" in new StubTest with Test {
         val checkpointId: CheckpointId = CheckpointId("someCheckpointId")

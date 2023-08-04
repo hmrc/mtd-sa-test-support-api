@@ -20,7 +20,7 @@ import api.models.domain.Nino
 import api.models.errors._
 import api.models.outcomes.ResponseWrapper
 import api.services.ServiceSpec
-import uk.gov.hmrc.mtdsatestsupportapi.connectors.MockDeleteVendorStateConnector
+import uk.gov.hmrc.mtdsatestsupportapi.mocks.connectors.MockDeleteVendorStateConnector
 import uk.gov.hmrc.mtdsatestsupportapi.models.request.deleteStatefulTestData.DeleteStatefulTestDataRequest
 
 import scala.concurrent.Future

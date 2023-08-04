@@ -28,7 +28,7 @@ import support.IntegrationBaseSpec
 class CreateCheckpointControllerISpec extends IntegrationBaseSpec {
 
   "Calling the create checkpoint endpoint" should {
-    "return a 204 status code" when {
+    "return a 201 status code" when {
       "a valid request is made" in new Test {
         val response: WSResponse = await(request().post(JsNull))
 

@@ -17,10 +17,9 @@
 package uk.gov.hmrc.mtdsatestsupportapi.models.response.createCheckpoint
 
 import api.hateoas.{HateoasData, HateoasLinksFactory, Link}
-import api.models.domain.Nino
+import api.models.domain.{CheckpointId, Nino}
 import config.AppConfig
 import play.api.libs.json.{Json, OFormat}
-import uk.gov.hmrc.mtdsatestsupportapi.models.common.CheckpointId
 import uk.gov.hmrc.mtdsatestsupportapi.models.hateoas.CheckpointHateoasLinks
 
 case class CreateCheckpointResponse(checkpointId: CheckpointId)
