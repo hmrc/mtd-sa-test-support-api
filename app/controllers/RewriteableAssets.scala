@@ -16,6 +16,7 @@
 
 package controllers
 
+import com.google.inject.ImplementedBy
 import config.AppConfig
 import play.api.http.{AcceptEncoding, HttpErrorHandler}
 import play.api.mvc.{Action, AnyContent, RequestHeader, Result}
@@ -30,17 +31,25 @@ trait Rewriter {
   def apply(path: String, filename: String, contents: String): String
 }
 
-@Singleton
-class RewriteableAssets @Inject() (errorHandler: HttpErrorHandler, meta: AssetsMetadata, appConfig: AppConfig)(implicit ec: ExecutionContext)
-    extends Assets(errorHandler, meta) {
-  import meta._
+@ImplementedBy(classOf[RewriteableAssetsImpl])
+trait RewriteableAssets {
 
   /** If no rewriters, Play's own static Assets.assetAt() will be called.
+    *
     * @param path
     *   e.g. "/public/api/conf/1.0"
     * @param filename
     *   e.g. "schemas/retrieve_other_expenses_response.json" or "employment_expenses_delete.yaml"
     */
+  def rewriteableAt(path: String, filename: String, rewriters: Seq[Rewriter]): Action[AnyContent]
+}
+
+@Singleton
+class RewriteableAssetsImpl @Inject() (errorHandler: HttpErrorHandler, meta: AssetsMetadata, appConfig: AppConfig)(implicit ec: ExecutionContext)
+    extends Assets(errorHandler, meta)
+    with RewriteableAssets {
+  import meta._
+
   def rewriteableAt(path: String, filename: String, rewriters: Seq[Rewriter]): Action[AnyContent] = {
     if (rewriters.isEmpty)
       at(path, filename)

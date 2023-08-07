@@ -38,9 +38,11 @@ class DocumentationController @Inject() (selfAssessmentApiDefinition: ApiDefinit
 
   def asset(version: String, filename: String): Action[AnyContent] = {
     val path = s"/public/api/conf/$version"
-    val rewriters = docRewriters.rewriteables.flatMap {
-      _.maybeRewriter(version, filename)
+
+    val rewriters = docRewriters.rewriteables.flatMap { rewritable =>
+      if (rewritable.check(version, filename)) Some(rewritable.rewrite) else None
     }
+
     assets.rewriteableAt(path, filename, rewriters)
   }
 

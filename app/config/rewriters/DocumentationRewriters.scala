@@ -16,12 +16,18 @@
 
 package config.rewriters
 
+import com.google.inject.ImplementedBy
 import config.rewriters.DocumentationRewriters.CheckAndRewrite
 import controllers.Rewriter
 
 import javax.inject.{Inject, Singleton}
 
-@Singleton class DocumentationRewriters @Inject() (oasFeatureRewriter: OasFeatureRewriter) {
+@ImplementedBy(classOf[DocumentationRewritersImpl])
+trait DocumentationRewriters {
+  def rewriteables: Seq[CheckAndRewrite]
+}
+
+@Singleton class DocumentationRewritersImpl @Inject() (oasFeatureRewriter: OasFeatureRewriter) extends DocumentationRewriters {
 
   val rewriteables: Seq[CheckAndRewrite] =
     List(
@@ -37,9 +43,6 @@ object DocumentationRewriters {
   }
 
   case class CheckAndRewrite(check: CheckRewrite, rewrite: Rewriter) {
-
-    def maybeRewriter(version: String, filename: String): Option[Rewriter] =
-      if (check(version, filename)) Some(rewrite) else None
 
     val asTuple: (CheckRewrite, Rewriter) = (check, rewrite)
   }

@@ -17,63 +17,84 @@
 package config
 
 import api.controllers.ControllerBaseSpec
-import com.typesafe.config.ConfigFactory
+import config.rewriters.DocumentationRewriters.{CheckAndRewrite, CheckRewrite}
 import config.rewriters._
-import controllers.{AssetsConfiguration, DefaultAssetsMetadata, RewriteableAssets}
+import controllers.{RewriteableAssets, Rewriter}
 import definition.ApiDefinitionFactory
 import mocks.MockAppConfig
-import org.scalatest.OptionValues
-import play.api.Configuration
-import play.api.http.{DefaultFileMimeTypes, DefaultHttpErrorHandler, FileMimeTypesConfiguration, HttpConfiguration}
-import play.api.mvc.Result
+import org.scalamock.handlers.CallHandler
+import play.api.mvc.Results.Ok
+import play.api.mvc._
 import uk.gov.hmrc.http.HeaderCarrier
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
-class DocumentationControllerSpec extends ControllerBaseSpec with MockAppConfig with OptionValues {
+class DocumentationControllerSpec extends ControllerBaseSpec with MockAppConfig {
 
-  "/file endpoint" should {
-    "return a file" in new Test {
-      MockAppConfig.endpointsEnabled("1.0").anyNumberOfTimes() returns true
-      val response: Future[Result] = requestAsset("application.yaml")
-      status(response) shouldBe OK
-      await(response).body.contentLength.value should be > 0L
+  "asset rewriting" when {
+    "all rewriters are to be used" must {
+      "use all rewriters" in new Test {
+        willUse(check1) returns true
+        willUse(check2) returns true
+        willRewriteUsing(Seq(rewriter1, rewriter2)) returns rewrittenOkAction
+
+        val response: Future[Result] = requestAsset(filename)
+        status(response) shouldBe OK
+        contentAsString(response) shouldBe rewrittenContent
+      }
+    }
+
+    "some rewriters are not be used" must {
+      "only use the required rewriters" in new Test {
+        willUse(check1) returns false
+        willUse(check2) returns true
+        willRewriteUsing(Seq(rewriter2)) returns rewrittenOkAction
+
+        val response: Future[Result] = requestAsset(filename)
+        status(response) shouldBe OK
+        contentAsString(response) shouldBe rewrittenContent
+      }
     }
   }
 
   trait Test {
     val hc: HeaderCarrier = HeaderCarrier()
 
-    protected def featureEnabled: Boolean = true
+    val version          = "1.0"
+    val filename         = "someFile.ext"
+    val rewrittenContent = "RE-WRITTEN"
 
     protected def requestAsset(filename: String, accept: String = "text/yaml"): Future[Result] =
       controller.asset("1.0", filename)(fakeGetRequest.withHeaders(ACCEPT -> accept))
 
-    MockAppConfig.featureSwitches returns Configuration("openApiFeatureTest.enabled" -> featureEnabled)
-
     private val apiFactory = new ApiDefinitionFactory(mockAppConfig)
+    private val actionBuilder = DefaultActionBuilder(BodyParsers.utils.ignore[AnyContent](AnyContentAsEmpty))
 
-    private val config    = new Configuration(ConfigFactory.load())
-    private val mimeTypes = HttpConfiguration.parseFileMimeTypes(config) ++ Map("yaml" -> "text/yaml", "md" -> "text/markdown")
+    protected val check1: CheckRewrite = mock[CheckRewrite]
+    protected val rewriter1: Rewriter  = mock[Rewriter]
 
-    private val assetsMetadata =
-      new DefaultAssetsMetadata(
-        AssetsConfiguration(textContentTypes = Set("text/yaml", "text/markdown")),
-        path => {
-          Option(getClass.getResource(path))
-        },
-        new DefaultFileMimeTypes(FileMimeTypesConfiguration(mimeTypes))
-      )
+    protected val check2: CheckRewrite = mock[CheckRewrite]
+    protected val rewriter2: Rewriter  = mock[Rewriter]
 
-    private val errorHandler = new DefaultHttpErrorHandler()
+    private val docRewriters = new DocumentationRewriters {
 
-    private val docRewriters = new DocumentationRewriters(
-      new OasFeatureRewriter()(mockAppConfig)
-    )
+      override def rewriteables: Seq[CheckAndRewrite] = {
+        Seq(CheckAndRewrite(check1, rewriter1), CheckAndRewrite(check2, rewriter2))
+      }
 
-    private val assets       = new RewriteableAssets(errorHandler, assetsMetadata, mockAppConfig)
-    protected val controller = new DocumentationController(apiFactory, docRewriters, assets, cc)
+    }
+
+    protected def willUse(check: CheckRewrite): CallHandler[Boolean] =
+      (check(_: String, _: String)).expects(version, filename)
+
+    protected def willRewriteUsing(rewriters: Seq[Rewriter]): CallHandler[Action[AnyContent]] =
+      (rewriteableAssets.rewriteableAt(_: String, _: String, _: Seq[Rewriter])).expects(s"/public/api/conf/$version", filename, rewriters)
+
+    protected def rewrittenOkAction: Action[AnyContent] = actionBuilder { _: Request[AnyContent] => Ok(rewrittenContent) }
+
+    protected val rewriteableAssets: RewriteableAssets = mock[RewriteableAssets]
+    protected val controller                           = new DocumentationController(apiFactory, docRewriters, rewriteableAssets, cc)
   }
 
 }
