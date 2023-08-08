@@ -1,3 +1,15 @@
+post:
+  $ref: "./checkpoints_create.yaml"
+  summary: Create a checkpoint
+  security:
+    - User-Restricted:
+        - write:self-assessment
+    parameters:
+      - $ref: './common/queryParameters.yaml#/components/parameters/ninoCreateCheckpoint'
+      - $ref: './common/headers.yaml#/components/parameters/acceptHeader'
+      - $ref: './common/headers.yaml#/components/parameters/authorizationWriteScopeHeader'
+
+
 delete:
   $ref: "./checkpoints_delete.yaml"
   summary: Delete a checkpoint
@@ -7,3 +19,4 @@ delete:
   parameters:
     - $ref: './common/headers.yaml#/components/parameters/acceptHeader'
     - $ref: './common/headers.yaml#/components/parameters/authorizationWriteScopeHeader'
+
