@@ -34,5 +34,8 @@ components:
 paths:
   /individuals/self-assessment-test-support/vendor-state:
     $ref: "./vendor_state.yaml"
-
+  # {{#if (enabled "checkpointing")}}
+  /individuals/self-assessment-test-support/vendor-state/checkpoints:
+    $ref: "./checkpoints.yaml"
+  # {{/if}}
 
