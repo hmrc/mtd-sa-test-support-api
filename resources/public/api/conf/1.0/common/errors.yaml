@@ -3,11 +3,11 @@ components:
 
     # 400
 
-    formatNino:
-      description: The format of the supplied NINO field is not valid.
+    formatCheckpointId:
+      description: The format of the supplied Checkpoint ID field is not valid.
       value:
-        code: FORMAT_NINO
-        message: The provided NINO is invalid
+        code: FORMAT_CHECKPOINT_ID
+        message: The provided checkpoint ID is invalid
 
     # 403
 

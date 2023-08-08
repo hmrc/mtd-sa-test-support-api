@@ -34,5 +34,7 @@ components:
 paths:
   /individuals/self-assessment-test-support/vendor-state:
     $ref: "./vendor_state.yaml"
+  /individuals/self-assessment-test-support/vendor-state/checkpoints/{checkpointId}:
+    $ref: "./checkpoints.yaml"
 
 
