@@ -14,25 +14,25 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.mtdsatestsupportapi.models.response.createCheckpoint
+package api.models.domain
 
-import api.models.domain.CheckpointId
-import play.api.libs.json.Json
 import support.UnitSpec
 
-class CreateCheckpointResponseSpec extends UnitSpec {
+class CheckpointIdSpec extends UnitSpec {
 
-  private val response = CreateCheckpointResponse(CheckpointId("someCheckpointId"))
+  "The validation of a checkpointId" must {
+    "fail when given in an invalid format" in {
+      val invalidCheckpointId = "some_invalid_id"
 
-  private val responseJson = Json.obj("checkpointId" -> "someCheckpointId")
-
-  "CreateCheckpointResponse" must {
-    "serialize to JSON" in {
-      Json.toJson(response) shouldBe responseJson
+      CheckpointId.isValid(invalidCheckpointId) shouldBe false
     }
+    "fail when the checkpointId is null" in {
+      CheckpointId.isValid(null) shouldBe false
+    }
+    "pass when given in a valid format" in {
+      val validCheckpointId = "a1e8057e-fbbc-47a8-a8b4-78d9f015c253"
 
-    "deserialize from JSON" in {
-      responseJson.as[CreateCheckpointResponse] shouldBe response
+      CheckpointId.isValid(validCheckpointId) shouldBe true
     }
   }
 

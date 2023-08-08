@@ -14,28 +14,27 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.mtdsatestsupportapi.connectors
+package uk.gov.hmrc.mtdsatestsupportapi.mocks.connectors
 
 import api.connectors.DownstreamOutcome
 import org.scalamock.handlers.CallHandler
 import org.scalamock.scalatest.MockFactory
 import uk.gov.hmrc.http.HeaderCarrier
-import uk.gov.hmrc.mtdsatestsupportapi.models.request.deleteStatefulTestData.DeleteStatefulTestDataRequest
+import uk.gov.hmrc.mtdsatestsupportapi.connectors.DeleteCheckpointConnector
+import uk.gov.hmrc.mtdsatestsupportapi.models.request.deleteCheckpoint.DeleteCheckpointRequest
 
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent._
+trait MockDeleteCheckpointConnector extends MockFactory {
 
-trait MockDeleteVendorStateConnector extends MockFactory {
+  val mockDeleteCheckpointConnector: DeleteCheckpointConnector = mock[DeleteCheckpointConnector]
 
-  val mockDeleteVendorStateConnector: DeleteVendorStateConnector =
-    mock[DeleteVendorStateConnector]
+  object MockDeleteCheckpointConnector {
 
-  object MockDeleteVendorStateConnector {
-
-    def deleteVendorState(requestData: DeleteStatefulTestDataRequest): CallHandler[Future[DownstreamOutcome[Unit]]] =
-      (mockDeleteVendorStateConnector
-        .deleteVendorState(_: DeleteStatefulTestDataRequest)(
-          _: HeaderCarrier,
+    def deleteCheckpoint(requestData: DeleteCheckpointRequest): CallHandler[Future[DownstreamOutcome[Unit]]] =
+      (mockDeleteCheckpointConnector
+        .deleteCheckpoint(_: DeleteCheckpointRequest)(
           _: ExecutionContext,
+          _: HeaderCarrier,
           _: String
         ))
         .expects(requestData, *, *, *)

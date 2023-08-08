@@ -19,8 +19,7 @@ package uk.gov.hmrc.mtdsatestsupportapi.models.hateoas
 import api.hateoas.Link
 import config.AppConfig
 import api.hateoas.Method._
-import api.models.domain.Nino
-import uk.gov.hmrc.mtdsatestsupportapi.models.common.CheckpointId
+import api.models.domain.{CheckpointId, Nino}
 
 trait CheckpointHateoasLinks {
 

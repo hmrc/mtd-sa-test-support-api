@@ -70,7 +70,7 @@ trait ControllerTestRunner extends MockEnrolmentsAuthService with MockIdGenerato
       val result: Future[Result] = callController()
 
       status(result) shouldBe expectedStatus
-      header("X-CorrelationId", result) shouldBe Some(correlationId)
+      header("X-CorrelationId", of = result) shouldBe Some(correlationId)
 
       maybeExpectedResponseBody match {
         case Some(jsBody) => contentAsJson(result) shouldBe jsBody

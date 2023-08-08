@@ -14,12 +14,8 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.mtdsatestsupportapi.models.common
+package uk.gov.hmrc.mtdsatestsupportapi.models.request.deleteCheckpoint
 
-import play.api.libs.json.{Format, Json}
+import api.models.domain.CheckpointId
 
-case class CheckpointId(value: String) extends AnyVal
-
-object CheckpointId{
-  implicit val format : Format[CheckpointId] = Json.valueFormat
-}
+case class DeleteCheckpointRequest(vendorClientId: String, checkpointId: CheckpointId)
