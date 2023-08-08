@@ -26,17 +26,6 @@ import uk.gov.hmrc.mtdsatestsupportapi.models.request.deleteCheckpoint.DeleteChe
 
 class DeleteCheckpointConnectorSpec extends ConnectorSpec {
 
-  private val vendorClientId = "someVendorId"
-  private val checkpointId   = "someCheckpointId"
-  private val downstreamUri  = s"/test-support/vendor-state/$vendorClientId/checkpoints/$checkpointId"
-  private val requestData    = DeleteCheckpointRequest(vendorClientId, CheckpointId("someCheckpointId"))
-
-  trait Test {
-    _: ConnectorTest =>
-
-    protected val connector = new DeleteCheckpointConnector(mockAppConfig, httpClientV2)
-  }
-
   "DeleteCheckpointConnector" when {
     "receiving a downstream 204 success response" must {
       "return a success response" in new StubTest with Test {
@@ -57,6 +46,18 @@ class DeleteCheckpointConnectorSpec extends ConnectorSpec {
           ResponseWrapper(responseCorrelationId, DownstreamErrors.single(DownstreamErrorCode("SOME_ERROR"))))
       }
     }
+  }
+
+  trait Test {
+    _: ConnectorTest =>
+
+    protected val vendorClientId = "someVendorId"
+    protected val checkpointId   = "someCheckpointId"
+    protected val downstreamUri  = s"/test-support/vendor-state/$vendorClientId/checkpoints/$checkpointId"
+
+    protected val requestData: DeleteCheckpointRequest = DeleteCheckpointRequest(vendorClientId, CheckpointId("someCheckpointId"))
+
+    protected val connector = new DeleteCheckpointConnector(mockAppConfig, httpClientV2)
   }
 
 }
