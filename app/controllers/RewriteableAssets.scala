@@ -17,7 +17,6 @@
 package controllers
 
 import com.google.inject.ImplementedBy
-import config.AppConfig
 import play.api.http.{AcceptEncoding, HttpErrorHandler}
 import play.api.mvc.{Action, AnyContent, RequestHeader, Result}
 import play.utils.{InvalidUriEncodingException, Resources}
@@ -45,7 +44,7 @@ trait RewriteableAssets {
 }
 
 @Singleton
-class RewriteableAssetsImpl @Inject() (errorHandler: HttpErrorHandler, meta: AssetsMetadata, appConfig: AppConfig)(implicit ec: ExecutionContext)
+class RewriteableAssetsImpl @Inject() (errorHandler: HttpErrorHandler, meta: AssetsMetadata)(implicit ec: ExecutionContext)
     extends Assets(errorHandler, meta)
     with RewriteableAssets {
   import meta._
