@@ -3,9 +3,9 @@
   "title": "List checkpoints",
   "type": "object",
   "properties": {
-    "checkpointId": {
+    "Checkpoints": {
       "type": "array",
-      "description": "An array containing details of savings accounts for the provided National Insurance number.",
+      "description": "The array holding all the checkpoint details.",
 
       "items": {
         "type": "object",
