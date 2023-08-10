@@ -1,12 +1,33 @@
 {
   "$schema": "http://json-schema.org/draft-04/schema#",
-  "title": "Create a checkpoint",
+  "title": "List checkpoints",
   "type": "object",
   "properties": {
     "checkpointId": {
-      "type": "string",
-      "description": "The unique ID of the checkpoint.",
-      "pattern": "^[A-Za-z0-9\\-]{36}$"
+      "type": "array",
+      "description": "An array containing details of savings accounts for the provided National Insurance number.",
+
+      "items": {
+        "type": "object",
+        "properties": {
+          "checkpointId": {
+            "type": "string",
+            "description": "The unique identifier of the calculation.",
+            "pattern": "^[A-Za-z0-9]{36}$",
+            "example": "a1e8057e-fbbc-47a8-a8b4-78d9f015c253"
+          },
+          "checkpointcreationTimestamp": {
+            "type": "string",
+            "description": "The timestamp of when the checkpoint was created in ISO 8601 UTC format.",
+            "pattern": "^[YYYY-MM-DDThh:mm:ss.SSSZ.]$",
+            "example": " 2019-07-13T07:51:43.112Z"
+          }
+        },
+        "required": [
+          "checkpointId",
+          "checkpointcreationTimestamp"
+        ]
+      }
     },
     "links": {
       "type": "array",

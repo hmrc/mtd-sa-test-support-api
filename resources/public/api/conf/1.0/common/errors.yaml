@@ -9,6 +9,12 @@ components:
         code: FORMAT_CHECKPOINT_ID
         message: The provided checkpoint ID is invalid
 
+    formatNino:
+      description: The format of the supplied NINO field is not valid.
+      value:
+        code: FORMAT_NINO
+        message: The provided NINO is invalid
+
     # 403
 
     clientOrAgentNotAuthorised:
