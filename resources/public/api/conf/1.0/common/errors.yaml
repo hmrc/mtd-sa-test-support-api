@@ -10,7 +10,7 @@ components:
         message: The provided checkpoint ID is invalid
 
     formatNino:
-      description: The format of the supplied NINO field is not valid.
+      description: The format of the supplied NINO is not valid.
       value:
         code: FORMAT_NINO
         message: The provided NINO is invalid
