@@ -48,7 +48,7 @@ class ControllerBaseSpec extends UnitSpec with Status with MimeTypes with Header
 
   def fakePutRequest[T](body: T): FakeRequest[T] = fakeRequest.withBody(body)
 
-  def fakeDeleteRequestWithHeaders(headers: (String, String)*): FakeRequest[AnyContentAsEmpty.type] = fakeRequest.withHeaders(headers: _*)
+  def fakeRequestWithHeaders(headers: (String, String)*): FakeRequest[AnyContentAsEmpty.type] = fakeRequest.withHeaders(headers: _*)
 
   def fakeRequestWithBody[T](body: T): FakeRequest[T] = fakeRequest.withBody(body)
 
