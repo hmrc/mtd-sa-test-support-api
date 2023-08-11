@@ -47,3 +47,13 @@ get:
           examples:
             CLIENT_OR_AGENT_NOT_AUTHORISED:
               $ref: './common/errors.yaml#/components/examples/clientOrAgentNotAuthorised'
+
+    404:
+      description: Not Found
+      content:
+        application/json:
+          schema:
+            $ref: './schemas/error_response.yaml'
+          examples:
+            MATCHING_RESOURCE_NOT_FOUND:
+              $ref: './common/errors.yaml#/components/examples/notFound'
