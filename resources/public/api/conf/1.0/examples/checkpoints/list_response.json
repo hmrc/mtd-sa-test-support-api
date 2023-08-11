@@ -16,7 +16,7 @@
           "rel": "delete-checkpoint"
         },
         {
-          "href": "/individuals/self-assessment-test-support/vendor-state/checkpoints?nino={nino}",
+          "href": "/individuals/self-assessment-test-support/vendor-state/checkpoints",
           "method": "POST",
           "rel": "create-checkpoint"
         }
@@ -25,20 +25,20 @@
     {
       "checkpointId": "b2e4050e-fbbc-47a8-d5b4-65d9f015c253",
       "nino": "RC972995B",
-      "checkpointCreationTimestamp": "2019-07-13T08:51:43.112Z",
+      "checkpointCreationTimestamp": "2020-08-20T08:51:43.112Z",
       "links": [
         {
-          "href": "/individuals/self-assessment-test-support/vendor-state/checkpoints/a1c8057e-fbbc-47a8-a8b4-78d9f015c253/restore",
+          "href": "/individuals/self-assessment-test-support/vendor-state/checkpoints/b2e4050e-fbbc-47a8-d5b4-65d9f015c253/restore",
           "method": "POST",
           "rel": "restore-checkpoint"
         },
         {
-          "href": "/individuals/self-assessment-test-support/vendor-state/checkpoints/a1c8057e-fbbc-47a8-a8b4-78d9f015c253",
+          "href": "/individuals/self-assessment-test-support/vendor-state/checkpoints/b2e4050e-fbbc-47a8-d5b4-65d9f015c253",
           "method": "DELETE",
           "rel": "delete-checkpoint"
         },
         {
-          "href": "/individuals/self-assessment-test-support/vendor-state/checkpoints?nino={nino}",
+          "href": "/individuals/self-assessment-test-support/vendor-state/checkpoints",
           "method": "POST",
           "rel": "create-checkpoint"
         }
