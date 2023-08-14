@@ -32,7 +32,8 @@ class ListCheckpointsControllerISpec extends IntegrationBaseSpec {
         "return a 200 response" in new Test {
           override def setupStubs(): StubMapping = {
             AuthStub.authorised()
-            DownstreamStub.onSuccess(GET, downstreamPath, Seq("taxableEntityId" -> nino), 200, listWithNinoDownstreamResponse)
+            // As to keep responses realistic, listing checkpoints by nino will only return those checkpoints that were created with that nino.
+            DownstreamStub.onSuccess(GET, downstreamPath, Seq("taxableEntityId" -> nino), 200, listByNinoDownstreamResponse)
           }
 
           override def request(): WSRequest = super.request().withQueryStringParameters("nino" -> nino)
@@ -50,6 +51,7 @@ class ListCheckpointsControllerISpec extends IntegrationBaseSpec {
         "return a 200 response" in new Test {
           override def setupStubs(): StubMapping = {
             AuthStub.authorised()
+            // Listing in the absence of a nino query parameter will return all created checkpoints associated with a vendor.
             DownstreamStub.onSuccess(GET, downstreamPath, Seq.empty, 200, listDownstreamResponse)
           }
 
@@ -93,7 +95,7 @@ class ListCheckpointsControllerISpec extends IntegrationBaseSpec {
       val checkpointCreationTimestamp1 = "2019-01-01T00:00:00.000Z"
       val checkpointCreationTimestamp2 = "2019-01-02T00:00:00.000Z"
 
-      protected val listWithNinoDownstreamResponse: JsValue = Json.parse(
+      protected val listByNinoDownstreamResponse: JsValue = Json.parse(
         s"""
            |{
            |  "checkpoints": [

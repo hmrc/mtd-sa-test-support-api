@@ -29,7 +29,7 @@ class ListCheckpointsConnectorSpec extends ConnectorSpec {
   "ListCheckpointsConnector" when {
     "the downstream returns a successful 200 response" when {
       "querying by nino" should {
-        "return the response data" in new StubTest with Test {
+        "return the response data associated with the vendorId and nino" in new StubTest with Test {
           when(GET, s"/test-support/vendor-state/$vendorId/checkpoints")
             .withQueryParams(Seq("taxableEntityId" -> nino))
             .withHeaders(requiredHeaders)
@@ -40,7 +40,7 @@ class ListCheckpointsConnectorSpec extends ConnectorSpec {
         }
       }
       "no nino query parameter is present" should {
-        "return the response data" in new StubTest with Test {
+        "return the response data associated with the vendorId" in new StubTest with Test {
           when(GET, s"/test-support/vendor-state/$vendorId/checkpoints")
             .withHeaders(requiredHeaders)
             .thenReturn[JsValue](status = 200, body = response, headers = responseHeaders)

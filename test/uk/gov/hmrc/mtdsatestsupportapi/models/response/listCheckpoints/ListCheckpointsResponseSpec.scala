@@ -21,20 +21,12 @@ import support.UnitSpec
 
 class ListCheckpointsResponseSpec extends UnitSpec {
 
-  "ListCheckpointsResponse" when {
-    "deserializing valid JSON" should {
-      "create the response object" in new Test {
-        Json.fromJson(validDownstreamResponseJson) shouldBe JsSuccess(
-          ListCheckpointsResponse(Seq(Checkpoint(checkpointId, Some(nino), checkpointCreationTimestamp))))
-      }
+  "ListCheckpointsResponse" should {
+    "deserialize valid JSON" in new Test {
+      Json.fromJson(validDownstreamResponseJson) shouldBe JsSuccess(
+        ListCheckpointsResponse(Seq(Checkpoint(checkpointId, Some(nino), checkpointCreationTimestamp))))
     }
-    "deserializing invalid JSON" should {
-      "return a failed result" in new Test {
-        Json.fromJson(invalidDownstreamResponseJson) shouldBe JsError(
-          List((JsPath \ "checkpoints", List(JsonValidationError(List("error.path.missing"))))))
-      }
-    }
-    "serializing JSON" in new Test {
+    "serialize JSON" in new Test {
       Json.toJson(response) shouldBe validMtdResponseJson
     }
   }

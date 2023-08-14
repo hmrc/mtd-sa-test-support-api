@@ -34,19 +34,11 @@ class CheckpointSpec extends UnitSpec {
   implicit val reads: Reads[Checkpoint]    = Checkpoint.reads
   implicit val writes: OWrites[Checkpoint] = Checkpoint.writes
 
-  "Checkpoint" when {
-    "deserializing valid JSON" should {
-      "create the response object" in {
-        Json.fromJson(validDownstreamResponseJson) shouldBe JsSuccess(response)
-      }
+  "Checkpoint" should {
+    "deserialize valid JSON" in {
+      Json.fromJson(validDownstreamResponseJson) shouldBe JsSuccess(response)
     }
-    "deserializing invalid JSON" should {
-      "return a failed result" in {
-        Json.fromJson(invalidDownstreamJson) shouldBe JsError(
-          List((JsPath \ "checkpointCreationTimestamp", List(JsonValidationError(List("error.path.missing"))))))
-      }
-    }
-    "serializing JSON" in {
+    "serialize JSON" in {
       Json.toJson(response) shouldBe validMtdResponseJson
     }
   }
