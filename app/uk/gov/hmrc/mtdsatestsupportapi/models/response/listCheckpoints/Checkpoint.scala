@@ -16,10 +16,17 @@
 
 package uk.gov.hmrc.mtdsatestsupportapi.models.response.listCheckpoints
 
+import play.api.libs.functional.syntax.toFunctionalBuilderOps
 import play.api.libs.json._
 
 case class Checkpoint(checkpointId: String, nino: Option[String], checkpointCreationTimestamp: String)
 
 object Checkpoint {
-  implicit val formats: OFormat[Checkpoint] = Json.format
+  implicit val writes: OWrites[Checkpoint] = Json.writes[Checkpoint]
+
+  implicit val reads: Reads[Checkpoint] = (
+    (JsPath \ "checkpointId").read[String] and
+      (JsPath \ "taxableEntityId").readNullable[String] and
+      (JsPath \ "checkpointCreationTimestamp").read[String]
+  )((checkpointId, nino, checkpointCreationTimestamp) => Checkpoint(checkpointId, nino, checkpointCreationTimestamp))
 }

@@ -24,18 +24,18 @@ class ListCheckpointsResponseSpec extends UnitSpec {
   "ListCheckpointsResponse" when {
     "deserializing valid JSON" should {
       "create the response object" in new Test {
-        Json.fromJson(validJsonResponse) shouldBe JsSuccess(
+        Json.fromJson(validDownstreamResponseJson) shouldBe JsSuccess(
           ListCheckpointsResponse(Seq(Checkpoint(checkpointId, Some(nino), checkpointCreationTimestamp))))
       }
     }
     "deserializing invalid JSON" should {
       "return a failed result" in new Test {
-
-        Json.fromJson(invalidJsonResponse) shouldBe JsError(List((JsPath \ "checkpoints", List(JsonValidationError(List("error.path.missing"))))))
+        Json.fromJson(invalidDownstreamResponseJson) shouldBe JsError(
+          List((JsPath \ "checkpoints", List(JsonValidationError(List("error.path.missing"))))))
       }
     }
     "serializing JSON" in new Test {
-      Json.toJson(response) shouldBe validJsonResponse
+      Json.toJson(response) shouldBe validMtdResponseJson
     }
   }
 
@@ -48,7 +48,19 @@ class ListCheckpointsResponseSpec extends UnitSpec {
     protected val response: ListCheckpointsResponse[Checkpoint] =
       ListCheckpointsResponse(Seq(Checkpoint(checkpointId, Some(nino), checkpointCreationTimestamp)))
 
-    protected val validJsonResponse: JsValue = Json.parse(s"""
+    protected val validDownstreamResponseJson: JsValue = Json.parse(s"""
+         |{
+         |  "checkpoints": [
+         |    {
+         |      "checkpointId": "$checkpointId",
+         |      "taxableEntityId": "$nino",
+         |      "checkpointCreationTimestamp": "$checkpointCreationTimestamp"
+         |    }
+         |  ]
+         |}
+         |""".stripMargin)
+
+    protected val validMtdResponseJson: JsValue = Json.parse(s"""
          |{
          |  "checkpoints": [
          |    {
@@ -60,8 +72,7 @@ class ListCheckpointsResponseSpec extends UnitSpec {
          |}
          |""".stripMargin)
 
-
-    val invalidJsonResponse: JsValue = Json.parse(s"""
+    val invalidDownstreamResponseJson: JsValue = Json.parse(s"""
          |{
          |  "checkpointId": "$checkpointId",
          |  "nino": "$nino",

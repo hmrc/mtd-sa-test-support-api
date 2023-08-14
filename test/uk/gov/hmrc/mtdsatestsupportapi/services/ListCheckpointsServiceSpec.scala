@@ -17,7 +17,6 @@
 package uk.gov.hmrc.mtdsatestsupportapi.services
 
 import api.models.domain.Nino
-import api.models.errors._
 import api.models.outcomes.ResponseWrapper
 import api.services.ServiceSpec
 import uk.gov.hmrc.mtdsatestsupportapi.mocks.connectors.MockListCheckpointsConnector
@@ -47,32 +46,6 @@ class ListCheckpointsServiceSpec extends ServiceSpec with MockListCheckpointsCon
 
         await(service.listCheckpoints(request)) shouldBe Right(ResponseWrapper(correlationId, response))
       }
-    }
-
-    "the connector call is unsuccessful" should {
-      "map the received errors from the stub to mtd errors" when {
-        def serviceError(stubErrorCode: String, mtdError: MtdError): Unit =
-          s"a $stubErrorCode error is returned from the connector" in {
-
-            MockListCheckpointsConnector
-              .listCheckpoints(request)
-              .returns(Future.successful(Left(ResponseWrapper(correlationId, DownstreamErrors.single(DownstreamErrorCode(stubErrorCode))))))
-
-            await(service.listCheckpoints(request)) shouldBe Left(ErrorWrapper(correlationId, mtdError))
-          }
-
-        val stubErrors: List[(String, MtdError)] = List(
-          "INVALID_TAXABLE_ENTITY_ID" -> NinoFormatError,
-          "NOT_FOUND"                 -> NotFoundError,
-          "SERVER_ERROR"              -> InternalError,
-          "SERVICE_UNAVAILABLE"       -> InternalError
-        )
-
-        stubErrors.foreach { case (stubErrorCode, mtdError) =>
-          serviceError(stubErrorCode, mtdError)
-        }
-      }
-
     }
   }
 

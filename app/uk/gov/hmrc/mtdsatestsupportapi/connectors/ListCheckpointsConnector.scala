@@ -41,8 +41,8 @@ class ListCheckpointsConnector @Inject() (val appConfig: AppConfig, val http: Ht
     implicit val context: ConnectorContext = ConnectorContext(appConfig.stubDownstreamConfig)
 
     val downstreamPath = request.nino match {
-      case Some(Nino(nino)) => s"/test-support/vendor-state/$vendorClientId?taxableEntityId=$nino"
-      case None             => s"/test-support/vendor-state/$vendorClientId"
+      case Some(Nino(nino)) => s"/test-support/vendor-state/$vendorClientId/checkpoints?taxableEntityId=$nino"
+      case None             => s"/test-support/vendor-state/$vendorClientId/checkpoints"
     }
 
     get(DownstreamUri[ListCheckpointsResponse[Checkpoint]](downstreamPath))

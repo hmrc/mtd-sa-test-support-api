@@ -16,34 +16,38 @@
 
 package uk.gov.hmrc.mtdsatestsupportapi.models.response.listCheckpoints
 
-import play.api.libs.json.{JsError, JsObject, JsPath, JsSuccess, Json, JsonValidationError, OFormat}
+import play.api.libs.json._
 import support.UnitSpec
 
 class CheckpointSpec extends UnitSpec {
 
   protected val response: Checkpoint = Checkpoint("some_id", Some("some_nino"), "2019-01-01T00:00:00.000Z")
 
-  protected val validJson: JsObject =
+  protected val validDownstreamResponseJson: JsObject =
+    Json.obj("checkpointId" -> "some_id", "taxableEntityId" -> "some_nino", "checkpointCreationTimestamp" -> "2019-01-01T00:00:00.000Z")
+
+  protected val validMtdResponseJson: JsObject =
     Json.obj("checkpointId" -> "some_id", "nino" -> "some_nino", "checkpointCreationTimestamp" -> "2019-01-01T00:00:00.000Z")
 
-  protected val invalidJson: JsObject = Json.obj("checkpointId" -> "some_id", "nino" -> "some_nino")
+  protected val invalidDownstreamJson: JsObject = Json.obj("checkpointId" -> "some_id", "taxableEntityId" -> "some_nino")
 
-  implicit val formats: OFormat[Checkpoint] = Checkpoint.formats
+  implicit val reads: Reads[Checkpoint]    = Checkpoint.reads
+  implicit val writes: OWrites[Checkpoint] = Checkpoint.writes
 
   "Checkpoint" when {
     "deserializing valid JSON" should {
       "create the response object" in {
-        Json.fromJson(validJson) shouldBe JsSuccess(response)
+        Json.fromJson(validDownstreamResponseJson) shouldBe JsSuccess(response)
       }
     }
     "deserializing invalid JSON" should {
       "return a failed result" in {
-        Json.fromJson(invalidJson) shouldBe JsError(
+        Json.fromJson(invalidDownstreamJson) shouldBe JsError(
           List((JsPath \ "checkpointCreationTimestamp", List(JsonValidationError(List("error.path.missing"))))))
       }
     }
     "serializing JSON" in {
-      Json.toJson(response) shouldBe validJson
+      Json.toJson(response) shouldBe validMtdResponseJson
     }
   }
 

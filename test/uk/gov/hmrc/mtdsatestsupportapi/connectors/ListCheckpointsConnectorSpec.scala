@@ -28,36 +28,39 @@ class ListCheckpointsConnectorSpec extends ConnectorSpec {
 
   "ListCheckpointsConnector" when {
     "the downstream returns a successful 200 response" when {
-      "nino is present" should {
+      "querying by nino" should {
         "return the response data" in new StubTest with Test {
-          when(GET, s"/test-support/vendor-state/$vendorId")
+          when(GET, s"/test-support/vendor-state/$vendorId/checkpoints")
             .withQueryParams(Seq("taxableEntityId" -> nino))
             .withHeaders(requiredHeaders)
-            .thenReturn[JsValue](status = 200, body = responseWithNino, headers = responseHeaders)
+            .thenReturn[JsValue](status = 200, body = responseFromNinoQuery, headers = responseHeaders)
 
           await(connector.listCheckpoints(requestDataWithNino)) shouldBe Right(
-            ResponseWrapper(responseCorrelationId, ListCheckpointsResponse(Seq(Checkpoint(checkpointId, Some(nino), checkpointCreationTimestamp)))))
+            ResponseWrapper(responseCorrelationId, ListCheckpointsResponse(Seq(Checkpoint(checkpointId1, Some(nino), checkpointCreationTimestamp1)))))
         }
       }
-      "no nino is present" should {
+      "no nino query parameter is present" should {
         "return the response data" in new StubTest with Test {
-          when(GET, s"/test-support/vendor-state/$vendorId")
+          when(GET, s"/test-support/vendor-state/$vendorId/checkpoints")
             .withHeaders(requiredHeaders)
-            .thenReturn[JsValue](status = 200, body = responseWithoutNino, headers = responseHeaders)
+            .thenReturn[JsValue](status = 200, body = response, headers = responseHeaders)
 
           await(connector.listCheckpoints(requestDataWithoutNino)) shouldBe Right(
-            ResponseWrapper(responseCorrelationId, ListCheckpointsResponse(Seq(Checkpoint(checkpointId, None, checkpointCreationTimestamp)))))
+            ResponseWrapper(responseCorrelationId, ListCheckpointsResponse(Seq(
+              Checkpoint(checkpointId1, Some(nino), checkpointCreationTimestamp1),
+              Checkpoint(checkpointId2, None, checkpointCreationTimestamp2)
+            ))))
         }
       }
       "the downstream call is unsuccessful" should {
         "return the corresponding errors " in new StubTest with Test {
-          when(GET, s"/test-support/vendor-state/$vendorId")
+          when(GET, s"/test-support/vendor-state/$vendorId/checkpoints")
             .withQueryParams(Seq("taxableEntityId" -> nino))
             .withHeaders(requiredHeaders)
-            .thenReturn[JsValue](404, body = Json.obj("code" -> "SOME_NOT_FOUND_ERROR", "reason" -> "Some message"), headers = responseHeaders)
+            .thenReturn[JsValue](404, body = Json.obj("code" -> "SOME_ERROR", "reason" -> "Some message"), headers = responseHeaders)
 
           await(connector.listCheckpoints(requestDataWithNino)) shouldBe Left(
-            ResponseWrapper(responseCorrelationId, DownstreamErrors.single(DownstreamErrorCode("SOME_NOT_FOUND_ERROR"))))
+            ResponseWrapper(responseCorrelationId, DownstreamErrors.single(DownstreamErrorCode("SOME_ERROR"))))
         }
       }
     }
@@ -68,20 +71,26 @@ class ListCheckpointsConnectorSpec extends ConnectorSpec {
 
     protected val connector = new ListCheckpointsConnector(mockAppConfig, httpClientV2)
 
-    protected val vendorId                    = "some_client_id"
-    protected val nino                        = "AA123456A"
-    protected val checkpointId                = "some_checkpoint_id"
-    protected val checkpointCreationTimestamp = "2019-01-01T00:00:00.000Z"
+    protected val vendorId                     = "some_client_id"
+    protected val nino                         = "AA123456A"
+    protected val checkpointId1                = "a1e8057e-fbbc-47a8-a8b4-78d9f015c253"
+    protected val checkpointId2                = "b2e4050e-fbbc-47a8-d5b4-65d9f015c253"
+    protected val checkpointCreationTimestamp1 = "2019-01-01T00:00:00.000Z"
+    protected val checkpointCreationTimestamp2 = "2019-01-02T00:00:00.000Z"
 
     protected val requestDataWithNino: ListCheckpointsRequest    = ListCheckpointsRequest(vendorId, Some(Nino(nino)))
     protected val requestDataWithoutNino: ListCheckpointsRequest = ListCheckpointsRequest(vendorId, None)
 
-    protected val responseWithNino: JsObject = Json.obj(
+    protected val responseFromNinoQuery: JsObject = Json.obj(
       "checkpoints" -> Json.arr(
-        Json.obj("checkpointId" -> checkpointId, "nino" -> nino, "checkpointCreationTimestamp" -> checkpointCreationTimestamp)))
+        Json.obj("checkpointId" -> checkpointId1, "taxableEntityId" -> nino, "checkpointCreationTimestamp" -> checkpointCreationTimestamp1)))
 
-    protected val responseWithoutNino: JsObject =
-      Json.obj("checkpoints" -> Json.arr(Json.obj("checkpointId" -> checkpointId, "checkpointCreationTimestamp" -> checkpointCreationTimestamp)))
+    protected val response: JsObject =
+      Json.obj(
+        "checkpoints" -> Json.arr(
+          Json.obj("checkpointId" -> checkpointId1, "taxableEntityId" -> nino, "checkpointCreationTimestamp" -> checkpointCreationTimestamp1),
+          Json.obj("checkpointId" -> checkpointId2, "checkpointCreationTimestamp" -> checkpointCreationTimestamp2)
+        ))
 
   }
 

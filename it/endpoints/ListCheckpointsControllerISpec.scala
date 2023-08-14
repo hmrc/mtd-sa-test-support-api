@@ -18,8 +18,8 @@ package endpoints
 
 import api.models.errors._
 import com.github.tomakehurst.wiremock.stubbing.StubMapping
-import play.api.http.Status.{BAD_REQUEST, NOT_FOUND}
-import play.api.libs.json.{JsObject, JsValue, Json}
+import play.api.http.Status.BAD_REQUEST
+import play.api.libs.json._
 import play.api.libs.ws.{WSRequest, WSResponse}
 import play.api.test.Helpers._
 import support.IntegrationBaseSpec
@@ -27,34 +27,38 @@ import support.IntegrationBaseSpec
 class ListCheckpointsControllerISpec extends IntegrationBaseSpec {
 
   "Listing checkpoints" when {
-    "a request is processed successfully with a nino" should {
-      "return a 200 response" in new Test {
-        override def setupStubs(): StubMapping = {
-          AuthStub.authorised()
-          DownstreamStub.onSuccess(GET, downstreamPath, Seq("taxableEntityId" -> nino), 200, downstreamResponseWithNino)
+    "querying by nino" when {
+      "a request is processed successfully" should {
+        "return a 200 response" in new Test {
+          override def setupStubs(): StubMapping = {
+            AuthStub.authorised()
+            DownstreamStub.onSuccess(GET, downstreamPath, Seq("taxableEntityId" -> nino), 200, listWithNinoDownstreamResponse)
+          }
+
+          override def request(): WSRequest = super.request().withQueryStringParameters("nino" -> nino)
+
+          val response: WSResponse = await(request().get())
+
+          response.status shouldBe 200
+          response.json shouldBe expectedListWithNinoMtdResponse
+          response.header("X-CorrelationId") should not be empty
         }
-
-        override def request(): WSRequest = super.request().withQueryStringParameters("nino" -> nino)
-
-        val response: WSResponse = await(request().get())
-
-        response.status shouldBe 200
-        response.json shouldBe expectedMtdResponseWithNino
-        response.header("X-CorrelationId") should not be empty
       }
     }
-    "a request is processed successfully without a nino" should {
-      "return a 200 response" in new Test {
-        override def setupStubs(): StubMapping = {
-          AuthStub.authorised()
-          DownstreamStub.onSuccess(GET, downstreamPath, Seq.empty, 200, downstreamResponseWithoutNino)
+    "not querying by nino" when {
+      "a request is processed successfully" should {
+        "return a 200 response" in new Test {
+          override def setupStubs(): StubMapping = {
+            AuthStub.authorised()
+            DownstreamStub.onSuccess(GET, downstreamPath, Seq.empty, 200, listDownstreamResponse)
+          }
+
+          val response: WSResponse = await(request().get())
+
+          response.status shouldBe 200
+          response.json shouldBe expectedListWithoutNinoMtdResponse
+          response.header("X-CorrelationId") should not be empty
         }
-
-        val response: WSResponse = await(request().get())
-
-        response.status shouldBe 200
-        response.json shouldBe expectedMtdResponseWithoutNino
-        response.header("X-CorrelationId") should not be empty
       }
     }
     "processing of a request fails with validation errors" should {
@@ -80,53 +84,54 @@ class ListCheckpointsControllerISpec extends IntegrationBaseSpec {
         validationErrorTest(nino, status, error)
       }
     }
-    "return an mtd error corresponding to the received downstream error" when {
-      def serviceError(stubErrorStatus: Int, stubErrorCode: String, expectedStatus: Int, expectedError: MtdError): Unit = {
-        s"stub returns a $stubErrorCode error and status $stubErrorStatus" in new Test {
-
-          override def setupStubs(): StubMapping = {
-            AuthStub.authorised()
-            DownstreamStub.onError(GET, downstreamPath, Seq.empty, stubErrorStatus, downstreamErrorBody(stubErrorCode))
-          }
-
-          val response: WSResponse = await(request().get())
-          response.status shouldBe expectedStatus
-          response.json shouldBe Json.toJson(expectedError)
-        }
-      }
-
-      val stubErrors = Seq(
-        (BAD_REQUEST, "INVALID_TAXABLE_ENTITY_ID", BAD_REQUEST, NinoFormatError),
-        (NOT_FOUND, "NOT_FOUND", NOT_FOUND, NotFoundError),
-        (INTERNAL_SERVER_ERROR, "SEVER_ERROR", INTERNAL_SERVER_ERROR, InternalError),
-        (SERVICE_UNAVAILABLE, "SERVICE_UNAVAILABLE", INTERNAL_SERVER_ERROR, InternalError)
-      )
-
-      stubErrors.foreach { case (stubErrorStatus, stubErrorCode, expectedStatus, expectedError) =>
-        serviceError(stubErrorStatus, stubErrorCode, expectedStatus, expectedError)
-      }
-    }
 
     trait Test {
-      val vendorClientId              = "some_client_id"
-      val checkpointId                = "a1e8057e-fbbc-47a8-a8b4-78d9f015c253"
-      val nino                        = "AA123456A"
-      val checkpointCreationTimestamp = "2019-01-01T00:00:00.000Z"
+      val vendorClientId               = "some_client_id"
+      val checkpointId1                = "a1e8057e-fbbc-47a8-a8b4-78d9f015c253"
+      val checkpointId2                = "b2e4050e-fbbc-47a8-d5b4-65d9f015c253"
+      val nino                         = "AA123456A"
+      val checkpointCreationTimestamp1 = "2019-01-01T00:00:00.000Z"
+      val checkpointCreationTimestamp2 = "2019-01-02T00:00:00.000Z"
 
-      val downstreamResponseWithNino: JsObject = Json.obj(
-        "checkpoints" -> Json.arr(
-          Json.obj("checkpointId" -> checkpointId, "nino" -> nino, "checkpointCreationTimestamp" -> checkpointCreationTimestamp)))
-
-      val downstreamResponseWithoutNino: JsObject =
-        Json.obj("checkpoints" -> Json.arr(Json.obj("checkpointId" -> checkpointId, "checkpointCreationTimestamp" -> checkpointCreationTimestamp)))
-
-      val expectedMtdResponseWithNino: JsValue = Json.parse(s"""
+      protected val listWithNinoDownstreamResponse: JsValue = Json.parse(
+        s"""
            |{
            |  "checkpoints": [
            |    {
-           |      "checkpointId": "$checkpointId",
+           |       "checkpointId": "$checkpointId1",
+           |       "taxableEntityId": "$nino",
+           |       "checkpointCreationTimestamp": "$checkpointCreationTimestamp1"
+           |     }
+           |  ]
+           |}
+           |""".stripMargin
+      )
+
+      protected val listDownstreamResponse: JsValue = Json.parse(
+        s"""
+           |{
+           |  "checkpoints": [
+           |    {
+           |       "checkpointId": "$checkpointId1",
+           |       "taxableEntityId": "$nino",
+           |       "checkpointCreationTimestamp": "$checkpointCreationTimestamp1"
+           |     },
+           |     {
+           |       "checkpointId": "$checkpointId2",
+           |       "checkpointCreationTimestamp": "$checkpointCreationTimestamp2"
+           |      }
+           |  ]
+           |}
+           |""".stripMargin
+      )
+
+      val expectedListWithNinoMtdResponse: JsValue = Json.parse(s"""
+           |{
+           |  "checkpoints": [
+           |    {
+           |      "checkpointId": "$checkpointId1",
            |      "nino": "$nino",
-           |      "checkpointCreationTimestamp": "$checkpointCreationTimestamp",
+           |      "checkpointCreationTimestamp": "$checkpointCreationTimestamp1",
            |      "links": [
            |        {
            |          "href": "/individuals/self-assessment-test-support/vendor-state/checkpoints/?nino=$nino",
@@ -134,12 +139,12 @@ class ListCheckpointsControllerISpec extends IntegrationBaseSpec {
            |          "rel": "create-checkpoint"
            |        },
            |        {
-           |          "href": "/individuals/self-assessment-test-support/vendor-state/checkpoints/$checkpointId",
+           |          "href": "/individuals/self-assessment-test-support/vendor-state/checkpoints/$checkpointId1",
            |          "method": "DELETE",
            |          "rel": "delete-checkpoint"
            |        },
            |        {
-           |          "href": "/individuals/self-assessment-test-support/vendor-state/checkpoints/$checkpointId/restore",
+           |          "href": "/individuals/self-assessment-test-support/vendor-state/checkpoints/$checkpointId1/restore",
            |          "method": "POST",
            |          "rel": "restore-checkpoint"
            |        }
@@ -149,20 +154,42 @@ class ListCheckpointsControllerISpec extends IntegrationBaseSpec {
            |}
            |""".stripMargin)
 
-      val expectedMtdResponseWithoutNino: JsValue = Json.parse(s"""
+      val expectedListWithoutNinoMtdResponse: JsValue = Json.parse(s"""
            |{
            |  "checkpoints": [
            |    {
-           |      "checkpointId": "$checkpointId",
-           |      "checkpointCreationTimestamp": "$checkpointCreationTimestamp",
+           |      "checkpointId": "$checkpointId1",
+           |      "nino": "$nino",
+           |      "checkpointCreationTimestamp": "$checkpointCreationTimestamp1",
            |      "links": [
            |        {
-           |          "href": "/individuals/self-assessment-test-support/vendor-state/checkpoints/$checkpointId",
+           |          "href": "/individuals/self-assessment-test-support/vendor-state/checkpoints/?nino=$nino",
+           |          "method": "POST",
+           |          "rel": "create-checkpoint"
+           |        },
+           |        {
+           |          "href": "/individuals/self-assessment-test-support/vendor-state/checkpoints/$checkpointId1",
            |          "method": "DELETE",
            |          "rel": "delete-checkpoint"
            |        },
            |        {
-           |          "href": "/individuals/self-assessment-test-support/vendor-state/checkpoints/$checkpointId/restore",
+           |          "href": "/individuals/self-assessment-test-support/vendor-state/checkpoints/$checkpointId1/restore",
+           |          "method": "POST",
+           |          "rel": "restore-checkpoint"
+           |        }
+           |      ]
+           |    },
+           |    {
+           |      "checkpointId": "$checkpointId2",
+           |      "checkpointCreationTimestamp": "$checkpointCreationTimestamp2",
+           |      "links": [
+           |        {
+           |          "href": "/individuals/self-assessment-test-support/vendor-state/checkpoints/$checkpointId2",
+           |          "method": "DELETE",
+           |          "rel": "delete-checkpoint"
+           |        },
+           |        {
+           |          "href": "/individuals/self-assessment-test-support/vendor-state/checkpoints/$checkpointId2/restore",
            |          "method": "POST",
            |          "rel": "restore-checkpoint"
            |        }
@@ -174,7 +201,7 @@ class ListCheckpointsControllerISpec extends IntegrationBaseSpec {
 
       val mtdPath = "/vendor-state/checkpoints"
 
-      val downstreamPath = s"/test-support/vendor-state/$vendorClientId"
+      val downstreamPath = s"/test-support/vendor-state/$vendorClientId/checkpoints"
 
       def setupStubs(): StubMapping
 

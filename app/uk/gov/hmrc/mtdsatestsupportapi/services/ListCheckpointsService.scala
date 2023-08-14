@@ -33,14 +33,6 @@ class ListCheckpointsService @Inject() (connector: ListCheckpointsConnector) ext
   def listCheckpoints(request: ListCheckpointsRequest)(implicit
       ec: ExecutionContext,
       rc: RequestContext): Future[Either[ErrorWrapper, ResponseWrapper[ListCheckpointsResponse[Checkpoint]]]] =
-    connector.listCheckpoints(request).map(_.leftMap(mapDownstreamErrors(stubErrorMap)))
-
-  private val stubErrorMap: Map[String, MtdError] =
-    Map(
-      "INVALID_TAXABLE_ENTITY_ID" -> NinoFormatError,
-      "NOT_FOUND"                 -> NotFoundError,
-      "SERVER_ERROR"              -> InternalError,
-      "SERVICE_UNAVAILABLE"       -> InternalError
-    )
+    connector.listCheckpoints(request).map(_.leftMap(mapDownstreamErrors(Map.empty)))
 
 }
