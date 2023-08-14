@@ -64,14 +64,6 @@ class ListCheckpointsResponseSpec extends UnitSpec {
          |}
          |""".stripMargin)
 
-    val invalidDownstreamResponseJson: JsValue = Json.parse(s"""
-         |{
-         |  "checkpointId": "$checkpointId",
-         |  "nino": "$nino",
-         |  "checkpointCreationTimestamp": "$checkpointCreationTimestamp"
-         |}
-         |""".stripMargin)
-
     implicit val reads: Reads[ListCheckpointsResponse[Checkpoint]] = ListCheckpointsResponse.reads
   }
 
