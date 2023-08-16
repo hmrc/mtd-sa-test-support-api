@@ -1,0 +1,60 @@
+post:
+  $ref: "./checkpoints_restore.yaml"
+  summary: Restore to checkpoint
+  description: |
+    This endpoint allows a developer to reset the stateful data back to the checkpoint created in the sandbox environment.
+    
+    A valid Checkpoint ID must be provided.
+    
+    When the developer restores the checkpoint the modified date of the data will be updated to the restored date.
+    
+    **Note**: To prevent data loss or unexpected behaviour, the checkpoint restore should not be performed while other stateful 
+    checkpoint operations are in progress for the same National insurance number.
+
+  security:
+    - User-Restricted:
+        - write:self-assessment
+
+  parameters:
+    - $ref: './common/headers.yaml#/components/parameters/acceptHeader'
+    - $ref: './common/headers.yaml#/components/parameters/authorizationWriteScopeHeader'
+    - $ref: './common/pathParameters.yaml#/components/parameters/checkpointId'
+
+  responses:
+    201:
+      description: Success
+      headers:
+        X-CorrelationId:
+          $ref: './common/headers.yaml#/components/parameters/correlationId'
+
+    400:
+      description: Bad Request
+      content:
+        application/json:
+          schema:
+            $ref: './schemas/error_response.yaml'
+          examples:
+            FORMAT_CHECKPOINT_ID:
+              $ref: './common/errors.yaml#/components/examples/formatCheckpointId'
+
+    403:
+      description: Forbidden
+      content:
+        application/json:
+          schema:
+            $ref: './schemas/error_response.yaml'
+          examples:
+            CLIENT_OR_AGENT_NOT_AUTHORISED:
+              $ref: './common/errors.yaml#/components/examples/clientOrAgentNotAuthorised'
+
+    404:
+      description: Not Found
+      content:
+        application/json:
+          schema:
+            $ref: './schemas/error_response.yaml'
+          examples:
+            MATCHING_RESOURCE_NOT_FOUND:
+              $ref: './common/errors.yaml#/components/examples/notFoundCreateCheckpoint'
+
+
