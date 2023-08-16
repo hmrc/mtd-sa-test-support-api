@@ -4,7 +4,7 @@ components:
       in: path
       name: checkpointId
       description: |
-        The checkpoint received from the create endpoint will have to be provided. Format: ^[A-Za-z0-9\-]{36}$
+        The unique identifier of the checkpoint returned by the 'Create a checkpoint' endpoint. Format: ^[A-Za-z0-9\-]{36}$
       schema:
         type: string
         example: "a1e8057e-fbbc-47a8-a8b4-78d9f015c253"

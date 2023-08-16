@@ -2,14 +2,12 @@ delete:
   $ref: "./checkpoints_delete.yaml"
   summary: Delete a checkpoint
   description: |
-    This endpoint allows a developer to delete the checkpoint created in sandbox for 
-    a particular CheckpointId.  CheckpointId must be provided.
-    
-    When this endpoint is called the checkpoint for the requested checkpointId will 
-    be deleted.
-    
-    Any checkpoint that has not been deleted by the developer will be  automatically 
-    purged from database 7 days after its creation.
+    This endpoint allows a developer to delete the checkpoint created in sandbox for a given ‘checkpointId’.
+  
+    Any checkpoint that has not been deleted by the developer will be automatically removed from database 7 days after its creation.
+
+    **Note**: To prevent data loss or unexpected behaviour, the checkpoint restore should not be performed while other stateful checkpoint operations are in progress for the same National insurance number.
+
   security:
     - User-Restricted:
         - write:self-assessment
