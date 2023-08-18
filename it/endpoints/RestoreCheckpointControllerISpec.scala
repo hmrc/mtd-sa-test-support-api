@@ -31,7 +31,7 @@ class RestoreCheckpointControllerISpec extends IntegrationBaseSpec {
       "a valid request is made" in new Test {
         override def setupStubs(): StubMapping = {
           AuthStub.authorised()
-          DownstreamStub.onSuccess(POST, downstreamUri, Seq.empty, NO_CONTENT, JsObject.empty)
+          DownstreamStub.onSuccess(POST, downstreamUri, Seq.empty, CREATED, JsObject.empty)
         }
 
         val response: WSResponse = await(request().post(JsNull))

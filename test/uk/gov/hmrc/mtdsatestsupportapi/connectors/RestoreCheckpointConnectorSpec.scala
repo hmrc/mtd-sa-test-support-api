@@ -31,7 +31,7 @@ class RestoreCheckpointConnectorSpec extends ConnectorSpec {
       "return a success response" in new StubTest with Test {
         when(method = POST, uri = downstreamUri)
           .withHeaders(requiredHeaders)
-          .thenReturnNoContent(headers = responseHeaders)
+          .thenReturnNoContent(status = CREATED, headers = responseHeaders)
 
         await(connector.restoreCheckpoint(requestData)) shouldBe Right(ResponseWrapper(responseCorrelationId, ()))
       }
