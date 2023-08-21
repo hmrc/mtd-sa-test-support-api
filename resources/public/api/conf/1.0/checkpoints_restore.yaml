@@ -25,6 +25,15 @@ post:
       headers:
         X-CorrelationId:
           $ref: './common/headers.yaml#/components/parameters/correlationId'
+      content:
+        application/json:
+          schema:
+            $ref: './schemas/checkpoints/restore_response.json'
+          examples:
+            example-response:
+              description: Example Response
+              value:
+                $ref: './examples/checkpoints/restore_response.json'
 
     400:
       description: Bad Request

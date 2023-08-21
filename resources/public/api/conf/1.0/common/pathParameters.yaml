@@ -3,6 +3,7 @@ components:
     checkpointId:
       in: path
       name: checkpointId
+      required: true
       description: |
         The unique identifier of the checkpoint returned by the 'Create a checkpoint' endpoint. Format: ^[A-Za-z0-9\-]{36}$
       schema:
