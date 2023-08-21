@@ -37,6 +37,7 @@ class RestoreCheckpointControllerISpec extends IntegrationBaseSpec {
         val response: WSResponse = await(request().post(JsNull))
 
         response.status shouldBe CREATED
+        response.json shouldBe expectedResponseBody
         response.header("X-CorrelationId") should not be empty
       }
     }
@@ -93,6 +94,19 @@ class RestoreCheckpointControllerISpec extends IntegrationBaseSpec {
   trait Test {
     val vendorClientId = "some_client_id"
     val checkpointId   = "a1e8057e-fbbc-47a8-a8b4-78d9f015c253"
+
+    val expectedResponseBody: JsValue = Json.parse(
+      s"""
+         |{
+         | "links": [
+         |   {
+         |     "href": "/individuals/self-assessment-test-support/vendor-state/checkpoints/$checkpointId",
+         |     "rel": "delete-checkpoint",
+         |     "method": "DELETE"
+         |   }
+         | ]
+         |}""".stripMargin
+    )
 
     val downstreamUri = s"/test-support/vendor-state/$vendorClientId/checkpoints/$checkpointId/restore"
 

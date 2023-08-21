@@ -17,10 +17,13 @@
 package uk.gov.hmrc.mtdsatestsupportapi.controllers
 
 import api.controllers.{AuthorisedController, EndpointLogContext, RequestContext, RequestHandler}
+import api.hateoas.HateoasFactory
 import api.services.EnrolmentsAuthService
 import play.api.mvc.{Action, AnyContent, ControllerComponents}
 import uk.gov.hmrc.mtdsatestsupportapi.controllers.requestParsers.RestoreCheckpointRequestParser
 import uk.gov.hmrc.mtdsatestsupportapi.models.request.restoreCheckpoint.RestoreCheckpointRawData
+import uk.gov.hmrc.mtdsatestsupportapi.models.response.restoreCheckpoint.RestoreCheckpointHateoasData
+import uk.gov.hmrc.mtdsatestsupportapi.models.response.restoreCheckpoint.RestoreCheckpointResponse.RestoreCheckpointLinksFactory
 import uk.gov.hmrc.mtdsatestsupportapi.services.RestoreCheckpointService
 import utils.{IdGenerator, Logging}
 
@@ -31,6 +34,7 @@ class RestoreCheckpointController @Inject() (cc: ControllerComponents,
                                              val authService: EnrolmentsAuthService,
                                              parser: RestoreCheckpointRequestParser,
                                              service: RestoreCheckpointService,
+                                             hateoasFactory: HateoasFactory,
                                              idGenerator: IdGenerator)(implicit ec: ExecutionContext)
     extends AuthorisedController(cc)
     with Logging {
@@ -45,7 +49,7 @@ class RestoreCheckpointController @Inject() (cc: ControllerComponents,
         val requestHandler = RequestHandler
           .withParser(parser)
           .withService(service.restoreCheckpoint)
-          .withNoContentResult(CREATED)
+          .withHateoasResult(hateoasFactory)(RestoreCheckpointHateoasData(checkpointId), CREATED)
 
         requestHandler.handleRequest(rawData)
 
