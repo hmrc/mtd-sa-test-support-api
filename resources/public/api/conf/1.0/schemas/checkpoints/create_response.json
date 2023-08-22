@@ -24,7 +24,6 @@
             "type": "string",
             "enum": [
               "GET",
-              "PUT",
               "POST",
               "DELETE"
             ]
@@ -33,8 +32,6 @@
             "description": "A label for the endpoint, which describes how it is related to the current resource\nThe rel will be self where the action is retrieval of the same resource.",
             "type": "string",
             "enum": [
-              "self",
-              "create-checkpoint",
               "delete-checkpoint",
               "restore-checkpoint",
               "list-checkpoints"
