@@ -36,6 +36,8 @@ paths:
     $ref: "./vendor_state.yaml"
   # {{#if (enabled "checkpointing")}}
   /individuals/self-assessment-test-support/vendor-state/checkpoints:
-    $ref: "./checkpoints.yaml"
+    $ref: "./checkpoints_create.yaml"
+  /individuals/self-assesment-test-support/vendor-state/checkpoints/{checkpointId}:
+    $ref: "./checkpoints_delete.yaml"
   # {{/if}}
 
