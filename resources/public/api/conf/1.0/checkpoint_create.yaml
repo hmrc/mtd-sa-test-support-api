@@ -1,8 +1,19 @@
 summary: Create a Checkpoint
 description: |
-  This endpoint allows a developer to set up a checkpoint for the stateful data in the sandbox environment for a particular NINO. 
-  A National insurance number must be provided.
-  The developer will be able to reset the data back to checkpoint created for a particular NINO using the reset endpoint.
+  This endpoint allows a developer to set up a checkpoint for the stateful data in the sandbox environment for a given National Insurance number.
+  
+  A National Insurance number must be provided.
+  
+  The developer will be able to reset the data back to the checkpoint created using the 'Restore to Checkpoint'endpoint.
+
+  Note: To prevent data loss or unexpected behaviour, the checkpoint restore should not be performed while other stateful checkpoint operations 
+  are in progress for the same National insurance number
+  
+parameters:
+  - $ref: './common/headers.yaml#/components/parameters/acceptHeader'
+  - $ref: './common/headers.yaml#/components/parameters/authorizationWriteScopeHeader'
+  - $ref: './common/queryParameters.yaml#/components/parameters/nino'
+
 
 security:
   - User-Restricted:
@@ -14,6 +25,17 @@ responses:
     headers:
       X-CorrelationId:
         $ref: './common/headers.yaml#/components/parameters/correlationId'
+    content:
+      application/json:
+        schema:
+          $ref: './schemas/checkpoints/create_response.json'
+        examples:
+          example-response:
+            description: Example Response
+            value:
+              $ref: './examples/checkpoints/create_response.json'
+
+
   400:
     description: Bad Request
     content:
@@ -23,8 +45,6 @@ responses:
         examples:
           FORMAT_NINO:
             $ref: './common/errors.yaml#/components/examples/formatNino'
-          RULE_DUPLICATE_SUBMISSION:
-            $ref: './common/errors.yaml#/components/examples/ruleDuplicateSubmission'
 
   403:
     description: Forbidden
