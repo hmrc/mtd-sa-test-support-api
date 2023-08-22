@@ -68,7 +68,7 @@ class RestoreCheckpointControllerSpec
         "return a success 201 result" in new Test {
           override protected def callController(): Future[Result] =
             controller.handleRequest(checkpointId)(
-              fakeDeleteRequestWithHeaders(HeaderNames.AUTHORIZATION -> "Bearer Token", "X-Client-Id" -> "some_id"))
+              fakeRequestWithHeaders(HeaderNames.AUTHORIZATION -> "Bearer Token", "X-Client-Id" -> "some_id"))
 
           MockRestoreCheckpointRequestParser
             .parseRequest(rawData)
@@ -89,7 +89,7 @@ class RestoreCheckpointControllerSpec
         "return the corresponding error" in new Test {
           override protected def callController(): Future[Result] =
             controller.handleRequest(checkpointId)(
-              fakeDeleteRequestWithHeaders(HeaderNames.AUTHORIZATION -> "Bearer Token", "X-Client-Id" -> "some_id"))
+              fakeRequestWithHeaders(HeaderNames.AUTHORIZATION -> "Bearer Token", "X-Client-Id" -> "some_id"))
 
           MockRestoreCheckpointRequestParser
             .parseRequest(rawData)
@@ -102,7 +102,7 @@ class RestoreCheckpointControllerSpec
         "return the corresponding error" in new Test {
           override protected def callController(): Future[Result] =
             controller.handleRequest(checkpointId)(
-              fakeDeleteRequestWithHeaders(HeaderNames.AUTHORIZATION -> "Bearer Token", "X-Client-Id" -> "some_id"))
+              fakeRequestWithHeaders(HeaderNames.AUTHORIZATION -> "Bearer Token", "X-Client-Id" -> "some_id"))
 
           MockRestoreCheckpointRequestParser
             .parseRequest(rawData)
@@ -120,7 +120,7 @@ class RestoreCheckpointControllerSpec
     "X-Client-Id header is not present" should {
       "return an internal server error result" in new Test {
         override protected def callController(): Future[Result] =
-          controller.handleRequest(checkpointId)(fakeDeleteRequestWithHeaders(HeaderNames.AUTHORIZATION -> "Bearer Token"))
+          controller.handleRequest(checkpointId)(fakeRequestWithHeaders(HeaderNames.AUTHORIZATION -> "Bearer Token"))
 
         val result: Future[Result] = callController()
 

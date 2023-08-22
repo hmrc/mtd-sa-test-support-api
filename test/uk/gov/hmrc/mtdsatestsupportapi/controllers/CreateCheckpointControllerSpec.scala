@@ -72,7 +72,7 @@ class CreateCheckpointControllerSpec
     "return CREATED with the checkpointId" when {
       "a valid request is processed successfully" in new Test {
         override protected def callController(): Future[Result] =
-          controller.handleRequest(maybeNino)(fakeDeleteRequestWithHeaders(HeaderNames.AUTHORIZATION -> "Bearer Token", "X-Client-Id" -> "some_id"))
+          controller.handleRequest(maybeNino)(fakeRequestWithHeaders(HeaderNames.AUTHORIZATION -> "Bearer Token", "X-Client-Id" -> "some_id"))
 
         MockCreateCheckpointRequestParser
           .parseRequest(rawData)
@@ -93,7 +93,7 @@ class CreateCheckpointControllerSpec
     "return the error as per spec" when {
       "the parser validation fails" in new Test {
         override protected def callController(): Future[Result] =
-          controller.handleRequest(maybeNino)(fakeDeleteRequestWithHeaders(HeaderNames.AUTHORIZATION -> "Bearer Token", "X-Client-Id" -> "some_id"))
+          controller.handleRequest(maybeNino)(fakeRequestWithHeaders(HeaderNames.AUTHORIZATION -> "Bearer Token", "X-Client-Id" -> "some_id"))
 
         MockCreateCheckpointRequestParser
           .parseRequest(rawData)
@@ -105,7 +105,7 @@ class CreateCheckpointControllerSpec
 
       "the service returns an error" in new Test {
         override protected def callController(): Future[Result] =
-          controller.handleRequest(maybeNino)(fakeDeleteRequestWithHeaders(HeaderNames.AUTHORIZATION -> "Bearer Token", "X-Client-Id" -> "some_id"))
+          controller.handleRequest(maybeNino)(fakeRequestWithHeaders(HeaderNames.AUTHORIZATION -> "Bearer Token", "X-Client-Id" -> "some_id"))
 
         MockCreateCheckpointRequestParser
           .parseRequest(rawData)
@@ -122,7 +122,7 @@ class CreateCheckpointControllerSpec
     "return an InternalServerError" when {
       "the request is missing an X-Client-Id header" in new Test {
         override protected def callController(): Future[Result] =
-          controller.handleRequest(maybeNino)(fakeDeleteRequestWithHeaders(HeaderNames.AUTHORIZATION -> "Bearer Token"))
+          controller.handleRequest(maybeNino)(fakeRequestWithHeaders(HeaderNames.AUTHORIZATION -> "Bearer Token"))
 
         val result: Future[Result] = callController()
 

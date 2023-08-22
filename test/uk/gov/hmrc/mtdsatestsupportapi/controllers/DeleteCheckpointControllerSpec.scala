@@ -61,7 +61,7 @@ class DeleteCheckpointControllerSpec
       "a valid request is processed successfully" should {
         "return a success 204 result" in new Test {
           override protected def callController(): Future[Result] =
-            controller.handleRequest(checkpointId)(fakeDeleteRequestWithHeaders(HeaderNames.AUTHORIZATION -> "Bearer Token", "X-Client-Id" -> "some_id"))
+            controller.handleRequest(checkpointId)(fakeRequestWithHeaders(HeaderNames.AUTHORIZATION -> "Bearer Token", "X-Client-Id" -> "some_id"))
 
           MockDeleteCheckpointRequestParser
             .parseRequest(rawData)
@@ -77,7 +77,7 @@ class DeleteCheckpointControllerSpec
       "a request is unsuccessful due to failing parser validation" should {
         "return the corresponding error" in new Test {
           override protected def callController(): Future[Result] =
-            controller.handleRequest(checkpointId)(fakeDeleteRequestWithHeaders(HeaderNames.AUTHORIZATION -> "Bearer Token", "X-Client-Id" -> "some_id"))
+            controller.handleRequest(checkpointId)(fakeRequestWithHeaders(HeaderNames.AUTHORIZATION -> "Bearer Token", "X-Client-Id" -> "some_id"))
 
           MockDeleteCheckpointRequestParser
             .parseRequest(rawData)
@@ -89,7 +89,7 @@ class DeleteCheckpointControllerSpec
       "the service returns an error during processing" should {
         "return the corresponding error" in new Test {
           override protected def callController(): Future[Result] =
-            controller.handleRequest(checkpointId)(fakeDeleteRequestWithHeaders(HeaderNames.AUTHORIZATION -> "Bearer Token", "X-Client-Id" -> "some_id"))
+            controller.handleRequest(checkpointId)(fakeRequestWithHeaders(HeaderNames.AUTHORIZATION -> "Bearer Token", "X-Client-Id" -> "some_id"))
 
           MockDeleteCheckpointRequestParser
             .parseRequest(rawData)
@@ -107,7 +107,7 @@ class DeleteCheckpointControllerSpec
     "X-Client-Id header is not present" should {
       "return an internal server error result" in new Test {
         override protected def callController(): Future[Result] =
-          controller.handleRequest(checkpointId)(fakeDeleteRequestWithHeaders(HeaderNames.AUTHORIZATION -> "Bearer Token"))
+          controller.handleRequest(checkpointId)(fakeRequestWithHeaders(HeaderNames.AUTHORIZATION -> "Bearer Token"))
 
         val result: Future[Result] = callController()
 
