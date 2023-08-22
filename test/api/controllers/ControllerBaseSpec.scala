@@ -23,8 +23,8 @@ import api.models.errors.MtdError
 import play.api.http.{HeaderNames, MimeTypes, Status}
 import play.api.libs.json.JsValue
 import play.api.mvc.{AnyContentAsEmpty, ControllerComponents, Result}
-import play.api.test.{FakeRequest, ResultExtractors}
 import play.api.test.Helpers.stubControllerComponents
+import play.api.test.{FakeRequest, ResultExtractors}
 import support.UnitSpec
 import uk.gov.hmrc.http.HeaderCarrier
 
@@ -48,7 +48,7 @@ class ControllerBaseSpec extends UnitSpec with Status with MimeTypes with Header
 
   def fakePutRequest[T](body: T): FakeRequest[T] = fakeRequest.withBody(body)
 
-  def fakeDeleteRequestWithHeaders(headers: (String, String)*): FakeRequest[AnyContentAsEmpty.type] = fakeRequest.withHeaders(headers: _*)
+  def fakeRequestWithHeaders(headers: (String, String)*): FakeRequest[AnyContentAsEmpty.type] = fakeRequest.withHeaders(headers: _*)
 
   def fakeRequestWithBody[T](body: T): FakeRequest[T] = fakeRequest.withBody(body)
 
@@ -70,7 +70,7 @@ trait ControllerTestRunner extends MockEnrolmentsAuthService with MockIdGenerato
       val result: Future[Result] = callController()
 
       status(result) shouldBe expectedStatus
-      header("X-CorrelationId", result) shouldBe Some(correlationId)
+      header("X-CorrelationId", of = result) shouldBe Some(correlationId)
 
       maybeExpectedResponseBody match {
         case Some(jsBody) => contentAsJson(result) shouldBe jsBody

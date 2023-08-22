@@ -16,9 +16,22 @@
 
 package config
 
+import com.google.inject.ImplementedBy
 import play.api.Configuration
 
-case class FeatureSwitches(featureSwitchConfig: Configuration) {
+import javax.inject.Inject
+
+
+@ImplementedBy(classOf[FeatureSwitchesImpl])
+trait FeatureSwitches {
+  def isVersionEnabled(version: String): Boolean
+  def isEnabled(key: String): Boolean
+}
+
+case class FeatureSwitchesImpl(featureSwitchConfig: Configuration) extends FeatureSwitches {
+
+  @Inject
+  def this(appConfig: AppConfig) = this(appConfig.featureSwitches)
 
   private val versionRegex = """(\d)\.\d""".r
 
@@ -36,8 +49,10 @@ case class FeatureSwitches(featureSwitchConfig: Configuration) {
 
     enabled.getOrElse(false)
   }
+
+  def isEnabled(key: String): Boolean = featureSwitchConfig.getOptional[Boolean](key + ".enabled").getOrElse(true)
 }
 
 object FeatureSwitches {
-  def apply()(implicit appConfig: AppConfig): FeatureSwitches = FeatureSwitches(appConfig.featureSwitches)
+  def apply(configuration: Configuration): FeatureSwitches = new FeatureSwitchesImpl(configuration)
 }

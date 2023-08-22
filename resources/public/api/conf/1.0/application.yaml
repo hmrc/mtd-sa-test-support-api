@@ -34,7 +34,10 @@ components:
 paths:
   /individuals/self-assessment-test-support/vendor-state:
     $ref: "./vendor_state.yaml"
-  /individuals/self-assessment-test-support/vendor-state/checkpoints?nino={nino}:
-    post:
-      $ref: "./checkpoint_create.yaml"
+  # {{#if (enabled "checkpointing")}}
+  /individuals/self-assessment-test-support/vendor-state/checkpoints:
+    $ref: "./checkpoints_create.yaml"
+  /individuals/self-assesment-test-support/vendor-state/checkpoints/{checkpointId}:
+    $ref: "./checkpoints_delete.yaml"
+  # {{/if}}
 

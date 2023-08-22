@@ -16,10 +16,4 @@
 
 package api.connectors
 
-sealed trait DownstreamUri[Resp] {
-  val value: String
-}
-
-object DownstreamUri {
-  final case class StubUri[Resp](value: String)                extends DownstreamUri[Resp]
-}
+case class DownstreamUri[Resp](path: String)
