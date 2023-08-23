@@ -10,7 +10,7 @@ get:
   parameters:
     - $ref: './common/headers.yaml#/components/parameters/acceptHeader'
     - $ref: './common/headers.yaml#/components/parameters/authorizationWriteScopeHeader'
-    - $ref: './common/queryParameters.yaml#/components/parameters/ninoCreateCheckpoint'
+    - $ref: './common/queryParameters.yaml#/components/parameters/ninoListCheckpoint'
 
   responses:
     200:

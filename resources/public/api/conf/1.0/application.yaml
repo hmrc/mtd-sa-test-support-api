@@ -39,7 +39,7 @@ paths:
     $ref: "./checkpoints_create.yaml"
   /individuals/self-assesment-test-support/vendor-state/checkpoints/{checkpointId}:
     $ref: "./checkpoints_delete.yaml"
-  /individuals/self-assesment-test-support/vendor-state/checkpoints?nino={nino}:
+  /individuals/self-assesment-test-support/vendor-state/checkpoints:
     $ref: "./checkpoints_list.yaml"
   /individuals/self-assessment-test-support/vendor-state/checkpoints/{checkpointId}/restore:
     $ref: "./checkpoints_restore.yaml"
