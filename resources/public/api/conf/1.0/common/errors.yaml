@@ -15,6 +15,7 @@ components:
         code: FORMAT_CHECKPOINT_ID
         message: The provided checkpoint ID is invalid
 
+
     # 403
 
     clientOrAgentNotAuthorised:

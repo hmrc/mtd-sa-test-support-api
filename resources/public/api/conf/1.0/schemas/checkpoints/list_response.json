@@ -1,0 +1,71 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "title": "List checkpoints",
+  "type": "object",
+  "properties": {
+    "Checkpoints": {
+      "type": "array",
+      "description": "The array holding all the checkpoint details.",
+
+      "items": {
+        "type": "object",
+        "properties": {
+          "checkpointId": {
+            "type": "string",
+            "description": "The unique identifier of the calculation.",
+            "pattern": "^[A-Za-z0-9]{36}$",
+            "example": "a1e8057e-fbbc-47a8-a8b4-78d9f015c253"
+          },
+          "checkpointcreationTimestamp": {
+            "type": "string",
+            "description": "The timestamp of when the checkpoint was created in ISO 8601 UTC format.",
+            "pattern": "^[YYYY-MM-DDThh:mm:ss.SSSZ.]$",
+            "example": " 2019-07-13T07:51:43.112Z"
+          }
+        },
+        "required": [
+          "checkpointId",
+          "checkpointcreationTimestamp"
+        ]
+      }
+    },
+    "links": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "description": "A list of endpoint links that indicate possible actions related to the current resource.",
+        "properties": {
+          "href": {
+            "description": "The relative url of the endpoint.",
+            "type": "string",
+            "example": "https://test-api.service.hmrc.gov.uk/individuals/self-assessment-test-support/vendor-state/checkpoints"
+          },
+          "method": {
+            "description": "The HTTP method type for the endpoint.",
+            "type": "string",
+            "enum": [
+              "POST",
+              "DELETE"
+            ]
+          },
+          "rel": {
+            "description": "A label for the endpoint, which describes how it is related to the current resource\nThe rel will be self where the action is retrieval of the same resource.",
+            "type": "string",
+            "enum": [
+              "create-checkpoint",
+              "delete-checkpoint",
+              "restore-checkpoint"
+            ]
+          }
+        },
+        "required": [
+          "href",
+          "method",
+          "rel"
+        ],
+        "additionalProperties": false
+      }
+    }
+  },
+  "additionalProperties": false
+}
