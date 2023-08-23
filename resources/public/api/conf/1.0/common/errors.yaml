@@ -3,6 +3,12 @@ components:
 
     # 400
 
+    formatNino:
+      description: The format of the supplied NINO is not valid.
+      value:
+        code: FORMAT_NINO
+        message: The provided NINO is invalid
+
     formatCheckpointId:
       description: The format of the supplied Checkpoint ID field is not valid.
       value:
@@ -26,7 +32,6 @@ components:
       value:
         code: MATCHING_RESOURCE_NOT_FOUND
         message: Matching resource not found
-
 
     notFoundCreateCheckpoint:
       description: 	No checkpoint found for the passed Checkpoint ID.
