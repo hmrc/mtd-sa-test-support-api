@@ -1,0 +1,42 @@
+{
+  "$schema": "https://json-schema.org/draft/2019-09/schema",
+  "title": "Restore a checkpoint",
+  "type": "object",
+  "properties": {
+    "links": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "description": "A list of endpoint links that indicate possible actions related to the current resource.",
+        "properties": {
+          "href": {
+            "description": "The relative url of the endpoint.",
+            "type": "string",
+            "example": "https://test-api.service.hmrc.gov.uk/individuals/self-assessment-test-support/vendor-state/checkpoints"
+          },
+          "method": {
+            "description": "The HTTP method type for the endpoint.",
+            "type": "string",
+            "enum": [
+              "POST"
+            ]
+          },
+          "rel": {
+            "description": "A label for the endpoint, which describes how it is related to the current resource\nThe rel will be self where the action is retrieval of the same resource.",
+            "type": "string",
+            "enum": [
+              "delete-checkpoint"
+            ]
+          }
+        },
+        "required": [
+          "href",
+          "method",
+          "rel"
+        ],
+        "additionalProperties": false
+      }
+    }
+  },
+  "additionalProperties": false
+}
