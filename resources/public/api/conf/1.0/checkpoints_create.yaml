@@ -6,7 +6,7 @@ post:
   
     A National Insurance number must be provided.
   
-    The developer will be able to reset the data back to the checkpoint created using the 'Restore to Checkpoint'endpoint.
+    The developer will be able to reset the data back to the checkpoint created using the 'Restore to Checkpoint' endpoint.
 
     **Note**: To prevent data loss or unexpected behaviour, the checkpoint restore should not be performed while other stateful checkpoint 
     operations are in progress for the same National insurance number.

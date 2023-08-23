@@ -2,8 +2,8 @@ get:
   $ref: "./checkpoints_list.yaml"
   summary: List checkpoints
   description: |
-    This endpoint allows a developer to get all the checkpoints created for the vendor id. 
-    A National Insurance number can be provided to to filter the results based on National Insurance number.
+    This endpoint allows a developer to get all the checkpoints created for the vendor ID. 
+    A National Insurance number can be provided to filter the results.
   security:
     - User-Restricted:
         - write:self-assessment
