@@ -16,34 +16,33 @@
 
 package uk.gov.hmrc.mtdsatestsupportapi.connectors
 
+import api.connectors.{DownstreamOutcome, _}
 import api.connectors.httpparsers.StandardDownstreamHttpParser
-import api.connectors.{BaseDownstreamConnector, DownstreamOutcome, DownstreamUri}
+import api.connectors.httpparsers.StandardDownstreamHttpParser.SuccessCode
 import config.AppConfig
+import play.api.http.Status.CREATED
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.http.client.HttpClientV2
-import uk.gov.hmrc.mtdsatestsupportapi.models.request.deleteStatefulTestData.DeleteStatefulTestDataRequest
+import uk.gov.hmrc.mtdsatestsupportapi.models.request.restoreCheckpoint.RestoreCheckpointRequest
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
-class DeleteVendorStateConnector @Inject() (val http: HttpClientV2, val appConfig: AppConfig)
+class RestoreCheckpointConnector @Inject() (val appConfig: AppConfig, val http: HttpClientV2)
     extends BaseDownstreamConnector
     with StandardDownstreamHttpParser {
 
-  def deleteVendorState(request: DeleteStatefulTestDataRequest)(implicit
-      hc: HeaderCarrier,
-      ec: ExecutionContext,
-      correlationId: String): Future[DownstreamOutcome[Unit]] = {
+  def restoreCheckpoint(
+      request: RestoreCheckpointRequest)(implicit ec: ExecutionContext, hc: HeaderCarrier, correlationId: String): Future[DownstreamOutcome[Unit]] = {
+
     import request._
 
+    implicit val successCode: SuccessCode  = SuccessCode(CREATED)
     implicit val context: ConnectorContext = ConnectorContext(appConfig.stubDownstreamConfig)
 
-    val path = nino match {
-      case Some(nino) => s"test-support/vendor-state/$vendorClientId?taxableEntityId=${nino.value}"
-      case None       => s"test-support/vendor-state/$vendorClientId"
-    }
+    val downstreamPath = s"/test-support/vendor-state/$vendorClientId/checkpoints/${checkpointId.value}/restore"
 
-    delete(DownstreamUri[Unit](path))
+    postEmpty(DownstreamUri[Unit](downstreamPath))
   }
 
 }

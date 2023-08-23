@@ -18,32 +18,34 @@ package uk.gov.hmrc.mtdsatestsupportapi.connectors
 
 import api.connectors.httpparsers.StandardDownstreamHttpParser
 import api.connectors.{BaseDownstreamConnector, DownstreamOutcome, DownstreamUri}
+import api.models.domain.Nino
 import config.AppConfig
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.http.client.HttpClientV2
-import uk.gov.hmrc.mtdsatestsupportapi.models.request.deleteStatefulTestData.DeleteStatefulTestDataRequest
+import uk.gov.hmrc.mtdsatestsupportapi.models.request.listCheckpoints.ListCheckpointsRequest
+import uk.gov.hmrc.mtdsatestsupportapi.models.response.listCheckpoints.{Checkpoint, ListCheckpointsResponse}
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
-class DeleteVendorStateConnector @Inject() (val http: HttpClientV2, val appConfig: AppConfig)
+class ListCheckpointsConnector @Inject() (val appConfig: AppConfig, val http: HttpClientV2)
     extends BaseDownstreamConnector
     with StandardDownstreamHttpParser {
 
-  def deleteVendorState(request: DeleteStatefulTestDataRequest)(implicit
+  def listCheckpoints(request: ListCheckpointsRequest)(implicit
       hc: HeaderCarrier,
       ec: ExecutionContext,
-      correlationId: String): Future[DownstreamOutcome[Unit]] = {
+      correlationId: String): Future[DownstreamOutcome[ListCheckpointsResponse[Checkpoint]]] = {
     import request._
 
     implicit val context: ConnectorContext = ConnectorContext(appConfig.stubDownstreamConfig)
 
-    val path = nino match {
-      case Some(nino) => s"test-support/vendor-state/$vendorClientId?taxableEntityId=${nino.value}"
-      case None       => s"test-support/vendor-state/$vendorClientId"
+    val downstreamPath = request.nino match {
+      case Some(Nino(nino)) => s"/test-support/vendor-state/$vendorClientId/checkpoints?taxableEntityId=$nino"
+      case None             => s"/test-support/vendor-state/$vendorClientId/checkpoints"
     }
 
-    delete(DownstreamUri[Unit](path))
+    get(DownstreamUri[ListCheckpointsResponse[Checkpoint]](downstreamPath))
   }
 
 }

@@ -17,6 +17,7 @@
 package uk.gov.hmrc.mtdsatestsupportapi.controllers
 
 import api.controllers._
+import api.hateoas.{HateoasWrapper, MockHateoasFactory}
 import api.mocks.MockIdGenerator
 import api.mocks.services.MockEnrolmentsAuthService
 import api.models.domain.CheckpointId
@@ -25,61 +26,72 @@ import api.models.outcomes.ResponseWrapper
 import play.api.http.HeaderNames
 import play.api.mvc.Result
 import support.UnitSpec
-import uk.gov.hmrc.mtdsatestsupportapi.mocks.requestParsers.MockDeleteCheckpointRequestParser
-import uk.gov.hmrc.mtdsatestsupportapi.mocks.services.MockDeleteCheckpointService
-import uk.gov.hmrc.mtdsatestsupportapi.models.request.deleteCheckpoint.{DeleteCheckpointRawData, DeleteCheckpointRequest}
+import uk.gov.hmrc.mtdsatestsupportapi.mocks.requestParsers.MockRestoreCheckpointRequestParser
+import uk.gov.hmrc.mtdsatestsupportapi.mocks.services.MockRestoreCheckpointService
+import uk.gov.hmrc.mtdsatestsupportapi.models.request.restoreCheckpoint.{RestoreCheckpointRawData, RestoreCheckpointRequest}
+import uk.gov.hmrc.mtdsatestsupportapi.models.response.restoreCheckpoint.RestoreCheckpointHateoasData
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
-class DeleteCheckpointControllerSpec
+class RestoreCheckpointControllerSpec
     extends ControllerBaseSpec
+    with ControllerSpecHateoasSupport
     with ControllerTestRunner
     with UnitSpec
-    with MockDeleteCheckpointRequestParser
-    with MockDeleteCheckpointService
+    with MockRestoreCheckpointRequestParser
+    with MockRestoreCheckpointService
     with MockEnrolmentsAuthService
+    with MockHateoasFactory
     with MockIdGenerator {
 
   trait Test extends ControllerTest {
     protected val vendorClientId = "some_id"
     protected val checkpointId   = "someCheckpointId"
 
-    val rawData: DeleteCheckpointRawData     = DeleteCheckpointRawData(vendorClientId, checkpointId)
-    val requestData: DeleteCheckpointRequest = DeleteCheckpointRequest(vendorClientId, CheckpointId(checkpointId))
+    val rawData: RestoreCheckpointRawData     = RestoreCheckpointRawData(vendorClientId, checkpointId)
+    val requestData: RestoreCheckpointRequest = RestoreCheckpointRequest(vendorClientId, CheckpointId(checkpointId))
 
-    val controller = new DeleteCheckpointController(
+    val controller = new RestoreCheckpointController(
       cc = cc,
       authService = mockEnrolmentsAuthService,
-      parser = mockDeleteCheckpointRequestParser,
-      service = mockDeleteCheckpointService,
+      parser = mockRestoreCheckpointRequestParser,
+      service = mockRestoreCheckpointService,
+      hateoasFactory = mockHateoasFactory,
       idGenerator = mockIdGenerator)
+
   }
 
-  "DeleteCheckpointController" when {
+  "RestoreCheckpointController" when {
     "X-Client-Id header is present" when {
       "a valid request is processed successfully" should {
-        "return a success 204 result" in new Test {
+        "return a success 201 result" in new Test {
           override protected def callController(): Future[Result] =
-            controller.handleRequest(checkpointId)(fakeRequestWithHeaders(HeaderNames.AUTHORIZATION -> "Bearer Token", "X-Client-Id" -> "some_id"))
+            controller.handleRequest(checkpointId)(
+              fakeRequestWithHeaders(HeaderNames.AUTHORIZATION -> "Bearer Token", "X-Client-Id" -> "some_id"))
 
-          MockDeleteCheckpointRequestParser
+          MockRestoreCheckpointRequestParser
             .parseRequest(rawData)
             .returns(Right(requestData))
 
-          MockDeleteCheckpointService
-            .deleteCheckpoint(requestData)
+          MockRestoreCheckpointService
+            .restoreCheckpoint(requestData)
             .returns(Future.successful(Right(ResponseWrapper(correlationId, ()))))
 
-          runOkTest(expectedStatus = NO_CONTENT)
+          MockHateoasFactory
+            .wrap((), RestoreCheckpointHateoasData(checkpointId))
+            .returns(HateoasWrapper((), hateoaslinks))
+
+          runOkTest(expectedStatus = CREATED, maybeExpectedResponseBody = Some(hateoaslinksJson))
         }
       }
       "a request is unsuccessful due to failing parser validation" should {
         "return the corresponding error" in new Test {
           override protected def callController(): Future[Result] =
-            controller.handleRequest(checkpointId)(fakeRequestWithHeaders(HeaderNames.AUTHORIZATION -> "Bearer Token", "X-Client-Id" -> "some_id"))
+            controller.handleRequest(checkpointId)(
+              fakeRequestWithHeaders(HeaderNames.AUTHORIZATION -> "Bearer Token", "X-Client-Id" -> "some_id"))
 
-          MockDeleteCheckpointRequestParser
+          MockRestoreCheckpointRequestParser
             .parseRequest(rawData)
             .returns(Left(ErrorWrapper(correlationId, CheckpointIdFormatError, None)))
 
@@ -89,14 +101,15 @@ class DeleteCheckpointControllerSpec
       "the service returns an error during processing" should {
         "return the corresponding error" in new Test {
           override protected def callController(): Future[Result] =
-            controller.handleRequest(checkpointId)(fakeRequestWithHeaders(HeaderNames.AUTHORIZATION -> "Bearer Token", "X-Client-Id" -> "some_id"))
+            controller.handleRequest(checkpointId)(
+              fakeRequestWithHeaders(HeaderNames.AUTHORIZATION -> "Bearer Token", "X-Client-Id" -> "some_id"))
 
-          MockDeleteCheckpointRequestParser
+          MockRestoreCheckpointRequestParser
             .parseRequest(rawData)
             .returns(Right(requestData))
 
-          MockDeleteCheckpointService
-            .deleteCheckpoint(requestData)
+          MockRestoreCheckpointService
+            .restoreCheckpoint(requestData)
             .returns(Future.successful(Left(ErrorWrapper(correlationId, NotFoundError))))
 
           runErrorTest(NotFoundError)
