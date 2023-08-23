@@ -63,6 +63,6 @@ post:
             $ref: './schemas/error_response.yaml'
           examples:
             MATCHING_RESOURCE_NOT_FOUND:
-              $ref: './common/errors.yaml#/components/examples/notFoundCreateCheckpoint'
+              $ref: './common/errors.yaml#/components/examples/notFoundCheckpointId'
 
 
