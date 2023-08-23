@@ -35,6 +35,12 @@ components:
         message: Matching resource not found
 
     notFoundCreateCheckpoint:
+      description: 	No records were found for the passed NINO to create a checkpoint.
+      value:
+        code: MATCHING_RESOURCE_NOT_FOUND
+        message: Matching resource not found
+
+    notFoundCheckpointId:
       description: 	No checkpoint found for the passed Checkpoint ID.
       value:
         code: MATCHING_RESOURCE_NOT_FOUND
