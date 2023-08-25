@@ -27,8 +27,6 @@ class BusinessSpec extends UnitSpec with CreateBusinessFixtures {
   private def business(typeOfBusiness: TypeOfBusiness = `self-employment`) = Business(
     typeOfBusiness = typeOfBusiness,
     tradingName = Some("Abc Ltd"),
-    accountingPeriodStartDate = "2001-01-01",
-    accountingPeriodEndDate = "2011-11-11",
     firstAccountingPeriodStartDate = Some("2002-02-02"),
     firstAccountingPeriodEndDate = Some("2012-12-12"),
     latencyDetails = Some(
@@ -57,8 +55,6 @@ class BusinessSpec extends UnitSpec with CreateBusinessFixtures {
           val mtdJson = Json.parse("""{
               |  "typeOfBusiness": "self-employment",
               |  "tradingName": "Abc Ltd",
-              |  "accountingPeriodStartDate": "2001-01-01",
-              |  "accountingPeriodEndDate": "2011-11-11",
               |  "firstAccountingPeriodStartDate": "2002-02-02",
               |  "firstAccountingPeriodEndDate": "2012-12-12",
               |  "latencyDetails": {
@@ -102,8 +98,6 @@ class BusinessSpec extends UnitSpec with CreateBusinessFixtures {
                 .parse(s"""{
                      |  "tradingName": "Abc Ltd",
                      |  "propertyIncome": $expectedPropertyIncome,
-                     |  "accountingPeriodStartDate": "2001-01-01",
-                     |  "accountingPeriodEndDate": "2011-11-11",
                      |  "firstAccountingPeriodStartDate": "2002-02-02",
                      |  "firstAccountingPeriodEndDate": "2012-12-12",
                      |  "latencyDetails": {

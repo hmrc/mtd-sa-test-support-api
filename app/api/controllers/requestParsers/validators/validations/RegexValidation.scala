@@ -14,9 +14,16 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.mtdsatestsupportapi.models.request.createBusiness
+package api.controllers.requestParsers.validators.validations
 
-import api.models.request.RawData
-import play.api.libs.json.JsValue
+import api.models.errors.MtdError
 
-case class CreateBusinessRawData(vendorClientId: String, nino: String, body: JsValue) extends RawData
+import scala.util.matching.Regex
+
+trait RegexValidation {
+  protected val regex: Regex
+
+  protected[validations] final def validateRegex(value: String, error: => MtdError): Seq[MtdError] =
+    if (regex.matches(value)) Nil else Seq(error)
+
+}

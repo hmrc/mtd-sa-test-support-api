@@ -14,9 +14,16 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.mtdsatestsupportapi.models.request.createBusiness
+package uk.gov.hmrc.mtdsatestsupportapi.controllers.requestParsers.validators.validations
 
-import api.models.request.RawData
-import play.api.libs.json.JsValue
+import api.controllers.requestParsers.validators.validations.RegexValidation
+import api.models.errors.{MtdError, PostcodeFormatError}
 
-case class CreateBusinessRawData(vendorClientId: String, nino: String, body: JsValue) extends RawData
+import scala.util.matching.Regex
+
+object PostcodeValidation extends RegexValidation {
+  override protected val regex: Regex = "^[A-Z]{1,2}[0-9][0-9A-Z]?\\s?[0-9][A-Z]{2}|BFPO\\s?[0-9]{1,10}$".r
+
+  def validate(value: String, error: => MtdError = PostcodeFormatError): Seq[MtdError] =
+    validateRegex(value, error)
+}

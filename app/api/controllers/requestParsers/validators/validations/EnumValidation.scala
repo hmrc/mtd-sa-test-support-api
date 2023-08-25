@@ -14,9 +14,14 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.mtdsatestsupportapi.models.request.createBusiness
+package api.controllers.requestParsers.validators.validations
 
-import api.models.request.RawData
-import play.api.libs.json.JsValue
+import api.models.errors.MtdError
 
-case class CreateBusinessRawData(vendorClientId: String, nino: String, body: JsValue) extends RawData
+trait EnumValidation[E] {
+  protected val parser: PartialFunction[String, E]
+
+  protected final def validateEnum(value: String, error: => MtdError): List[MtdError] =
+    if (parser.isDefinedAt(value)) Nil else List(error)
+
+}

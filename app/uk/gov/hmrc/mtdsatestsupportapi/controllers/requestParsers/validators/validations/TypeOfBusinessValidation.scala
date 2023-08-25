@@ -14,9 +14,15 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.mtdsatestsupportapi.models.request.createBusiness
+package uk.gov.hmrc.mtdsatestsupportapi.controllers.requestParsers.validators.validations
 
-import api.models.request.RawData
-import play.api.libs.json.JsValue
+import api.controllers.requestParsers.validators.validations.EnumValidation
+import api.models.errors.{MtdError, TypeOfBusinessFormatError}
+import uk.gov.hmrc.mtdsatestsupportapi.models.request.createBusiness.TypeOfBusiness
 
-case class CreateBusinessRawData(vendorClientId: String, nino: String, body: JsValue) extends RawData
+object TypeOfBusinessValidation extends EnumValidation[TypeOfBusiness] {
+
+  override val parser: PartialFunction[String, TypeOfBusiness] = TypeOfBusiness.parser
+
+  def validate(value: String, error: => MtdError = TypeOfBusinessFormatError): Seq[MtdError] = validateEnum(value, error)
+}

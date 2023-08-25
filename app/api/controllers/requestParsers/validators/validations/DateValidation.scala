@@ -14,9 +14,19 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.mtdsatestsupportapi.models.request.createBusiness
+package api.controllers.requestParsers.validators.validations
 
-import api.models.request.RawData
-import play.api.libs.json.JsValue
+import api.models.errors.{DateFormatError, MtdError}
 
-case class CreateBusinessRawData(vendorClientId: String, nino: String, body: JsValue) extends RawData
+import java.time.LocalDate
+import scala.util.{Failure, Success, Try}
+
+object DateValidation {
+
+  def validate(value: String, error: => MtdError = DateFormatError): Seq[MtdError] =
+    Try(LocalDate.parse(value, dateFormat)) match {
+      case Success(_) => Nil
+      case Failure(_) => List(error)
+    }
+
+}

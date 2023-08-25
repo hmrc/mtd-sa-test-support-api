@@ -14,14 +14,15 @@
  * limitations under the License.
  */
 
-package api.controllers.requestParsers.validators
+package uk.gov.hmrc.mtdsatestsupportapi.controllers.requestParsers.validators.validations
 
-import java.time.format.DateTimeFormatter
+import api.controllers.requestParsers.validators.validations.EnumValidation
+import api.models.errors.{LatencyIndicatorFormatError, MtdError}
+import uk.gov.hmrc.mtdsatestsupportapi.models.request.createBusiness.LatencyIndicator
 
+object LatencyIndicatorValidation extends EnumValidation[LatencyIndicator] {
 
-package object validations {
+  override val parser: PartialFunction[String, LatencyIndicator] = LatencyIndicator.parser
 
-  val dateFormat: DateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
-  val NoValidationErrors: List[Nothing] = List()
-
+  def validate(value: String, error: => MtdError = LatencyIndicatorFormatError): Seq[MtdError] = validateEnum(value, error)
 }
