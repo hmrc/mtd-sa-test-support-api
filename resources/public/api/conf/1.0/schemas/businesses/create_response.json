@@ -1,0 +1,13 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "title": "Create a Test Business",
+  "type": "object",
+  "properties": {
+    "businessId": {
+      "type": "string",
+      "description": "A unique identifier for the business income source. It must conform to the following regex.",
+      "pattern": "^X[A-Z0-9]{1}IS[0-9]{11}$"
+    },
+  },
+  "additionalProperties": false
+}

@@ -44,4 +44,8 @@ paths:
   /individuals/self-assessment-test-support/vendor-state/checkpoints/{checkpointId}/restore:
     $ref: "./checkpoints_restore.yaml"
   # {{/if}}
+  /individuals/self-assessment-test-support/business/{nino}/{businessId}:
+    $ref: "./business_delete.yaml"
+  /individuals/self-assessment-test-support/business/{nino}/:
+    $ref: "./business_create.yaml"
 

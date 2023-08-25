@@ -9,3 +9,13 @@ components:
       schema:
         type: string
         example: "a1e8057e-fbbc-47a8-a8b4-78d9f015c253"
+    businessId:
+      name: businessId
+      in: path
+      description: |
+        An identifier for the business, unique to the customer.<p>Must conform to the regular expression `^X[A-Z0-9]{1}IS[0-9]{11}$`
+      schema:
+        type: string
+        pattern: ^X[A-Z0-9]{1}IS[0-9]{11}$
+        example: XAIS12345678910
+      required: true
