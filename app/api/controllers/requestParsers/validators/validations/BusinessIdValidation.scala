@@ -14,8 +14,16 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.mtdsatestsupportapi.models.request.deleteTestBusiness
+package api.controllers.requestParsers.validators.validations
 
-import api.models.domain.Nino
+import api.models.errors.{BusinessIdFormatError, MtdError}
 
-case class DeleteTestBusinessRequest (vendorClientId: String, nino: Nino, businessId: String)
+object BusinessIdValidation {
+
+  def validate(id: String): List[MtdError] = {
+    val idRegex = "^X[A-Z0-9]{1}IS[0-9]{11}$"
+    if (id.matches(idRegex)) NoValidationErrors else List(BusinessIdFormatError)
+  }
+
+}
+

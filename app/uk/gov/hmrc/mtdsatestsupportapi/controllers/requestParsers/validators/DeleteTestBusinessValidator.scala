@@ -17,10 +17,13 @@
 package uk.gov.hmrc.mtdsatestsupportapi.controllers.requestParsers.validators
 
 import api.controllers.requestParsers.validators.Validator
-import api.controllers.requestParsers.validators.validations.NinoValidation
+import api.controllers.requestParsers.validators.validations.{BusinessIdValidation, NinoValidation}
 import api.models.errors.MtdError
 import uk.gov.hmrc.mtdsatestsupportapi.models.request.deleteTestBusiness.DeleteTestBusinessRawData
 
 class DeleteTestBusinessValidator extends Validator[DeleteTestBusinessRawData] {
-  override def validate(data: DeleteTestBusinessRawData): List[MtdError] = NinoValidation.validate(data.nino)
+
+  override def validate(data: DeleteTestBusinessRawData): List[MtdError] =
+    List(NinoValidation.validate(data.nino), BusinessIdValidation.validate(data.businessId)).flatten
+
 }

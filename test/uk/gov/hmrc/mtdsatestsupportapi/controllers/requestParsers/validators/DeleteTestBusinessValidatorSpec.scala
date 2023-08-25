@@ -16,7 +16,7 @@
 
 package uk.gov.hmrc.mtdsatestsupportapi.controllers.requestParsers.validators
 
-import api.models.errors.NinoFormatError
+import api.models.errors.{BusinessIdFormatError, NinoFormatError}
 import support.UnitSpec
 import uk.gov.hmrc.mtdsatestsupportapi.models.request.deleteTestBusiness.DeleteTestBusinessRawData
 
@@ -24,17 +24,24 @@ class DeleteTestBusinessValidatorSpec extends UnitSpec {
 
   val validator = new DeleteTestBusinessValidator
   val vendorClientId = "some_id"
+  val validBusinessId = "XAIS12345678910"
+  val validNino = "TC663795B"
 
   "DeleteTestBusinessValidator" should {
     "return no errors" when {
       "a valid request is supplied" in {
-        validator.validate(DeleteTestBusinessRawData(vendorClientId, "TC663795B")) shouldBe Nil
+        validator.validate(DeleteTestBusinessRawData(vendorClientId, validNino, validBusinessId)) shouldBe Nil
       }
     }
-    "return a NinoFormatError" when {
+    "return an error" when {
       "the request contains an invalid nino" in {
-        validator.validate(DeleteTestBusinessRawData(vendorClientId, "not_a_valid_nino")) shouldBe List(NinoFormatError)
-
+        validator.validate(DeleteTestBusinessRawData(vendorClientId, "not_a_valid_nino", validBusinessId)) shouldBe List(NinoFormatError)
+      }
+      "the request contains an invalid businessId" in {
+        validator.validate(DeleteTestBusinessRawData(vendorClientId, validNino, "not_a_valid_business_id")) shouldBe List(BusinessIdFormatError)
+      }
+      "multiple format errors are made" in {
+        validator.validate(DeleteTestBusinessRawData(vendorClientId, "not_a_valid_nino", "not_a_valid_business_id")) shouldBe List(NinoFormatError,BusinessIdFormatError)
       }
     }
   }

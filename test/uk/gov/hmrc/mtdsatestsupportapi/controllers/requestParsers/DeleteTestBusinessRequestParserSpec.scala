@@ -17,34 +17,45 @@
 package uk.gov.hmrc.mtdsatestsupportapi.controllers.requestParsers
 
 import api.models.domain.Nino
-import api.models.errors.{ErrorWrapper, NinoFormatError}
+import api.models.errors.{BadRequestError, BusinessIdFormatError, ErrorWrapper, NinoFormatError}
 import support.UnitSpec
 import uk.gov.hmrc.mtdsatestsupportapi.mocks.validators.MockDeleteTestBusinessValidator
 import uk.gov.hmrc.mtdsatestsupportapi.models.request.deleteTestBusiness.{DeleteTestBusinessRawData, DeleteTestBusinessRequest}
 
 class DeleteTestBusinessRequestParserSpec extends UnitSpec with MockDeleteTestBusinessValidator {
 
-  val parser  = new DeleteTestBusinessRequestParser(mockDeleteTestBusinessValidator)
+  val parser = new DeleteTestBusinessRequestParser(mockDeleteTestBusinessValidator)
 
   implicit val correlationId: String = "X-123"
+  val vendorId                       = "some_vendor_id"
+  val validNino                      = "AA999999A"
+  val validBusinessId                = "XAIS12345678910"
 
   "DeleteTestBusinessRequestParser" must {
     "parse clean rawData into a request" in {
-      val rawData = DeleteTestBusinessRawData("some_vendor_id", "AA999999A")
+      val rawData = DeleteTestBusinessRawData(vendorId, validNino, validBusinessId)
 
       MockDeleteTestBusinessValidator.validate(rawData).returns(Nil)
 
-      parser.parseRequest(rawData) shouldBe Right(DeleteTestBusinessRequest("some_vendor_id", Nino("AA999999A")))
+      parser.parseRequest(rawData) shouldBe Right(DeleteTestBusinessRequest(vendorId, Nino(validNino), validBusinessId))
 
     }
     "return an error" when {
-      "rawData contains an invalid Nino" in {
-        val rawData = DeleteTestBusinessRawData("some_vendor_id", "not_a_valid_nino")
+      "a single validation error occurs" in {
+        val rawData = DeleteTestBusinessRawData(vendorId, "not_a_valid_nino", validBusinessId)
 
         MockDeleteTestBusinessValidator.validate(rawData).returns(List(NinoFormatError))
 
         parser.parseRequest(rawData) shouldBe Left(ErrorWrapper(correlationId, NinoFormatError))
 
+      }
+
+      "many validation errors occur" in {
+        val rawData = DeleteTestBusinessRawData(vendorId, "not_a_valid_nino", "not_a_valid_business_id")
+
+        MockDeleteTestBusinessValidator.validate(rawData).returns(List(NinoFormatError, BusinessIdFormatError))
+
+        parser.parseRequest(rawData) shouldBe Left(ErrorWrapper(correlationId, BadRequestError, Some(Seq(NinoFormatError, BusinessIdFormatError))))
       }
     }
   }

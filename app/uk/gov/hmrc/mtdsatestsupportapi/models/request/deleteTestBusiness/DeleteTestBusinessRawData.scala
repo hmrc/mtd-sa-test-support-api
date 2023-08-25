@@ -18,4 +18,4 @@ package uk.gov.hmrc.mtdsatestsupportapi.models.request.deleteTestBusiness
 
 import api.models.request.RawData
 
-case class DeleteTestBusinessRawData(vendorClientId: String, nino: String) extends RawData
+case class DeleteTestBusinessRawData(vendorClientId: String, nino: String, businessId: String) extends RawData

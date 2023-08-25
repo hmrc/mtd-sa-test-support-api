@@ -28,7 +28,7 @@ class DeleteTestBusinessRequestParser @Inject() (val validator: DeleteTestBusine
 
   override protected def requestFor(data: DeleteTestBusinessRawData): DeleteTestBusinessRequest = {
     val nino: Nino = Nino(data.nino)
-    DeleteTestBusinessRequest(data.vendorClientId, nino)
+    DeleteTestBusinessRequest(data.vendorClientId, nino, data.businessId)
   }
 
 }
