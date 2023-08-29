@@ -7,13 +7,6 @@ post:
     MTD supports only one accounting period per year so this must be a full tax year period e.g. April 6th to April 5th. 
     Any test business that has not been deleted by the developer is automatically purged from database 7 days after its creation.
     
-    ### Test data
-    Scenario simulation using Gov-Test-Scenario headers is only available in the sandbox environment.
-    
-    | Header Value (Gov-Test-Scenario) | Scenario                                       |
-    |----------------------------------|------------------------------------------------|
-    | N/A - DEFAULT                    | Simulates success response.                    |
-    | NOT_FOUND                        | Simulates the scenario where no data is found. |
 
   tags:
     - Business Income Source
@@ -71,6 +64,8 @@ post:
               $ref: './common/errors.yaml#/components/examples/ruleCommencementDateNotSupported'
             RULE_PROPERTY_BUSINESS_ADDED:
               $ref: './common/errors.yaml#/components/examples/rulePropertyBusinessAdded'
+            RULE_INCORRECT_OR_EMPTY_BODY_SUBMITTED:
+              $ref: './common/errors.yaml#/components/examples/ruleIncorrectOrEmptyBodySubmitted'
 
     "403":
       description: Forbidden

@@ -85,6 +85,13 @@ components:
         code: RULE_PROPERTY_BUSINESS_ADDED
         message: The provided property business is already added
 
+    ruleIncorrectOrEmptyBodySubmitted:
+      description: |
+        An empty or non-matching body was submitted.
+      value:
+        code: RULE_INCORRECT_OR_EMPTY_BODY_SUBMITTED
+        message: An empty or non-matching body was submitted
+
 
     # 403
 

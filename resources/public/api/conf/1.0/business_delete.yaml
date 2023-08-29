@@ -3,13 +3,6 @@ delete:
   description: |
     This endpoint allows a developer to delete a test business that they previously created.
     
-    ### Test data
-    Scenario simulation using Gov-Test-Scenario headers is only available in the sandbox environment.
-    
-    | Header Value (Gov-Test-Scenario) | Scenario                                       |
-    |----------------------------------|------------------------------------------------|
-    | N/A - DEFAULT                    | Simulates success response.                    |
-    | NOT_FOUND                        | Simulates the scenario where no data is found. |
 
   tags:
     - Business Income Source
