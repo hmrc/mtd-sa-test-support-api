@@ -33,7 +33,7 @@ post:
               $ref: './examples/businesses/create_request.json'
 
   responses:
-    200:
+    201:
       description: Success
       headers:
         X-CorrelationId:
