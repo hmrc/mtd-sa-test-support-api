@@ -18,4 +18,4 @@ package uk.gov.hmrc.mtdsatestsupportapi.models.request.deleteTestBusiness
 
 import api.models.domain.Nino
 
-case class DeleteTestBusinessRequest (vendorClientId: String, nino: Nino, businessId: String)
+case class DeleteTestBusinessRequest (vendorClientId: String, nino: Nino, businessId:String)
