@@ -21,13 +21,13 @@
     "firstAccountingPeriodStartDate": {
       "type": "string",
       "description": "The first accounting period start date",
-      "format": "yyyy-MM-DD",
+      "format": "YYYY-MM-DD",
       "example": "2019-09-30"
     },
     "firstAccountingPeriodEndDate": {
       "type": "string",
       "description": "The first accounting period end date",
-      "format": "yyyy-MM-DD",
+      "format": "YYYY-MM-DD",
       "example": "2020-02-29"
     },
     "latencyDetails": {
@@ -98,36 +98,43 @@
     "commencementDate": {
       "description": "Business start date, must be in the past.",
       "type": "string",
+      "format": "YYYY-MM-DD",
       "example": "2016-09-24"
     },
     "cessationDate": {
       "description": "Business cessation date.",
       "type": "string",
+      "format": "YYYY-MM-DD",
       "example": "2020-03-24"
     },
     "businessAddressLineOne": {
       "description": "First line of the business address.",
       "type": "string",
+      "maximum": 35,
       "example": "1 ABC Rd."
     },
     "businessAddressLineTwo": {
       "description": "Second line of the business address.",
       "type": "string",
+      "maximum": 35,
       "example": "London"
     },
     "businessAddressLineThree": {
       "description": "Third line of the business address.",
       "type": "string",
+      "maximum": 35,
       "example": "Greater London"
     },
     "businessAddressLineFour": {
       "description": "Fourth line of the business address.",
       "type": "string",
+      "maximum": 35,
       "example": "United Kingdom"
     },
     "businessAddressPostcode": {
-      "description": "Business code.",
+      "description": "Business postcode.",
       "type": "string",
+      "maximum": 35,
       "example": "M1 1AG"
     },
     "businessAddressCountryCode": {

@@ -5,7 +5,7 @@
   "properties": {
     "businessId": {
       "type": "string",
-      "description": "A unique identifier for the business income source. It must conform to the following regex.",
+      "description": "A unique identifier for the business income source.",
       "pattern": "^X[A-Z0-9]{1}IS[0-9]{11}$"
     },
   },

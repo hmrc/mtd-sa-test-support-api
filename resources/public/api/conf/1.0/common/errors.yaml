@@ -15,19 +15,18 @@ components:
         code: FORMAT_CHECKPOINT_ID
         message: The provided checkpoint ID is invalid
 
-    formatBusinessId:
-      description: |
-        The format of the supplied Business ID field is not valid.
-      value:
-        code: FORMAT_BUSINESS_ID
-        message: The provided Business ID is invalid
-
     formatTypeOfBusiness:
       description: |
         The format of the type of business field is not valid.
       value:
         code: FORMAT_TYPE_OF_BUSINESS
         message: The provided typeOfBusiness field is invalid
+
+    formatTaxYear:
+      description: The format of the supplied taxYear value is not valid.
+      value:
+        code: FORMAT_TAX_YEAR
+        message: The provided tax year is invalid
 
     formatDate:
       description: |
@@ -55,7 +54,7 @@ components:
         The format of a latency indicator fields must be "Annual" or "Quarterly".
       value:
         code: FORMAT_LATENCY_INDICATOR
-        message: The format of a latency indicator fields is incorrect.
+        message: The format of a latency indicator field is incorrect
 
     formatCountryCode:
       description: |
@@ -76,7 +75,7 @@ components:
         The commencement date specified is not in the past.
       value:
         code: RULE_COMMENCEMENT_DATE_NOT_SUPPORTED
-        message: The specified commencementDate must be in the past.
+        message: The specified commencementDate must be in the past
 
     rulePropertyBusinessAdded:
       description: |
@@ -91,6 +90,12 @@ components:
       value:
         code: RULE_INCORRECT_OR_EMPTY_BODY_SUBMITTED
         message: An empty or non-matching body was submitted
+
+    ruleTaxYearRangeInvalid:
+      description: Tax year range invalid. A tax year range of one year is required.
+      value:
+        code: RULE_TAX_YEAR_RANGE_INVALID
+        message: Tax year range invalid. A tax year range of one year is required
 
 
     # 403
