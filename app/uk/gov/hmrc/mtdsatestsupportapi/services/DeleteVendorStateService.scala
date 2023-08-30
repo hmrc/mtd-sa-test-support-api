@@ -24,9 +24,10 @@ import cats.implicits.toBifunctorOps
 import uk.gov.hmrc.mtdsatestsupportapi.connectors.DeleteVendorStateConnector
 import uk.gov.hmrc.mtdsatestsupportapi.models.request.deleteStatefulTestData.DeleteStatefulTestDataRequest
 
-import javax.inject.Inject
+import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 
+@Singleton
 class DeleteVendorStateService @Inject()(connector: DeleteVendorStateConnector) extends BaseService {
 
   def deleteVendorState(request: DeleteStatefulTestDataRequest)(implicit ec: ExecutionContext, rc: RequestContext): Future[Either[ErrorWrapper, ResponseWrapper[Unit]]] =

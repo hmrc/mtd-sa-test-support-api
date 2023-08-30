@@ -21,8 +21,9 @@ import api.models.domain.CheckpointId
 import uk.gov.hmrc.mtdsatestsupportapi.controllers.requestParsers.validators.DeleteCheckpointValidator
 import uk.gov.hmrc.mtdsatestsupportapi.models.request.deleteCheckpoint.{DeleteCheckpointRawData, DeleteCheckpointRequest}
 
-import javax.inject.Inject
+import javax.inject.{Inject, Singleton}
 
+@Singleton
 class DeleteCheckpointRequestParser @Inject() (val validator: DeleteCheckpointValidator)
     extends RequestParser[DeleteCheckpointRawData, DeleteCheckpointRequest] {
 

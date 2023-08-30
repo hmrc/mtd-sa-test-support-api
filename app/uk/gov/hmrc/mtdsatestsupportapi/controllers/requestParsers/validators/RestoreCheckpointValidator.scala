@@ -21,6 +21,9 @@ import api.controllers.requestParsers.validators.validations.CheckpointIdValidat
 import api.models.errors.MtdError
 import uk.gov.hmrc.mtdsatestsupportapi.models.request.restoreCheckpoint.RestoreCheckpointRawData
 
+import javax.inject.Singleton
+
+@Singleton
 class RestoreCheckpointValidator extends Validator[RestoreCheckpointRawData] {
 
   override def validate(data: RestoreCheckpointRawData): List[MtdError] =

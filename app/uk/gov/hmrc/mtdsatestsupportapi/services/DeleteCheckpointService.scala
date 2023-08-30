@@ -24,9 +24,10 @@ import cats.implicits.toBifunctorOps
 import uk.gov.hmrc.mtdsatestsupportapi.connectors.DeleteCheckpointConnector
 import uk.gov.hmrc.mtdsatestsupportapi.models.request.deleteCheckpoint.DeleteCheckpointRequest
 
-import javax.inject.Inject
+import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 
+@Singleton
 class DeleteCheckpointService @Inject() (connector: DeleteCheckpointConnector) extends BaseService {
 
   def deleteCheckpoint(request: DeleteCheckpointRequest)(implicit

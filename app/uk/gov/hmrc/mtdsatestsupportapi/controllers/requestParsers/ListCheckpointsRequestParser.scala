@@ -21,8 +21,9 @@ import api.models.domain.Nino
 import uk.gov.hmrc.mtdsatestsupportapi.controllers.requestParsers.validators.ListCheckpointsValidator
 import uk.gov.hmrc.mtdsatestsupportapi.models.request.listCheckpoints.{ListCheckpointsRawData, ListCheckpointsRequest}
 
-import javax.inject.Inject
+import javax.inject.{Inject, Singleton}
 
+@Singleton
 class ListCheckpointsRequestParser @Inject() (val validator: ListCheckpointsValidator)
     extends RequestParser[ListCheckpointsRawData, ListCheckpointsRequest] {
 

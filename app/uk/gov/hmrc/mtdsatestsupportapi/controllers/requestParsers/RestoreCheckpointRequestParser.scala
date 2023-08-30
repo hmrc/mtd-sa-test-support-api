@@ -21,9 +21,10 @@ import api.models.domain.CheckpointId
 import uk.gov.hmrc.mtdsatestsupportapi.controllers.requestParsers.validators.RestoreCheckpointValidator
 import uk.gov.hmrc.mtdsatestsupportapi.models.request.restoreCheckpoint.{RestoreCheckpointRawData, RestoreCheckpointRequest}
 
-import javax.inject.Inject
+import javax.inject.{Inject, Singleton}
 
-class RestoreCheckpointRequestParser @Inject()(val validator: RestoreCheckpointValidator)
+@Singleton
+class RestoreCheckpointRequestParser @Inject() (val validator: RestoreCheckpointValidator)
     extends RequestParser[RestoreCheckpointRawData, RestoreCheckpointRequest] {
 
   override protected def requestFor(data: RestoreCheckpointRawData): RestoreCheckpointRequest =
