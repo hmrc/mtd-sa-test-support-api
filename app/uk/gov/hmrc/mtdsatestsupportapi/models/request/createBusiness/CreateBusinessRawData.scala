@@ -19,4 +19,4 @@ package uk.gov.hmrc.mtdsatestsupportapi.models.request.createBusiness
 import api.models.request.RawData
 import play.api.libs.json.JsValue
 
-case class CreateBusinessRawData(vendorClientId: String, nino: String, body: JsValue) extends RawData
+case class CreateBusinessRawData(nino: String, body: JsValue) extends RawData

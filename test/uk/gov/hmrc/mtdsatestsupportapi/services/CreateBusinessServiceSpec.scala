@@ -32,8 +32,8 @@ class CreateBusinessServiceSpec extends ServiceSpec with MockCreateBusinessConne
 
   private val service = new CreateBusinessService(mockCreateBusinessConnector)
 
-  private val request       = CreateBusinessRequest(vendorClientId = "someVendorId", nino = Nino("TC663795B"), business)
-  private val response      = CreateBusinessResponse("someBusinessId")
+  private val request  = CreateBusinessRequest(nino = Nino("TC663795B"), business)
+  private val response = CreateBusinessResponse("someBusinessId")
 
   "CreateBusinessService" when {
 

@@ -25,11 +25,9 @@ import uk.gov.hmrc.mtdsatestsupportapi.models.request.createBusiness.{CreateBusi
 
 class CreateBusinessRequestParserSpec extends UnitSpec with MockCreateBusinessValidator with CreateBusinessFixtures {
 
-  private val vendorClientId = "some_client_id"
-
   private implicit val correlationId: String = "X-123"
 
-  private val rawData = CreateBusinessRawData(vendorClientId, "AA123456A", MinimalCreateBusinessRequest.mtdBusinessJson)
+  private val rawData = CreateBusinessRawData("AA123456A", MinimalCreateBusinessRequest.mtdBusinessJson)
 
   private val parser = new CreateBusinessRequestParser(mockCreateBusinessValidator)
 
@@ -39,7 +37,7 @@ class CreateBusinessRequestParserSpec extends UnitSpec with MockCreateBusinessVa
         MockCreateBusinessValidator.validate(rawData) returns Nil
 
         parser.parseRequest(rawData) shouldBe
-          Right(CreateBusinessRequest(vendorClientId, Nino("AA123456A"), MinimalCreateBusinessRequest.business))
+          Right(CreateBusinessRequest(Nino("AA123456A"), MinimalCreateBusinessRequest.business))
       }
     }
 

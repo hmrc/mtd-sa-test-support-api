@@ -28,6 +28,6 @@ class CreateBusinessRequestParser @Inject() (val validator: CreateBusinessValida
     extends RequestParser[CreateBusinessRawData, CreateBusinessRequest] {
 
   override protected def requestFor(data: CreateBusinessRawData): CreateBusinessRequest =
-    CreateBusinessRequest(data.vendorClientId, Nino(data.nino), data.body.as[Business])
+    CreateBusinessRequest(Nino(data.nino), data.body.as[Business])
 
 }

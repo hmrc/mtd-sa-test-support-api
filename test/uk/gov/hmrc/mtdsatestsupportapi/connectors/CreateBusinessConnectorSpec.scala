@@ -27,12 +27,11 @@ import uk.gov.hmrc.mtdsatestsupportapi.models.request.createBusiness.CreateBusin
 
 class CreateBusinessConnectorSpec extends ConnectorSpec with CreateBusinessFixtures {
 
-  import MinimalCreateBusinessRequest._
   import ExampleCreateBusinessResponse._
+  import MinimalCreateBusinessRequest._
 
-  private val vendorId = "someVendor"
-  private val nino = "AA123456A"
-  private val request = CreateBusinessRequest(vendorId, Nino(nino), business)
+  private val nino    = "AA123456A"
+  private val request = CreateBusinessRequest(Nino(nino), business)
 
   trait Test {
     _: ConnectorTest =>
@@ -64,6 +63,5 @@ class CreateBusinessConnectorSpec extends ConnectorSpec with CreateBusinessFixtu
       }
     }
   }
-
 
 }
