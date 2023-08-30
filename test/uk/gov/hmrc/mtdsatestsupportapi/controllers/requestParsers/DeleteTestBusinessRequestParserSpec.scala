@@ -28,21 +28,20 @@ class DeleteTestBusinessRequestParserSpec extends UnitSpec with MockDeleteTestBu
 
   implicit val correlationId: String = "X-123"
   val vendorId                       = "some_vendor_id"
-  val validNino                      = "AA999999A"
-  val validBusinessId                = "XAIS12345678910"
+  val nino                           = "AA999999A"
+  val businessId                     = "XAIS12345678910"
+  val rawData                        = DeleteTestBusinessRawData(vendorId, nino, businessId)
 
   "DeleteTestBusinessRequestParser" must {
     "parse clean rawData into a request" in {
-      val rawData = DeleteTestBusinessRawData(vendorId, validNino, validBusinessId)
 
       MockDeleteTestBusinessValidator.validate(rawData).returns(Nil)
 
-      parser.parseRequest(rawData) shouldBe Right(DeleteTestBusinessRequest(vendorId, Nino(validNino), validBusinessId))
+      parser.parseRequest(rawData) shouldBe Right(DeleteTestBusinessRequest(vendorId, Nino(nino), businessId))
 
     }
     "return an error" when {
       "a single validation error occurs" in {
-        val rawData = DeleteTestBusinessRawData(vendorId, "not_a_valid_nino", validBusinessId)
 
         MockDeleteTestBusinessValidator.validate(rawData).returns(List(NinoFormatError))
 
@@ -51,7 +50,6 @@ class DeleteTestBusinessRequestParserSpec extends UnitSpec with MockDeleteTestBu
       }
 
       "many validation errors occur" in {
-        val rawData = DeleteTestBusinessRawData(vendorId, "not_a_valid_nino", "not_a_valid_business_id")
 
         MockDeleteTestBusinessValidator.validate(rawData).returns(List(NinoFormatError, BusinessIdFormatError))
 
