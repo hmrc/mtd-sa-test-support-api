@@ -15,11 +15,22 @@ post:
     - $ref: './common/pathParameters.yaml#/components/parameters/nino'
     - $ref: './common/headers.yaml#/components/parameters/acceptHeader'
     - $ref: './common/headers.yaml#/components/parameters/authorizationWriteScopeHeader'
-    - $ref: './common/headers.yaml#/components/parameters/testScenarioHeader'
+    - $ref: './common/headers.yaml#/components/parameters/correlationId'
 
   security:
     - User-Restricted:
         - write:self-assessment
+
+  requestBody:
+    content:
+      application/json:
+        schema:
+          $ref: './schemas/businesses/create_request.json'
+        examples:
+          example-request:
+            description:
+            value:
+              $ref: './examples/businesses/create_request.json'
 
   responses:
     200:

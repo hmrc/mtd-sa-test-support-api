@@ -1,0 +1,23 @@
+{
+  "typeOfBusiness":"uk-property",
+  "tradingName":"Business McBusiness",
+  "firstAccountingPeriodStartDate": "2019-09-30",
+  "firstAccountingPeriodEndDate":"2020-02-29",
+  "latencyDetails": {
+    "latencyEndDate": "2020-02-27",
+    "taxYear1": "2019",
+    "latencyIndicator1": "Annual",
+    "taxYear2": "2020",
+    "latencyIndicator2": "Annual"
+  },
+  "accountingType":"CASH",
+  "commencementDate":"2022-04-06",
+  "cessationDate":"2023-04-06",
+  "businessAddressLineOne":"221b Baker Street",
+  "businessAddressLineTwo":"Marylebone",
+  "businessAddressLineThree":"London",
+  "businessAddressLineFour":"England",
+  "businessAddressPostcode": "NW1 6XE",
+  "businessAddressCountryCode":"GB"
+
+}

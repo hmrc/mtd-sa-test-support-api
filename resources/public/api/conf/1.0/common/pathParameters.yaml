@@ -19,3 +19,13 @@ components:
         pattern: ^X[A-Z0-9]{1}IS[0-9]{11}$
         example: XAIS12345678910
       required: true
+
+    nino:
+      name: nino
+      in: path
+      description: |
+        National Insurance number, in the format `AA999999A`
+      schema:
+        type: string
+        example: TC663795B
+      required: true
