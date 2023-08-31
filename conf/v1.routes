@@ -11,3 +11,6 @@ GET           /vendor-state/checkpoints                         uk.gov.hmrc.mtds
 DELETE        /vendor-state/checkpoints/:checkpointId           uk.gov.hmrc.mtdsatestsupportapi.controllers.DeleteCheckpointController.handleRequest(checkpointId: String)
 
 POST          /vendor-state/checkpoints/:checkpointId/restore   uk.gov.hmrc.mtdsatestsupportapi.controllers.RestoreCheckpointController.handleRequest(checkpointId: String)
+
+# Test Business Routes
+DELETE       /business/:nino/:businessId                        uk.gov.hmrc.mtdsatestsupportapi.controllers.DeleteTestBusinessController.handleRequest(nino: String, businessId:String)

@@ -14,21 +14,23 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.mtdsatestsupportapi.controllers.requestParsers
+package uk.gov.hmrc.mtdsatestsupportapi.mocks.requestParsers
 
-import api.controllers.requestParsers.RequestParser
-import api.models.domain.Nino
-import uk.gov.hmrc.mtdsatestsupportapi.controllers.requestParsers.validators.DeleteTestBusinessValidator
+import api.models.errors.ErrorWrapper
+import org.scalamock.handlers.CallHandler
+import org.scalamock.scalatest.MockFactory
+import uk.gov.hmrc.mtdsatestsupportapi.controllers.requestParsers.DeleteTestBusinessRequestParser
 import uk.gov.hmrc.mtdsatestsupportapi.models.request.deleteTestBusiness.{DeleteTestBusinessRawData, DeleteTestBusinessRequest}
 
-import javax.inject.Inject
+trait MockDeleteTestBusinessRequestParser extends MockFactory {
 
-class DeleteTestBusinessRequestParser @Inject() (val validator: DeleteTestBusinessValidator)
-    extends RequestParser[DeleteTestBusinessRawData, DeleteTestBusinessRequest] {
+  val mockParser: DeleteTestBusinessRequestParser = mock[DeleteTestBusinessRequestParser]
 
-  override protected def requestFor(data: DeleteTestBusinessRawData): DeleteTestBusinessRequest = {
-    val nino: Nino = Nino(data.nino)
-    DeleteTestBusinessRequest(nino, data.businessId)
+  object MockDeleteTestBusinessRequestParser {
+
+    def parseRequest(rawData: DeleteTestBusinessRawData): CallHandler[Either[ErrorWrapper, DeleteTestBusinessRequest]] =
+      (mockParser.parseRequest(_: DeleteTestBusinessRawData)(_: String)).expects(rawData, *)
+
   }
 
 }
