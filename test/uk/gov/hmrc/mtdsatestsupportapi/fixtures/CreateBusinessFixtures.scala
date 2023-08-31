@@ -61,7 +61,6 @@ trait CreateBusinessFixtures {
     val businessId                       = "someBusinessId"
     val response: CreateBusinessResponse = CreateBusinessResponse(businessId)
     val downstreamResponseJson: JsObject = Json.obj("incomeSourceId" -> businessId)
-    val mtdResponseJson: JsObject        = Json.obj("businessId" -> businessId)
   }
 
 }

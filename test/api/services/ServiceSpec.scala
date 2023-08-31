@@ -29,6 +29,6 @@ trait ServiceSpec extends UnitSpec with Status with MimeTypes with HeaderNames {
 
   implicit val hc: HeaderCarrier    = HeaderCarrier()
   implicit val ec: ExecutionContext = scala.concurrent.ExecutionContext.global
-  implicit val rc: RequestContext   = RequestContext(HeaderCarrier(), "X-123", EndpointLogContext("someController", "someEndpoint"))
+  implicit val rc: RequestContext   = RequestContext(HeaderCarrier(), correlationId, EndpointLogContext("someController", "someEndpoint"))
 
 }
