@@ -130,7 +130,6 @@
     "businessAddressPostcode": {
       "description": "Business postcode.",
       "type": "string",
-      "maximum": 35,
       "example": "M1 1AG"
     },
     "businessAddressCountryCode": {

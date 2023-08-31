@@ -28,6 +28,13 @@ components:
         code: FORMAT_TAX_YEAR
         message: The provided tax year is invalid
 
+    formatBusinessId:
+      description: |
+        The format of the supplied Business ID field is not valid.
+      value:
+        code: FORMAT_BUSINESS_ID
+        message: The provided Business ID is invalid
+
     formatDate:
       description: |
         The supplied date format is not valid.
@@ -95,7 +102,7 @@ components:
       description: Tax year range invalid. A tax year range of one year is required.
       value:
         code: RULE_TAX_YEAR_RANGE_INVALID
-        message: Tax year range invalid. A tax year range of one year is required
+        message: The tax year range is invalid
 
 
     # 403
