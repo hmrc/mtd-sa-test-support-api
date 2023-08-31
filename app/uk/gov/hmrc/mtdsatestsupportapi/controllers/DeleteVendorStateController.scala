@@ -24,9 +24,10 @@ import uk.gov.hmrc.mtdsatestsupportapi.models.request.deleteStatefulTestData.Del
 import uk.gov.hmrc.mtdsatestsupportapi.services.DeleteVendorStateService
 import utils.{IdGenerator, Logging}
 
-import javax.inject.Inject
+import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 
+@Singleton
 class DeleteVendorStateController @Inject() (val cc: ControllerComponents,
                                              val authService: EnrolmentsAuthService,
                                              parser: DeleteStatefulTestDataRequestParser,

@@ -32,4 +32,6 @@ object AccountingType {
     case AccountingType.ACCRUALS => JsBoolean(true)
   }
 
+  implicit val parser: PartialFunction[String, AccountingType] = Enums.parser[AccountingType]
+
 }

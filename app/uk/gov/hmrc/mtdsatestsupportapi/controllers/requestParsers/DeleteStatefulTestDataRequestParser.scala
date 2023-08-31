@@ -21,8 +21,9 @@ import api.models.domain.Nino
 import uk.gov.hmrc.mtdsatestsupportapi.controllers.requestParsers.validators.DeleteStatefulTestDataValidator
 import uk.gov.hmrc.mtdsatestsupportapi.models.request.deleteStatefulTestData.{DeleteStatefulTestDataRawData, DeleteStatefulTestDataRequest}
 
-import javax.inject.Inject
+import javax.inject.{Inject, Singleton}
 
+@Singleton
 class DeleteStatefulTestDataRequestParser @Inject() (val validator: DeleteStatefulTestDataValidator)
     extends RequestParser[DeleteStatefulTestDataRawData, DeleteStatefulTestDataRequest] {
 

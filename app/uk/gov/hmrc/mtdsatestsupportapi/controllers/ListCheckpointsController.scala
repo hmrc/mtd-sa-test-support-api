@@ -26,9 +26,10 @@ import uk.gov.hmrc.mtdsatestsupportapi.models.response.listCheckpoints._
 import uk.gov.hmrc.mtdsatestsupportapi.services.ListCheckpointsService
 import utils.{IdGenerator, Logging}
 
-import javax.inject.Inject
+import javax.inject.{Inject, Singleton}
 import scala.concurrent._
 
+@Singleton
 class ListCheckpointsController @Inject() (val authService: EnrolmentsAuthService,
                                            cc: ControllerComponents,
                                            parser: ListCheckpointsRequestParser,

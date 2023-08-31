@@ -25,9 +25,10 @@ import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.http.client.HttpClientV2
 import uk.gov.hmrc.mtdsatestsupportapi.models.request.restoreCheckpoint.RestoreCheckpointRequest
 
-import javax.inject.Inject
+import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 
+@Singleton
 class RestoreCheckpointConnector @Inject() (val appConfig: AppConfig, val http: HttpClientV2)
     extends BaseDownstreamConnector
     with StandardDownstreamHttpParser {

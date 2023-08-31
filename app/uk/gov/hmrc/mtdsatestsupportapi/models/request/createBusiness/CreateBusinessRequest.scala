@@ -18,4 +18,4 @@ package uk.gov.hmrc.mtdsatestsupportapi.models.request.createBusiness
 
 import api.models.domain.Nino
 
-case class CreateBusinessRequest(vendorClientId: String, nino: Nino, body: Business)
+case class CreateBusinessRequest(nino: Nino, business: Business)

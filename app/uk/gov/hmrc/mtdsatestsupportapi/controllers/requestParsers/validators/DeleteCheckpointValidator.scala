@@ -21,6 +21,9 @@ import api.controllers.requestParsers.validators.validations.CheckpointIdValidat
 import api.models.errors.MtdError
 import uk.gov.hmrc.mtdsatestsupportapi.models.request.deleteCheckpoint.DeleteCheckpointRawData
 
+import javax.inject.Singleton
+
+@Singleton
 class DeleteCheckpointValidator extends Validator[DeleteCheckpointRawData] {
 
   override def validate(data: DeleteCheckpointRawData): List[MtdError] =

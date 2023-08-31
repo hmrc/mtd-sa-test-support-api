@@ -21,6 +21,9 @@ import api.controllers.requestParsers.validators.validations.{NinoValidation, No
 import api.models.errors.MtdError
 import uk.gov.hmrc.mtdsatestsupportapi.models.request.deleteStatefulTestData.DeleteStatefulTestDataRawData
 
+import javax.inject.Singleton
+
+@Singleton
 class DeleteStatefulTestDataValidator extends Validator[DeleteStatefulTestDataRawData] {
 
   private val validationSet = List(parameterFormatValidation)

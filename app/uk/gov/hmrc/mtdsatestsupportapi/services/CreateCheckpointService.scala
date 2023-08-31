@@ -25,9 +25,10 @@ import uk.gov.hmrc.mtdsatestsupportapi.connectors.CreateCheckpointConnector
 import uk.gov.hmrc.mtdsatestsupportapi.models.request.createCheckpoint.CreateCheckpointRequest
 import uk.gov.hmrc.mtdsatestsupportapi.models.response.createCheckpoint.CreateCheckpointResponse
 
-import javax.inject.Inject
+import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 
+@Singleton
 class CreateCheckpointService @Inject() (connector: CreateCheckpointConnector) extends BaseService {
 
   def createCheckpoint(request: CreateCheckpointRequest)(implicit

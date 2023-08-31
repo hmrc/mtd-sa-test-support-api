@@ -32,4 +32,6 @@ object LatencyIndicator {
     case LatencyIndicator.Quarterly => JsString("Q")
   }
 
+  implicit val parser: PartialFunction[String, LatencyIndicator] = Enums.parser[LatencyIndicator]
+
 }
