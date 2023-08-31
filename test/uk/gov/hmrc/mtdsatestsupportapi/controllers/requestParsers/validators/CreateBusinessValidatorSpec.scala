@@ -85,6 +85,32 @@ class CreateBusinessValidatorSpec extends UnitSpec with JsonErrorValidators with
       }
     }
 
+    "return FORMAT_TAX_YEAR error with the appropriate path" when {
+      Seq(
+        "/latencyDetails/taxYear1",
+        "/latencyDetails/taxYear2"
+      ).foreach(testWith)
+
+      def testWith(path: String): Unit =
+        s"when the format of a tax year is not valid for $path" in {
+          validator.validate(CreateBusinessRawData(validNino, body.update(path, JsString("badValue")))) shouldBe
+            Seq(TaxYearFormatError.withExtraPath(path))
+        }
+    }
+
+    "return RULE_TAX_YEAR_RANGE_INVALID error with the appropriate path" when {
+      Seq(
+        "/latencyDetails/taxYear1",
+        "/latencyDetails/taxYear2"
+      ).foreach(testWith)
+
+      def testWith(path: String): Unit =
+        s"when a tax year has an invalid range for $path" in {
+          validator.validate(CreateBusinessRawData(validNino, body.update(path, JsString("2020-22")))) shouldBe
+            Seq(RuleTaxYearRangeInvalidError.withExtraPath(path))
+        }
+    }
+
     "return FORMAT_DATE error with the appropriate path" when {
 
       Seq(
