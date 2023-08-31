@@ -51,19 +51,16 @@ trait CreateBusinessFixtures {
 
     val downstreamBusinessJson: JsObject = Json
       .parse("""{
-           |  "tradingName": "Abc Ltd",
-           |  "propertyIncome": false,
-           |  "accountingPeriodStartDate": "2001-01-01",
-           |  "accountingPeriodEndDate": "2011-11-11"
+           |  "propertyIncome": false
            |}""".stripMargin)
       .as[JsObject]
 
   }
 
   object ExampleCreateBusinessResponse {
-    val response: CreateBusinessResponse = CreateBusinessResponse("someBusinessId")
-    val downstreamResponseJson: JsObject = Json.obj("incomeSourceId" -> "someBusinessId")
-    val mtdResponseJson: JsObject        = Json.obj("businessId" -> "someBusinessId")
+    val businessId                       = "someBusinessId"
+    val response: CreateBusinessResponse = CreateBusinessResponse(businessId)
+    val downstreamResponseJson: JsObject = Json.obj("incomeSourceId" -> businessId)
   }
 
 }

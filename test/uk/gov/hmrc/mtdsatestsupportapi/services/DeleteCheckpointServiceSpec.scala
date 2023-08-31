@@ -28,7 +28,6 @@ import scala.concurrent.Future
 class DeleteCheckpointServiceSpec extends ServiceSpec with MockDeleteCheckpointConnector {
 
   private val service       = new DeleteCheckpointService(mockDeleteCheckpointConnector)
-  private val correlationId = "X-123"
   private val requestData   = DeleteCheckpointRequest("someVendorId", CheckpointId("someCheckpointId"))
 
   "DeleteCheckpointService" when {
