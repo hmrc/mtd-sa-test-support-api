@@ -31,14 +31,16 @@ class DeleteTestBusinessController @Inject() (cc: ControllerComponents,
                                               val authService: EnrolmentsAuthService,
                                               parser: DeleteTestBusinessRequestParser,
                                               service: DeleteTestBusinessService,
-                                             idGenerator: IdGenerator)(implicit ec: ExecutionContext) extends AuthorisedController(cc) with Logging{
+                                              idGenerator: IdGenerator)(implicit ec: ExecutionContext)
+    extends AuthorisedController(cc)
+    with Logging {
 
-  def handleRequest(nino: String, businessId: String):Action[AnyContent]= authorisedAction().async { implicit request =>
-    val endpointLogContext = EndpointLogContext(controllerName = "DeleteTestBusinessController", endpointName="DeleteTestBusiness")
+  def handleRequest(nino: String, businessId: String): Action[AnyContent] = authorisedAction().async { implicit request =>
+    val endpointLogContext           = EndpointLogContext(controllerName = "DeleteTestBusinessController", endpointName = "DeleteTestBusiness")
     implicit val ctx: RequestContext = RequestContext.from(idGenerator, endpointLogContext)
     request.headers.get("X-Client-Id") match {
-      case Some(vendorClientId) =>
-        val rawData = DeleteTestBusinessRawData( nino, businessId)
+      case Some(_) =>
+        val rawData = DeleteTestBusinessRawData(nino, businessId)
 
         val requestHandler = RequestHandler.withParser(parser).withService(service.deleteTestBusiness)
 
@@ -49,4 +51,5 @@ class DeleteTestBusinessController @Inject() (cc: ControllerComponents,
         Future.successful(InternalServerError)
     }
   }
+
 }

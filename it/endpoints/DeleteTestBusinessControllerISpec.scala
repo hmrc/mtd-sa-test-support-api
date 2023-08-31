@@ -16,10 +16,10 @@
 
 package endpoints
 
-import api.models.errors.{InternalError, MtdError, NotFoundError}
+import api.models.errors.{BusinessIdFormatError, MtdError, NinoFormatError, NotFoundError}
 import com.github.tomakehurst.wiremock.stubbing.StubMapping
 import play.api.http.HeaderNames.ACCEPT
-import play.api.http.Status.{INTERNAL_SERVER_ERROR, NOT_FOUND, NO_CONTENT, SERVICE_UNAVAILABLE}
+import play.api.http.Status.{BAD_REQUEST, NOT_FOUND, NO_CONTENT}
 import play.api.libs.json.{JsObject, Json}
 import play.api.libs.ws.{WSRequest, WSResponse}
 import play.api.test.Helpers.AUTHORIZATION
@@ -33,6 +33,39 @@ class DeleteTestBusinessControllerISpec extends IntegrationBaseSpec {
         val response: WSResponse = await(request().delete())
         response.status shouldBe NO_CONTENT
         response.header("X-CorrelationId") should not be empty
+      }
+    }
+    "return validation errors according to the spec" when {
+      def validationErrorTest(inputNino: String, inputBusinessId:String, expectedStatus: Int, expectedBody: MtdError): Unit = {
+        s"validation fails with ${expectedBody.code} error" in new Test {
+
+          override def setupStubs(): StubMapping =
+            AuthStub.authorised()
+
+          override def request(): WSRequest = {
+            setupStubs()
+            buildRequest(s"/business/$inputNino/$inputBusinessId")
+              .withHttpHeaders(
+                (ACCEPT, "application/vnd.hmrc.1.0+json"),
+                (AUTHORIZATION, "Bearer 123"), // some bearer token
+                ("X-Client-Id", "some_id")
+              )
+          }
+
+          val response: WSResponse = await(request().delete())
+
+          response.status shouldBe expectedStatus
+          response.json shouldBe Json.toJson(expectedBody)
+        }
+      }
+
+      val input = Seq(
+        ("invalid_nino", "XAIS12345678910", BAD_REQUEST, NinoFormatError),
+        ("AA123456A", "invalidBusinessId", BAD_REQUEST, BusinessIdFormatError)
+      )
+
+      input.foreach { case (nino, businessId, status, error) =>
+        validationErrorTest(nino, businessId, status, error)
       }
     }
     "return the downstream error" when {
@@ -51,9 +84,7 @@ class DeleteTestBusinessControllerISpec extends IntegrationBaseSpec {
       }
 
       val stubErrors = Seq(
-        (NOT_FOUND, "NOT_FOUND", NOT_FOUND, NotFoundError),
-        (INTERNAL_SERVER_ERROR, "SERVER_ERROR", INTERNAL_SERVER_ERROR, InternalError),
-        (SERVICE_UNAVAILABLE, "SERVICE_UNAVAILABLE", INTERNAL_SERVER_ERROR, InternalError)
+        (NOT_FOUND, "NOT_FOUND", NOT_FOUND, NotFoundError)
       )
 
       stubErrors.foreach(elem => (serviceError _).tupled(elem))
@@ -61,6 +92,7 @@ class DeleteTestBusinessControllerISpec extends IntegrationBaseSpec {
   }
 
   trait Test {
+
     val nino       = "AA123456A"
     val businessId = "XAIS12345678910"
 

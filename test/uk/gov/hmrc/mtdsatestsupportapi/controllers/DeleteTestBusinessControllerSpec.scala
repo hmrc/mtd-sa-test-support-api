@@ -95,7 +95,7 @@ class DeleteTestBusinessControllerSpec
         runErrorTest(NotFoundError)
       }
     }
-    "return OK" when {
+    "return NO_CONTENT" when {
       "valid parameters are provided" in new Test {
         override protected def callController(): Future[Result] =
           controller.handleRequest(nino, businessId)(
