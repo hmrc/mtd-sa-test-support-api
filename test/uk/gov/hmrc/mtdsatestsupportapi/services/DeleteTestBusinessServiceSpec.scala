@@ -28,8 +28,8 @@ import scala.concurrent.Future
 class DeleteTestBusinessServiceSpec extends ServiceSpec with MockDeleteTestBusinessConnector {
 
   private val service       = new DeleteTestBusinessService(mockDeleteTestBusinessConnector)
-  private val correlationId = "X-123"
-  private val requestData   = DeleteTestBusinessRequest("someVendorId", Nino("AA999999A"), businessId = "XAIS12345678910")
+
+  private val requestData   = DeleteTestBusinessRequest( Nino("AA999999A"), businessId = "XAIS12345678910")
 
   "DeleteTestBusinessService" when {
     "the connector call is successful" must {

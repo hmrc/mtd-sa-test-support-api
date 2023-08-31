@@ -28,7 +28,6 @@ import scala.concurrent.Future
 class RestoreCheckpointServiceSpec extends ServiceSpec with MockRestoreCheckpointConnector {
 
   private val service       = new RestoreCheckpointService(mockRestoreCheckpointConnector)
-  private val correlationId = "X-123"
   private val requestData   = RestoreCheckpointRequest("someVendorId", CheckpointId("someCheckpointId"))
 
   "RestoreCheckpointService" when {
