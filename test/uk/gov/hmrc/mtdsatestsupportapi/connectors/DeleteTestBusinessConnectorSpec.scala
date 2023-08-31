@@ -48,12 +48,11 @@ class DeleteTestBusinessConnectorSpec extends ConnectorSpec {
 
   trait Test {
     _: ConnectorTest =>
-    protected val vendorClientId = "some_vendor_id"
     protected val nino           = "AA999999A"
     protected val businessId     = "XAIS12345678910"
     protected val downstreamUri  = s"/test-support/business-details/$nino/$businessId"
 
-    protected val requestData = DeleteTestBusinessRequest(vendorClientId, Nino(nino), businessId)
+    protected val requestData = DeleteTestBusinessRequest( Nino(nino), businessId)
 
     protected val connector = new DeleteTestBusinessConnector(mockAppConfig, httpClientV2)
 

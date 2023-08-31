@@ -23,25 +23,24 @@ import uk.gov.hmrc.mtdsatestsupportapi.models.request.deleteTestBusiness.DeleteT
 class DeleteTestBusinessValidatorSpec extends UnitSpec {
 
   val validator = new DeleteTestBusinessValidator
-  val vendorClientId = "some_id"
   val validBusinessId = "XAIS12345678910"
   val validNino = "TC663795B"
 
   "DeleteTestBusinessValidator" should {
     "return no errors" when {
       "a valid request is supplied" in {
-        validator.validate(DeleteTestBusinessRawData(vendorClientId, validNino, validBusinessId)) shouldBe Nil
+        validator.validate(DeleteTestBusinessRawData( validNino, validBusinessId)) shouldBe Nil
       }
     }
     "return an error" when {
       "the request contains an invalid nino" in {
-        validator.validate(DeleteTestBusinessRawData(vendorClientId, "not_a_valid_nino", validBusinessId)) shouldBe List(NinoFormatError)
+        validator.validate(DeleteTestBusinessRawData( "not_a_valid_nino", validBusinessId)) shouldBe List(NinoFormatError)
       }
       "the request contains an invalid businessId" in {
-        validator.validate(DeleteTestBusinessRawData(vendorClientId, validNino, "not_a_valid_business_id")) shouldBe List(BusinessIdFormatError)
+        validator.validate(DeleteTestBusinessRawData(validNino, "not_a_valid_business_id")) shouldBe List(BusinessIdFormatError)
       }
       "multiple format errors are made" in {
-        validator.validate(DeleteTestBusinessRawData(vendorClientId, "not_a_valid_nino", "not_a_valid_business_id")) shouldBe List(NinoFormatError,BusinessIdFormatError)
+        validator.validate(DeleteTestBusinessRawData( "not_a_valid_nino", "not_a_valid_business_id")) shouldBe List(NinoFormatError,BusinessIdFormatError)
       }
     }
   }
