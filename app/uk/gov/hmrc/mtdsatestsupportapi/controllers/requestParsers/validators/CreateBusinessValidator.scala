@@ -48,7 +48,9 @@ class CreateBusinessValidator @Inject() (clock: Clock) extends Validator[CreateB
   private def bodyEnumValidation(body: JsValue): Either[List[MtdError], Unit] = {
     val errors = validateAccountingType(body) ++ validateTypeOfBusiness(body) ++
       validateLatencyIndicator(body, "/latencyDetails/latencyIndicator1") ++
-      validateLatencyIndicator(body, "/latencyDetails/latencyIndicator2")
+      validateLatencyIndicator(body, "/latencyDetails/latencyIndicator2") ++
+      validateTaxYear(body, "/latencyDetails/taxYear1") ++
+      validateTaxYear(body, "/latencyDetails/taxYear2")
 
     errorsResult(errors)
   }
@@ -89,6 +91,9 @@ class CreateBusinessValidator @Inject() (clock: Clock) extends Validator[CreateB
 
   private def validateLatencyIndicator(json: JsValue, path: String): Seq[MtdError] =
     jsLookupFrom(json, path).asOpt[String].map(LatencyIndicatorValidation.validate(_, LatencyIndicatorFormatError.withExtraPath(path))).getOrElse(Nil)
+
+  private def validateTaxYear(json: JsValue, path: String): Seq[MtdError] =
+    jsLookupFrom(json, path).asOpt[String].map(TaxYearValidation.validate(_, path)).getOrElse(Nil)
 
   private def jsLookupFrom(json: JsValue, path: String) =
     path.split("/").filter(_.nonEmpty).foldLeft[JsLookupResult](JsDefined(json))(_ \ _)

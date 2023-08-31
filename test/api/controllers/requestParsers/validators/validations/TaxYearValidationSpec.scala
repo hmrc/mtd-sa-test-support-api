@@ -21,7 +21,7 @@ import support.UnitSpec
 
 class TaxYearValidationSpec extends UnitSpec {
 
-  "validate" should {
+  "validate" must {
     "return no errors" when {
       "a valid taxYear is supplied" in {
         TaxYearValidation.validate("2021-22") shouldBe Nil
@@ -35,6 +35,28 @@ class TaxYearValidationSpec extends UnitSpec {
 
       "a taxYear with a range longer than 1 is supplied" in {
         TaxYearValidation.validate("2021-23") shouldBe Seq(RuleTaxYearRangeInvalidError)
+      }
+    }
+  }
+
+  "validate" when {
+    "a path is supplied" must {
+      val path = "somePath"
+
+      "return no errors" when {
+        "a valid taxYear is supplied" in {
+          TaxYearValidation.validate("2021-22", path) shouldBe Nil
+        }
+      }
+
+      "return an error with the path" when {
+        "a taxYear with an invalid format is supplied" in {
+          TaxYearValidation.validate("2021", path) shouldBe Seq(TaxYearFormatError.withExtraPath(path))
+        }
+
+        "a taxYear with a range longer than 1 is supplied" in {
+          TaxYearValidation.validate("2021-23", path) shouldBe Seq(RuleTaxYearRangeInvalidError.withExtraPath(path))
+        }
       }
     }
   }

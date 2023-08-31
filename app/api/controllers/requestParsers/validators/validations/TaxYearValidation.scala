@@ -22,13 +22,25 @@ object TaxYearValidation {
 
   private val taxYearFormat = "20[1-9][0-9]-[1-9][0-9]".r
 
-  def validate(taxYear: String): List[MtdError] = {
+  def validate(taxYear: String): List[MtdError] = doValidate(taxYear, None)
+
+  def validate(taxYear: String, path: String): List[MtdError] = doValidate(taxYear, Some(path))
+
+  private def doValidate(taxYear: String, maybePath: Option[String]): List[MtdError] = {
     if (taxYearFormat.matches(taxYear)) {
       val start = taxYear.substring(2, 4).toInt
       val end   = taxYear.substring(5, 7).toInt
 
-      if (end - start == 1) NoValidationErrors else List(RuleTaxYearRangeInvalidError)
-    } else List(TaxYearFormatError)
+      if (end - start == 1) NoValidationErrors else List(createError(RuleTaxYearRangeInvalidError, maybePath))
+    } else {
+      List(createError(TaxYearFormatError, maybePath))
+    }
   }
+
+  private def createError(error: MtdError, maybePath: Option[String]) =
+    maybePath match {
+      case None       => error
+      case Some(path) => error.withExtraPath(path)
+    }
 
 }
