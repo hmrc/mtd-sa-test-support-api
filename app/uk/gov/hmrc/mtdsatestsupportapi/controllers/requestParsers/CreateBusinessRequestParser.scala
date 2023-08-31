@@ -17,17 +17,17 @@
 package uk.gov.hmrc.mtdsatestsupportapi.controllers.requestParsers
 
 import api.controllers.requestParsers.RequestParser
-import api.models.domain.CheckpointId
-import uk.gov.hmrc.mtdsatestsupportapi.controllers.requestParsers.validators.DeleteCheckpointValidator
-import uk.gov.hmrc.mtdsatestsupportapi.models.request.deleteCheckpoint.{DeleteCheckpointRawData, DeleteCheckpointRequest}
+import api.models.domain.Nino
+import uk.gov.hmrc.mtdsatestsupportapi.controllers.requestParsers.validators.CreateBusinessValidator
+import uk.gov.hmrc.mtdsatestsupportapi.models.request.createBusiness.{Business, CreateBusinessRawData, CreateBusinessRequest}
 
 import javax.inject.{Inject, Singleton}
 
 @Singleton
-class DeleteCheckpointRequestParser @Inject() (val validator: DeleteCheckpointValidator)
-    extends RequestParser[DeleteCheckpointRawData, DeleteCheckpointRequest] {
+class CreateBusinessRequestParser @Inject() (val validator: CreateBusinessValidator)
+    extends RequestParser[CreateBusinessRawData, CreateBusinessRequest] {
 
-  override protected def requestFor(data: DeleteCheckpointRawData): DeleteCheckpointRequest =
-    DeleteCheckpointRequest(data.vendorClientId, CheckpointId(data.checkpointId))
+  override protected def requestFor(data: CreateBusinessRawData): CreateBusinessRequest =
+    CreateBusinessRequest(data.vendorClientId, Nino(data.nino), data.body.as[Business])
 
 }

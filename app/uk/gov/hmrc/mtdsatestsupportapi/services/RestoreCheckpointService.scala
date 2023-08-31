@@ -24,9 +24,10 @@ import cats.implicits.toBifunctorOps
 import uk.gov.hmrc.mtdsatestsupportapi.connectors.RestoreCheckpointConnector
 import uk.gov.hmrc.mtdsatestsupportapi.models.request.restoreCheckpoint.RestoreCheckpointRequest
 
-import javax.inject.Inject
+import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 
+@Singleton
 class RestoreCheckpointService @Inject()(connector: RestoreCheckpointConnector) extends BaseService {
 
   def restoreCheckpoint(request: RestoreCheckpointRequest)(implicit

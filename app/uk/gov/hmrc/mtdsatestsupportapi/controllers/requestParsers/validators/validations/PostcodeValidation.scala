@@ -14,19 +14,16 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.mtdsatestsupportapi.controllers.requestParsers.validators
+package uk.gov.hmrc.mtdsatestsupportapi.controllers.requestParsers.validators.validations
 
-import api.controllers.requestParsers.validators.Validator
-import api.controllers.requestParsers.validators.validations.CheckpointIdValidation
-import api.models.errors.MtdError
-import uk.gov.hmrc.mtdsatestsupportapi.models.request.restoreCheckpoint.RestoreCheckpointRawData
+import api.controllers.requestParsers.validators.validations.RegexValidation
+import api.models.errors.{MtdError, PostcodeFormatError}
 
-import javax.inject.Singleton
+import scala.util.matching.Regex
 
-@Singleton
-class RestoreCheckpointValidator extends Validator[RestoreCheckpointRawData] {
+object PostcodeValidation extends RegexValidation {
+  override protected val regex: Regex = "^[A-Z]{1,2}[0-9][0-9A-Z]?\\s?[0-9][A-Z]{2}|BFPO\\s?[0-9]{1,10}$".r
 
-  override def validate(data: RestoreCheckpointRawData): List[MtdError] =
-    CheckpointIdValidation.validate(data.checkpointId)
-
+  def validate(value: String, error: => MtdError = PostcodeFormatError): Seq[MtdError] =
+    validateRegex(value, error)
 }

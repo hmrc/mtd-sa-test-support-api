@@ -21,6 +21,9 @@ import api.controllers.requestParsers.validators.validations.NinoValidation
 import api.models.errors.{MtdError, NinoFormatError}
 import uk.gov.hmrc.mtdsatestsupportapi.models.request.createCheckpoint.CreateCheckpointRawData
 
+import javax.inject.Singleton
+
+@Singleton
 class CreateCheckpointValidator extends Validator[CreateCheckpointRawData] {
 
   override def validate(data: CreateCheckpointRawData): List[MtdError] = {

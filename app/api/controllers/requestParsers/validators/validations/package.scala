@@ -16,9 +16,12 @@
 
 package api.controllers.requestParsers.validators
 
+import java.time.format.DateTimeFormatter
+
 
 package object validations {
 
-  val NoValidationErrors            = List()
+  val dateFormat: DateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
+  val NoValidationErrors: List[Nothing] = List()
 
 }

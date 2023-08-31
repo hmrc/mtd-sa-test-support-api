@@ -14,19 +14,14 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.mtdsatestsupportapi.controllers.requestParsers.validators
+package api.controllers.requestParsers.validators.validations
 
-import api.controllers.requestParsers.validators.Validator
-import api.controllers.requestParsers.validators.validations.CheckpointIdValidation
 import api.models.errors.MtdError
-import uk.gov.hmrc.mtdsatestsupportapi.models.request.restoreCheckpoint.RestoreCheckpointRawData
 
-import javax.inject.Singleton
+trait EnumValidation[E] {
+  protected val parser: PartialFunction[String, E]
 
-@Singleton
-class RestoreCheckpointValidator extends Validator[RestoreCheckpointRawData] {
-
-  override def validate(data: RestoreCheckpointRawData): List[MtdError] =
-    CheckpointIdValidation.validate(data.checkpointId)
+  protected final def validateEnum(value: String, error: => MtdError): List[MtdError] =
+    if (parser.isDefinedAt(value)) Nil else List(error)
 
 }

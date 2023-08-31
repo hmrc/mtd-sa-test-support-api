@@ -24,9 +24,10 @@ import uk.gov.hmrc.mtdsatestsupportapi.models.request.deleteCheckpoint.DeleteChe
 import uk.gov.hmrc.mtdsatestsupportapi.services.DeleteCheckpointService
 import utils.{IdGenerator, Logging}
 
-import javax.inject.Inject
+import javax.inject.{Inject, Singleton}
 import scala.concurrent._
 
+@Singleton
 class DeleteCheckpointController @Inject() (cc: ControllerComponents,
                                             val authService: EnrolmentsAuthService,
                                             parser: DeleteCheckpointRequestParser,

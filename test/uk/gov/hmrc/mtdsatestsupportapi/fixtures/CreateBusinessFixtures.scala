@@ -27,9 +27,7 @@ trait CreateBusinessFixtures {
 
     val mtdBusinessJson: JsObject = Json
       .parse("""{
-        |  "typeOfBusiness": "self-employment",
-        |  "accountingPeriodStartDate": "2001-01-01",
-        |  "accountingPeriodEndDate": "2011-11-11"
+        |  "typeOfBusiness": "self-employment"
         |}
         |""".stripMargin)
       .as[JsObject]
@@ -37,8 +35,6 @@ trait CreateBusinessFixtures {
     val business: Business = Business(
       typeOfBusiness = TypeOfBusiness.`self-employment`,
       tradingName = None,
-      accountingPeriodStartDate = "2001-01-01",
-      accountingPeriodEndDate = "2011-11-11",
       firstAccountingPeriodStartDate = None,
       firstAccountingPeriodEndDate = None,
       latencyDetails = None,

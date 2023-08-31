@@ -14,19 +14,19 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.mtdsatestsupportapi.controllers.requestParsers.validators
+package api.controllers.requestParsers.validators.validations
 
-import api.controllers.requestParsers.validators.Validator
-import api.controllers.requestParsers.validators.validations.CheckpointIdValidation
-import api.models.errors.MtdError
-import uk.gov.hmrc.mtdsatestsupportapi.models.request.restoreCheckpoint.RestoreCheckpointRawData
+import api.models.errors.{DateFormatError, MtdError}
 
-import javax.inject.Singleton
+import java.time.LocalDate
+import scala.util.{Failure, Success, Try}
 
-@Singleton
-class RestoreCheckpointValidator extends Validator[RestoreCheckpointRawData] {
+object DateValidation {
 
-  override def validate(data: RestoreCheckpointRawData): List[MtdError] =
-    CheckpointIdValidation.validate(data.checkpointId)
+  def validate(value: String, error: => MtdError = DateFormatError): Seq[MtdError] =
+    Try(LocalDate.parse(value, dateFormat)) match {
+      case Success(_) => Nil
+      case Failure(_) => List(error)
+    }
 
 }

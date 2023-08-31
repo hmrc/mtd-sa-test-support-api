@@ -23,9 +23,10 @@ import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.http.client.HttpClientV2
 import uk.gov.hmrc.mtdsatestsupportapi.models.request.deleteCheckpoint.DeleteCheckpointRequest
 
-import javax.inject.Inject
+import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 
+@Singleton
 class DeleteCheckpointConnector @Inject() (val appConfig: AppConfig, val http: HttpClientV2)
     extends BaseDownstreamConnector
     with StandardDownstreamHttpParser {

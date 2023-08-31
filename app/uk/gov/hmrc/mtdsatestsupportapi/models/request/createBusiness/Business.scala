@@ -23,8 +23,6 @@ import utils.enums.Enums
 case class Business(
     typeOfBusiness: TypeOfBusiness,
     tradingName: Option[String],
-    accountingPeriodStartDate: String,
-    accountingPeriodEndDate: String,
     firstAccountingPeriodStartDate: Option[String],
     firstAccountingPeriodEndDate: Option[String],
     latencyDetails: Option[LatencyDetails],
@@ -57,11 +55,9 @@ object Business {
     }
   }
 
-  implicit val writes: Writes[Business] = (
+  implicit val writes: OWrites[Business] = (
     __.write[TypeOfBusiness] and
       (__ \ "tradingName").writeNullable[String] and
-      (__ \ "accountingPeriodStartDate").write[String] and
-      (__ \ "accountingPeriodEndDate").write[String] and
       (__ \ "firstAccountingPeriodStartDate").writeNullable[String] and
       (__ \ "firstAccountingPeriodEndDate").writeNullable[String] and
       (__ \ "latencyDetails").writeNullable[LatencyDetails] and

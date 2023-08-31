@@ -14,19 +14,15 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.mtdsatestsupportapi.controllers.requestParsers.validators
+package uk.gov.hmrc.mtdsatestsupportapi.controllers.requestParsers.validators.validations
 
-import api.controllers.requestParsers.validators.Validator
-import api.controllers.requestParsers.validators.validations.CheckpointIdValidation
-import api.models.errors.MtdError
-import uk.gov.hmrc.mtdsatestsupportapi.models.request.restoreCheckpoint.RestoreCheckpointRawData
+import api.controllers.requestParsers.validators.validations.EnumValidation
+import api.models.errors.{LatencyIndicatorFormatError, MtdError}
+import uk.gov.hmrc.mtdsatestsupportapi.models.request.createBusiness.LatencyIndicator
 
-import javax.inject.Singleton
+object LatencyIndicatorValidation extends EnumValidation[LatencyIndicator] {
 
-@Singleton
-class RestoreCheckpointValidator extends Validator[RestoreCheckpointRawData] {
+  override val parser: PartialFunction[String, LatencyIndicator] = LatencyIndicator.parser
 
-  override def validate(data: RestoreCheckpointRawData): List[MtdError] =
-    CheckpointIdValidation.validate(data.checkpointId)
-
+  def validate(value: String, error: => MtdError = LatencyIndicatorFormatError): Seq[MtdError] = validateEnum(value, error)
 }
