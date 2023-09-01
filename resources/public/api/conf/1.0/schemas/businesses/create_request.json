@@ -52,10 +52,10 @@
           "type": "string",
           "description": "Self assessment submission frequency.",
           "enum": [
-            "Annual",
-            "Quarterly"
+            "A",
+            "Q"
           ],
-          "example": "Annual"
+          "example": "A"
         },
         "taxYear2": {
           "type": "string",
@@ -69,10 +69,10 @@
           "type": "string",
           "description": "Self assessment submission frequency.",
           "enum": [
-            "Annual",
-            "Quarterly"
+            "A",
+            "Q"
           ],
-          "example": "Annual"
+          "example": "A"
         }
       },
       "required": [

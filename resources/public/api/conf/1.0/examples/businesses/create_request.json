@@ -6,9 +6,9 @@
   "latencyDetails": {
     "latencyEndDate": "2020-02-27",
     "taxYear1": "2018-19",
-    "latencyIndicator1": "Annual",
+    "latencyIndicator1": "A",
     "taxYear2": "2019-20",
-    "latencyIndicator2": "Annual"
+    "latencyIndicator2": "Q"
   },
   "accountingType":"CASH",
   "commencementDate":"2022-04-06",

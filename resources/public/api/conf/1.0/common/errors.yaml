@@ -58,7 +58,7 @@ components:
 
     formatLatencyIndicator:
       description: |
-        The format of a latency indicator fields must be "Annual" or "Quarterly".
+        The format of a latency indicator fields must be "A" or "Q".
       value:
         code: FORMAT_LATENCY_INDICATOR
         message: The format of a latency indicator field is incorrect
