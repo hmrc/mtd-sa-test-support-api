@@ -26,9 +26,9 @@ class LatencyDetailsSpec extends UnitSpec {
     LatencyDetails(
       latencyEndDate = "2020-01-01",
       taxYear1 = TaxYear.fromMtd("2020-21"),
-      latencyIndicator1 = LatencyIndicator.Annual,
+      latencyIndicator1 = LatencyIndicator.A,
       taxYear2 = TaxYear.fromMtd("2021-22"),
-      latencyIndicator2 = LatencyIndicator.Quarterly
+      latencyIndicator2 = LatencyIndicator.Q
     )
 
   "LatencyDetails" when {
@@ -37,9 +37,9 @@ class LatencyDetailsSpec extends UnitSpec {
         val mtdJson = Json.parse("""{
             |    "latencyEndDate": "2020-01-01",
             |    "taxYear1": "2020-21",
-            |    "latencyIndicator1": "Annual",
+            |    "latencyIndicator1": "A",
             |    "taxYear2": "2021-22",
-            |    "latencyIndicator2": "Quarterly"          
+            |    "latencyIndicator2": "Q"
             |}
             |""".stripMargin)
 

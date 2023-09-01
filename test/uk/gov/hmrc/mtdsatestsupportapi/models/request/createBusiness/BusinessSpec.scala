@@ -33,9 +33,9 @@ class BusinessSpec extends UnitSpec with CreateBusinessFixtures {
       LatencyDetails(
         latencyEndDate = "2020-01-01",
         taxYear1 = TaxYear.fromMtd("2020-21"),
-        latencyIndicator1 = LatencyIndicator.Annual,
+        latencyIndicator1 = LatencyIndicator.A,
         taxYear2 = TaxYear.fromMtd("2021-22"),
-        latencyIndicator2 = LatencyIndicator.Quarterly
+        latencyIndicator2 = LatencyIndicator.Q
       )),
     accountingType = Some(AccountingType.CASH),
     commencementDate = Some("2000-01-01"),
@@ -60,9 +60,9 @@ class BusinessSpec extends UnitSpec with CreateBusinessFixtures {
               |  "latencyDetails": {
               |    "latencyEndDate": "2020-01-01",
               |    "taxYear1": "2020-21",
-              |    "latencyIndicator1": "Annual",
+              |    "latencyIndicator1": "A",
               |    "taxYear2": "2021-22",
-              |    "latencyIndicator2": "Quarterly"
+              |    "latencyIndicator2": "Q"
               |  },
               |  "accountingType": "CASH",
               |  "commencementDate": "2000-01-01",
