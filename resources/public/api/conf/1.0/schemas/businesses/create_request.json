@@ -50,7 +50,7 @@
         },
         "latencyIndicator1": {
           "type": "string",
-          "description": "Self assessment submission frequency.",
+          "description": "Self assessment submission frequency ('A' - Annual, 'Q' - Quarterly).",
           "enum": [
             "A",
             "Q"
@@ -67,7 +67,7 @@
         },
         "latencyIndicator2": {
           "type": "string",
-          "description": "Self assessment submission frequency.",
+          "description": "Self assessment submission frequency ('A' - Annual, 'Q' - Quarterly).",
           "enum": [
             "A",
             "Q"
