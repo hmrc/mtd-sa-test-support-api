@@ -25,23 +25,22 @@ trait BusinessHateoasLinks {
 
   val SELF = "self"
 
-  private def baseUrl(appConfig:AppConfig) =
+  private def baseUrl(appConfig: AppConfig) =
     s"/${appConfig.apiGatewayContext}/business"
 
   private def businessDetailsBaseUrl(appConfig: AppConfig) =
     s"/${appConfig.businessDetailsConfig.baseUrl}"
 
-  def createBusiness(appConfig:AppConfig, nino: Nino):Link =
-    Link(href=s"${baseUrl(appConfig)}/$nino", method= POST, rel = "create-business")
+  def createBusiness(appConfig: AppConfig, nino: Nino): Link =
+    Link(href = s"${baseUrl(appConfig)}/$nino", method = POST, rel = "create-business")
 
-  def deleteBusiness(appConfig: AppConfig, nino: Nino, businessId: String):Link =
-    Link(href=s"${baseUrl(appConfig)}/$nino/$businessId", method=DELETE, rel="delete-business")
+  def deleteBusiness(appConfig: AppConfig, nino: Nino, businessId: String): Link =
+    Link(href = s"${baseUrl(appConfig)}/$nino/$businessId", method = DELETE, rel = "delete-business")
 
-  def listAllBusinesses(appConfig:AppConfig, nino:Nino):Link =
-    Link(href = s"${businessDetailsBaseUrl(appConfig)}/details/$nino/list", method=GET, rel="list-businesses")
+  def listAllBusinesses(appConfig: AppConfig, nino: Nino): Link =
+    Link(href = s"${businessDetailsBaseUrl(appConfig)}/details/$nino/list", method = GET, rel = "list-businesses")
 
-  def retrieveBusinessDetails(appConfig:AppConfig, nino:Nino, businessId: String):Link=
-    Link(href = s"${businessDetailsBaseUrl(appConfig)}/$nino/$businessId", method=GET, rel="retrieve-business-details")
-
+  def retrieveBusinessDetails(appConfig: AppConfig, nino: Nino, businessId: String): Link =
+    Link(href = s"${businessDetailsBaseUrl(appConfig)}/$nino/$businessId", method = GET, rel = "retrieve-business-details")
 
 }

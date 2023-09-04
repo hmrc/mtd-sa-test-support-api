@@ -17,7 +17,7 @@
 package uk.gov.hmrc.mtdsatestsupportapi.fixtures
 
 import play.api.libs.json.{JsObject, Json}
-import uk.gov.hmrc.mtdsatestsupportapi.models.request.createBusiness.{Business,TypeOfBusiness}
+import uk.gov.hmrc.mtdsatestsupportapi.models.request.createBusiness.{Business, TypeOfBusiness}
 import uk.gov.hmrc.mtdsatestsupportapi.models.response.createBusiness.CreateBusinessResponse
 
 // Reusable JSON to support testing in various places outside of detailed JSON serialization testing
@@ -54,8 +54,6 @@ trait CreateBusinessFixtures {
            |  "propertyIncome": false
            |}""".stripMargin)
       .as[JsObject]
-
-
 
   }
 

@@ -51,15 +51,13 @@ class CreateBusinessControllerSpec
     val requestData: CreateBusinessRequest = CreateBusinessRequest(Nino(nino), MinimalCreateBusinessRequest.business)
     val response                           = ExampleCreateBusinessResponse.response
 
-
-
     val controller = new CreateBusinessController(
       cc = cc,
       authService = mockEnrolmentsAuthService,
       parser = mockParser,
       service = mockService,
       idGenerator = mockIdGenerator,
-      hateoasFactory = mockHateoasFactory,
+      hateoasFactory = mockHateoasFactory
     )
 
     protected val hateoasResponse: JsObject = Json.obj("businessId" -> businessId) ++ hateoaslinksJson
@@ -71,7 +69,9 @@ class CreateBusinessControllerSpec
       "a valid request is sent" in new Test {
         override protected def callController(): Future[Result] =
           controller.handleRequest(nino)(
-            fakeRequest.withBody(MinimalCreateBusinessRequest.mtdBusinessJson).withHeaders(HeaderNames.AUTHORIZATION -> "Bearer Token", "X-Client-Id" -> vendorClientId))
+            fakeRequest
+              .withBody(MinimalCreateBusinessRequest.mtdBusinessJson)
+              .withHeaders(HeaderNames.AUTHORIZATION -> "Bearer Token", "X-Client-Id" -> vendorClientId))
 
         MockCreateBusinessRequestParser.parseRequest(rawData).returns(Right(requestData))
 
@@ -97,7 +97,9 @@ class CreateBusinessControllerSpec
       "the validator returns an error" in new Test {
         override protected def callController(): Future[Result] =
           controller.handleRequest(nino)(
-            fakeRequest.withBody(MinimalCreateBusinessRequest.mtdBusinessJson).withHeaders(HeaderNames.AUTHORIZATION -> "Bearer Token", "X-Client-Id" -> vendorClientId))
+            fakeRequest
+              .withBody(MinimalCreateBusinessRequest.mtdBusinessJson)
+              .withHeaders(HeaderNames.AUTHORIZATION -> "Bearer Token", "X-Client-Id" -> vendorClientId))
 
         MockCreateBusinessRequestParser.parseRequest(rawData).returns(Left(ErrorWrapper(correlationId, NinoFormatError, None)))
 
@@ -106,7 +108,9 @@ class CreateBusinessControllerSpec
       "the service returns an error" in new Test {
         override protected def callController(): Future[Result] =
           controller.handleRequest(nino)(
-            fakeRequest.withBody(MinimalCreateBusinessRequest.mtdBusinessJson).withHeaders(HeaderNames.AUTHORIZATION -> "Bearer Token", "X-Client-Id" -> vendorClientId))
+            fakeRequest
+              .withBody(MinimalCreateBusinessRequest.mtdBusinessJson)
+              .withHeaders(HeaderNames.AUTHORIZATION -> "Bearer Token", "X-Client-Id" -> vendorClientId))
 
         MockCreateBusinessRequestParser.parseRequest(rawData).returns(Right(requestData))
 

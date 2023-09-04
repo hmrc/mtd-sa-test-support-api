@@ -48,10 +48,10 @@ class AppConfigImpl @Inject() (config: ServicesConfig, configuration: Configurat
   }
 
   lazy val businessDetailsConfig: DownstreamConfig = {
-    //TODO: Get configuration for business details API
-    //We need this to implement HATEOAS links (see here: https://confluence.tools.tax.service.gov.uk/pages/viewpage.action?pageId=691961861 )
-    //For now, this will just return the stub base URL + config as a placeholder
-    val businessDetailsBaseUrl = config.baseUrl("stub")
+    // TODO: Get configuration for business details API
+    // We need this to implement HATEOAS links (see here: https://confluence.tools.tax.service.gov.uk/pages/viewpage.action?pageId=691961861 )
+    // For now, this will just return the stub base URL + config as a placeholder
+    val businessDetailsBaseUrl            = config.baseUrl("stub")
     val businessDetailsEnvironmentHeaders = configuration.getOptional[Seq[String]]("microservice.services.stub.environmentHeaders")
 
     DownstreamConfig(baseUrl = businessDetailsBaseUrl, environmentHeaders = businessDetailsEnvironmentHeaders)
