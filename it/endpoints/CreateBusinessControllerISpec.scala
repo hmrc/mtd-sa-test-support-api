@@ -47,9 +47,9 @@ class CreateBusinessControllerISpec extends IntegrationBaseSpec with CreateBusin
 
   trait Test {
 
-    private val nino                   = "AA123456A"
+    private val nino           = "AA123456A"
     private val vendorClientId = "some_id"
-    private val businessId             = ExampleCreateBusinessResponse.businessId
+    private val businessId     = ExampleCreateBusinessResponse.businessId
 
     private val expectedResponse =
       s"""
