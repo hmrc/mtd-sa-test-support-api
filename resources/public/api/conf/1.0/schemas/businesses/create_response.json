@@ -23,7 +23,7 @@
             "description": "The HTTP method type for the endpoint.",
             "type": "string",
             "enum": [
-              "POST",
+              "GET",
               "DELETE"
             ]
           },
@@ -31,8 +31,9 @@
             "description": "A label for the endpoint, which describes how it is related to the current resource\nThe rel will be self where the action is retrieval of the same resource.",
             "type": "string",
             "enum": [
-              "create-business",
               "delete-business",
+              "list-all-businesses",
+              "retrieve-business-details"
             ]
           }
         },

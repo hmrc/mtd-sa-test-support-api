@@ -2,14 +2,19 @@
   "businessId": "XAIS12345678910",
   "links": [
     {
-      "href": "/individuals/self-assessment-test-support/business/ET009363D",
-      "method": "POST",
-      "rel": "create-business"
-    },
-    {
       "href": "/individuals/self-assessment-test-support/business/ET009363D/XAIS12345678910",
       "method": "DELETE",
       "rel": "delete-business"
+    },
+    {
+      "href": "/individuals/business/details/ET009363D/list",
+      "method": "GET",
+      "rel": "self"
+    },
+    {
+      "href": "/individuals/business/details/ET009363D/XAIS12345678910",
+      "method": "GET",
+      "rel": "self"
     }
   ]
 }
