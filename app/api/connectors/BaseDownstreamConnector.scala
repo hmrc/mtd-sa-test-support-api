@@ -96,6 +96,7 @@ trait BaseDownstreamConnector extends Logging {
     implicit val hc: HeaderCarrier    = downstreamHeaderCarrier()
     implicit val ec: ExecutionContext = connectorContext.ec
 
+
     http.delete(url(downstreamUri)).execute
   }
 

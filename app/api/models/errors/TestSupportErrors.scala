@@ -30,3 +30,4 @@ object PostcodeFormatError         extends MtdError("FORMAT_POSTCODE", "The prov
 object LatencyIndicatorFormatError extends MtdError("FORMAT_LATENCY_INDICATOR", "The format of a latency indicator field is incorrect", BAD_REQUEST)
 object MissingPostcodeError        extends MtdError("MISSING_POSTCODE", "Missing postcode", BAD_REQUEST)
 object CountryCodeFormatError      extends MtdError("FORMAT_COUNTRY_CODE", "The provided country code is invalid", BAD_REQUEST)
+object RulePropertyBusinessAdded extends MtdError("RULE_PROPERTY_BUSINESS_ADDED", "The provided property business is already added", BAD_REQUEST)

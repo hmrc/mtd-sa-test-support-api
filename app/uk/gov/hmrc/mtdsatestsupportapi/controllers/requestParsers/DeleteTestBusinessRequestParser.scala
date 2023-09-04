@@ -21,8 +21,9 @@ import api.models.domain.Nino
 import uk.gov.hmrc.mtdsatestsupportapi.controllers.requestParsers.validators.DeleteTestBusinessValidator
 import uk.gov.hmrc.mtdsatestsupportapi.models.request.deleteTestBusiness.{DeleteTestBusinessRawData, DeleteTestBusinessRequest}
 
-import javax.inject.Inject
+import javax.inject.{Inject, Singleton}
 
+@Singleton
 class DeleteTestBusinessRequestParser @Inject() (val validator: DeleteTestBusinessValidator)
     extends RequestParser[DeleteTestBusinessRawData, DeleteTestBusinessRequest] {
 

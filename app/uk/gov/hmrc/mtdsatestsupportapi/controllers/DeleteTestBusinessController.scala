@@ -24,9 +24,10 @@ import uk.gov.hmrc.mtdsatestsupportapi.models.request.deleteTestBusiness.DeleteT
 import uk.gov.hmrc.mtdsatestsupportapi.services.DeleteTestBusinessService
 import utils.{IdGenerator, Logging}
 
-import javax.inject.Inject
+import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 
+@Singleton
 class DeleteTestBusinessController @Inject() (cc: ControllerComponents,
                                               val authService: EnrolmentsAuthService,
                                               parser: DeleteTestBusinessRequestParser,

@@ -16,12 +16,28 @@
 
 package uk.gov.hmrc.mtdsatestsupportapi.models.response.createBusiness
 
+import api.hateoas.{HateoasData, HateoasLinksFactory, Link}
+import api.models.domain.Nino
+import config.AppConfig
 import play.api.libs.json._
+import uk.gov.hmrc.mtdsatestsupportapi.models.hateoas.BusinessHateoasLinks
 
 case class CreateBusinessResponse(businessId: String)
 
-object CreateBusinessResponse {
+object CreateBusinessResponse extends BusinessHateoasLinks {
   implicit val reads: Reads[CreateBusinessResponse] = (__ \ "incomeSourceId").read[String].map(CreateBusinessResponse.apply)
 
-  implicit val writes: Writes[CreateBusinessResponse] = Json.writes
+  implicit val writes: OWrites[CreateBusinessResponse] = Json.writes
+
+  implicit object LinksFactory extends HateoasLinksFactory[CreateBusinessResponse, CreateBusinessHateoasData] {
+
+    override def links(appConfig: AppConfig, data: CreateBusinessHateoasData): Seq[Link] = {
+      import data._
+      Seq(deleteBusiness(appConfig, nino, businessId), listAllBusinesses(appConfig, nino), retrieveBusinessDetails(appConfig, nino, businessId))
+    }
+
+  }
+
 }
+
+case class CreateBusinessHateoasData(nino: Nino, businessId: String) extends HateoasData
