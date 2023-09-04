@@ -5,8 +5,8 @@ post:
     
     Customer may have multiple Self-Employment businesses but only one of each Property business is allowed. 
     MTD supports only one accounting period per year so this must be a full tax year period e.g. April 6th to April 5th. 
-    Any test business that has not been deleted by the developer is automatically purged from database 7 days after its creation.
-    
+    Any test business that has not been deleted by the developer is automatically purged from database 7 days after its
+    creation.
 
   tags:
     - Business Income Source

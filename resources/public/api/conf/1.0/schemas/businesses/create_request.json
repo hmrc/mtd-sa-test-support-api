@@ -50,12 +50,12 @@
         },
         "latencyIndicator1": {
           "type": "string",
-          "description": "Self assessment submission frequency.",
+          "description": "Self assessment submission frequency ('A' - Annual, 'Q' - Quarterly).",
           "enum": [
-            "Annual",
-            "Quarterly"
+            "A",
+            "Q"
           ],
-          "example": "Annual"
+          "example": "A"
         },
         "taxYear2": {
           "type": "string",
@@ -67,12 +67,12 @@
         },
         "latencyIndicator2": {
           "type": "string",
-          "description": "Self assessment submission frequency.",
+          "description": "Self assessment submission frequency ('A' - Annual, 'Q' - Quarterly).",
           "enum": [
-            "Annual",
-            "Quarterly"
+            "A",
+            "Q"
           ],
-          "example": "Annual"
+          "example": "A"
         }
       },
       "required": [
