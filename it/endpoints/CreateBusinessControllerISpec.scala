@@ -47,33 +47,8 @@ class CreateBusinessControllerISpec extends IntegrationBaseSpec with CreateBusin
 
   trait Test {
 
-    private val nino           = "AA123456A"
+    val nino                   = "AA123456A"
     private val vendorClientId = "some_id"
-    private val businessId     = ExampleCreateBusinessResponse.businessId
-
-    private val expectedResponse =
-      s"""
-        |{
-        |  "businessId": "$businessId",
-        |  "links": [
-        |    {
-        |      "href": "/individuals/self-assessment-test-support/business/$nino/$businessId",
-        |      "method": "DELETE",
-        |      "rel": "delete-business"
-        |    },
-        |    {
-        |      "href": "/individuals/business/details/$nino/list",
-        |      "method": "GET",
-        |      "rel": "list-businesses"
-        |    },
-        |    {
-        |      "href": "/individuals/business/details/$nino/$businessId",
-        |      "method": "GET",
-        |      "rel": "retrieve-business-details"
-        |    }
-        |  ]
-        |}
-        |""".stripMargin
 
     val downstreamUri = s"/test-support/business-details/$nino"
 
