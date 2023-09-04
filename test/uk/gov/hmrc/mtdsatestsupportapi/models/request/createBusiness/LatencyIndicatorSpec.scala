@@ -24,15 +24,15 @@ class LatencyIndicatorSpec extends UnitSpec {
   "LatencyIndicator" when {
     "deserialized from API JSON" must {
       "work" in {
-        JsString("Annual").as[LatencyIndicator] shouldBe LatencyIndicator.Annual
-        JsString("Quarterly").as[LatencyIndicator] shouldBe LatencyIndicator.Quarterly
+        JsString("A").as[LatencyIndicator] shouldBe LatencyIndicator.A
+        JsString("Q").as[LatencyIndicator] shouldBe LatencyIndicator.Q
       }
     }
 
     "serialized to downstream JSON" must {
       "work" in {
-        Json.toJson[LatencyIndicator](LatencyIndicator.Annual) shouldBe JsString("A")
-        Json.toJson[LatencyIndicator](LatencyIndicator.Quarterly) shouldBe JsString("Q")
+        Json.toJson[LatencyIndicator](LatencyIndicator.A) shouldBe JsString("A")
+        Json.toJson[LatencyIndicator](LatencyIndicator.Q) shouldBe JsString("Q")
       }
     }
   }

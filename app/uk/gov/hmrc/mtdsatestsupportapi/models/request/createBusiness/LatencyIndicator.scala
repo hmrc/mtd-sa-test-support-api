@@ -22,14 +22,14 @@ import utils.enums.Enums
 sealed trait LatencyIndicator
 
 object LatencyIndicator {
-  case object Annual    extends LatencyIndicator
-  case object Quarterly extends LatencyIndicator
+  case object A extends LatencyIndicator
+  case object Q extends LatencyIndicator
 
   implicit val reads: Reads[LatencyIndicator] = Enums.reads[LatencyIndicator]
 
   implicit val writes: Writes[LatencyIndicator] = {
-    case LatencyIndicator.Annual    => JsString("A")
-    case LatencyIndicator.Quarterly => JsString("Q")
+    case LatencyIndicator.A => JsString("A")
+    case LatencyIndicator.Q => JsString("Q")
   }
 
   implicit val parser: PartialFunction[String, LatencyIndicator] = Enums.parser[LatencyIndicator]

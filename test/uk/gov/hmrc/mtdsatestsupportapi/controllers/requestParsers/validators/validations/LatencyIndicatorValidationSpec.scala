@@ -16,18 +16,18 @@
 
 package uk.gov.hmrc.mtdsatestsupportapi.controllers.requestParsers.validators.validations
 
-import api.models.errors.LatencyIndicatorFormatError
+import api.models.errors.{LatencyIndicatorFormatError, MtdError}
 import support.UnitSpec
 
 class LatencyIndicatorValidationSpec extends UnitSpec {
 
-  val err = LatencyIndicatorFormatError.withExtraPath("somePath")
+  val err: MtdError = LatencyIndicatorFormatError.withExtraPath("somePath")
 
   "validate" should {
 
     "return no errors" when {
-      checkValid("Annual")
-      checkValid("Quarterly")
+      checkValid("A")
+      checkValid("Q")
 
       def checkValid(value: String): Unit =
         s"provided with a string of '$value'" in {
