@@ -24,15 +24,17 @@ import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
 import javax.inject.{Inject, Singleton}
 
 trait AppConfig {
-
-  def stubDownstreamConfig: DownstreamConfig
-
   // API Config
   def apiGatewayContext: String
   def confidenceLevelConfig: ConfidenceLevelConfig
   def apiStatus(version: String): String
   def featureSwitches: Configuration
   def endpointsEnabled(version: String): Boolean
+
+  // Stub Config
+  def stubDownstreamConfig: DownstreamConfig
+  def stubEnv: String
+  def stubToken: String
 
 }
 
@@ -42,8 +44,10 @@ class AppConfigImpl @Inject() (config: ServicesConfig, configuration: Configurat
   lazy val stubDownstreamConfig: DownstreamConfig = {
     val stubBaseUrl            = config.baseUrl("stub")
     val stubEnvironmentHeaders = configuration.getOptional[Seq[String]]("microservice.services.stub.environmentHeaders")
+    val stubEnv                = config.getString("microservice.services.stub.env")
+    val stubToken              = config.getString("microservice.services.stub.token")
 
-    DownstreamConfig(baseUrl = stubBaseUrl, environmentHeaders = stubEnvironmentHeaders)
+    DownstreamConfig(baseUrl = stubBaseUrl, env = stubEnv, token = stubToken, environmentHeaders = stubEnvironmentHeaders)
   }
 
   // API Config
@@ -52,6 +56,10 @@ class AppConfigImpl @Inject() (config: ServicesConfig, configuration: Configurat
   def apiStatus(version: String): String           = config.getString(s"api.$version.status")
   def featureSwitches: Configuration               = configuration.getOptional[Configuration](s"feature-switch").getOrElse(Configuration.empty)
   def endpointsEnabled(version: String): Boolean   = config.getBoolean(s"api.$version.endpoints.enabled")
+
+  // Stub Config
+  val stubEnv: String   = config.getString("microservice.services.stub.env")
+  val stubToken: String = config.getString("microservice.services.stub.token")
 
 }
 

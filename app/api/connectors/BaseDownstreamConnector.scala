@@ -108,7 +108,9 @@ trait BaseDownstreamConnector extends Logging {
       extraHeaders = connectorContext.hc.extraHeaders ++
         // Contract headers
         List(
-          "CorrelationId" -> connectorContext.correlationId
+          "CorrelationId" -> connectorContext.correlationId,
+          "Authorization" -> s"Bearer ${appConfig.stubToken}",
+          "Environment"   -> appConfig.stubEnv
         ) ++
         additionalHeaders ++
         passThroughHeaders
