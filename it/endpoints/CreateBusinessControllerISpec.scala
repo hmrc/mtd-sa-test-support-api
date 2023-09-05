@@ -27,7 +27,7 @@ import api.models.errors.{
   PostcodeFormatError,
   RuleCommencementDateNotSupported,
   RuleIncorrectOrEmptyBodyError,
-  RulePropertyBusinessAdded,
+  RulePropertyBusinessAddedError,
   RuleTaxYearRangeInvalidError,
   TaxYearFormatError,
   TypeOfBusinessFormatError
@@ -85,7 +85,7 @@ class CreateBusinessControllerISpec extends IntegrationBaseSpec with CreateBusin
         |    {
         |      "href": "/individuals/business/details/$nino/$businessId",
         |      "method": "GET",
-        |      "rel": "retrieve-business-details"
+        |      "rel": "self"
         |    }
         |  ]
         |}""".stripMargin
@@ -232,7 +232,7 @@ class CreateBusinessControllerISpec extends IntegrationBaseSpec with CreateBusin
       }
 
       val stubErrors = Seq(
-        (BAD_REQUEST, "DUPLICATE_PROPERTY_BUSINESS", BAD_REQUEST, RulePropertyBusinessAdded)
+        (BAD_REQUEST, "DUPLICATE_PROPERTY_BUSINESS", BAD_REQUEST, RulePropertyBusinessAddedError)
       )
 
       stubErrors.foreach(elem => (serviceError _).tupled(elem))

@@ -17,7 +17,7 @@
 package uk.gov.hmrc.mtdsatestsupportapi.models.hateoas
 
 import api.hateoas.Link
-import api.hateoas.Method.{DELETE, GET, POST}
+import api.hateoas.Method.{DELETE, GET}
 import api.models.domain.Nino
 import config.AppConfig
 
@@ -31,9 +31,6 @@ trait BusinessHateoasLinks {
   private def businessDetailsBaseUrl(appConfig: AppConfig) =
     s"/${appConfig.businessDetailsApiGatewayContext}"
 
-  def createBusiness(appConfig: AppConfig, nino: Nino): Link =
-    Link(href = s"${baseUrl(appConfig)}/$nino", method = POST, rel = "create-business")
-
   def deleteBusiness(appConfig: AppConfig, nino: Nino, businessId: String): Link =
     Link(href = s"${baseUrl(appConfig)}/$nino/$businessId", method = DELETE, rel = "delete-business")
 
@@ -41,6 +38,6 @@ trait BusinessHateoasLinks {
     Link(href = s"${businessDetailsBaseUrl(appConfig)}/$nino/list", method = GET, rel = "list-businesses")
 
   def retrieveBusinessDetails(appConfig: AppConfig, nino: Nino, businessId: String): Link =
-    Link(href = s"${businessDetailsBaseUrl(appConfig)}/$nino/$businessId", method = GET, rel = "retrieve-business-details")
+    Link(href = s"${businessDetailsBaseUrl(appConfig)}/$nino/$businessId", method = GET, rel = "self")
 
 }

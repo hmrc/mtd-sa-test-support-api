@@ -49,7 +49,7 @@ class AppConfigImpl @Inject() (config: ServicesConfig, configuration: Configurat
 
   // API Config
   val apiGatewayContext: String                    = config.getString("api.gateway.context")
-  val businessDetailsApiGatewayContext: String     = config.getString("api.businessDetails.gateway.context")
+  val businessDetailsApiGatewayContext: String     = config.getString("businessDetailsApi.gateway.context")
   val confidenceLevelConfig: ConfidenceLevelConfig = configuration.get[ConfidenceLevelConfig](s"api.confidence-level-check")
   def apiStatus(version: String): String           = config.getString(s"api.$version.status")
   def featureSwitches: Configuration               = configuration.getOptional[Configuration](s"feature-switch").getOrElse(Configuration.empty)
