@@ -48,7 +48,8 @@ class CreateBusinessControllerISpec extends IntegrationBaseSpec with CreateBusin
   trait Test {
 
     val nino                   = "AA123456A"
-    private val vendorClientId = "some_id"
+    private val vendorClientId = "someId"
+    private val businessId     = "someBusinessId"
 
     val downstreamUri = s"/test-support/business-details/$nino"
 
@@ -67,6 +68,28 @@ class CreateBusinessControllerISpec extends IntegrationBaseSpec with CreateBusin
         )
     }
 
+    val expectedResponseBody =
+      s"""{
+        |  "businessId": "$businessId",
+        |  "links": [
+        |    {
+        |      "href": "/individuals/self-assessment-test-support/business/$nino/$businessId",
+        |      "method": "DELETE",
+        |      "rel": "delete-business"
+        |    },
+        |    {
+        |      "href": "/individuals/business/details/$nino/list",
+        |      "method": "GET",
+        |      "rel": "list-businesses"
+        |    },
+        |    {
+        |      "href": "/individuals/business/details/$nino/$businessId",
+        |      "method": "GET",
+        |      "rel": "retrieve-business-details"
+        |    }
+        |  ]
+        |}""".stripMargin
+
   }
 
   "Calling the create Business endpoint" should {
@@ -77,8 +100,7 @@ class CreateBusinessControllerISpec extends IntegrationBaseSpec with CreateBusin
 
         response.status shouldBe CREATED
         response.header("X-CorrelationId") should not be empty
-        // TODO: Implement HATEOAS links to ensure the assertion below passes:
-        // response.json shouldBe expectedResponse
+        response.json shouldBe Json.parse(expectedResponseBody)
       }
     }
     "return validation error according to spec" when {

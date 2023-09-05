@@ -29,7 +29,7 @@ trait BusinessHateoasLinks {
     s"/${appConfig.apiGatewayContext}/business"
 
   private def businessDetailsBaseUrl(appConfig: AppConfig) =
-    s"/${appConfig.businessDetailsConfig.baseUrl}"
+    s"/${appConfig.businessDetailsApiGatewayContext}"
 
   def createBusiness(appConfig: AppConfig, nino: Nino): Link =
     Link(href = s"${baseUrl(appConfig)}/$nino", method = POST, rel = "create-business")
@@ -38,7 +38,7 @@ trait BusinessHateoasLinks {
     Link(href = s"${baseUrl(appConfig)}/$nino/$businessId", method = DELETE, rel = "delete-business")
 
   def listAllBusinesses(appConfig: AppConfig, nino: Nino): Link =
-    Link(href = s"${businessDetailsBaseUrl(appConfig)}/details/$nino/list", method = GET, rel = "list-businesses")
+    Link(href = s"${businessDetailsBaseUrl(appConfig)}/$nino/list", method = GET, rel = "list-businesses")
 
   def retrieveBusinessDetails(appConfig: AppConfig, nino: Nino, businessId: String): Link =
     Link(href = s"${businessDetailsBaseUrl(appConfig)}/$nino/$businessId", method = GET, rel = "retrieve-business-details")

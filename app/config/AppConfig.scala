@@ -26,10 +26,10 @@ import javax.inject.{Inject, Singleton}
 trait AppConfig {
 
   def stubDownstreamConfig: DownstreamConfig
-  def businessDetailsConfig: DownstreamConfig
 
   // API Config
   def apiGatewayContext: String
+  def businessDetailsApiGatewayContext: String
   def confidenceLevelConfig: ConfidenceLevelConfig
   def apiStatus(version: String): String
   def featureSwitches: Configuration
@@ -47,18 +47,9 @@ class AppConfigImpl @Inject() (config: ServicesConfig, configuration: Configurat
     DownstreamConfig(baseUrl = stubBaseUrl, environmentHeaders = stubEnvironmentHeaders)
   }
 
-  lazy val businessDetailsConfig: DownstreamConfig = {
-    // TODO: Get configuration for business details API
-    // We need this to implement HATEOAS links (see here: https://confluence.tools.tax.service.gov.uk/pages/viewpage.action?pageId=691961861 )
-    // For now, this will just return the stub base URL + config as a placeholder
-    val businessDetailsBaseUrl            = config.baseUrl("stub")
-    val businessDetailsEnvironmentHeaders = configuration.getOptional[Seq[String]]("microservice.services.stub.environmentHeaders")
-
-    DownstreamConfig(baseUrl = businessDetailsBaseUrl, environmentHeaders = businessDetailsEnvironmentHeaders)
-  }
-
   // API Config
   val apiGatewayContext: String                    = config.getString("api.gateway.context")
+  val businessDetailsApiGatewayContext: String     = config.getString("api.businessDetails.gateway.context")
   val confidenceLevelConfig: ConfidenceLevelConfig = configuration.get[ConfidenceLevelConfig](s"api.confidence-level-check")
   def apiStatus(version: String): String           = config.getString(s"api.$version.status")
   def featureSwitches: Configuration               = configuration.getOptional[Configuration](s"feature-switch").getOrElse(Configuration.empty)

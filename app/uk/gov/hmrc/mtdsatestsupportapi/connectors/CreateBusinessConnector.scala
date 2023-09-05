@@ -26,9 +26,10 @@ import uk.gov.hmrc.http.client.HttpClientV2
 import uk.gov.hmrc.mtdsatestsupportapi.models.request.createBusiness.CreateBusinessRequest
 import uk.gov.hmrc.mtdsatestsupportapi.models.response.createBusiness.CreateBusinessResponse
 
-import javax.inject.Inject
+import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 
+@Singleton
 class CreateBusinessConnector @Inject() (val http: HttpClientV2, val appConfig: AppConfig)
     extends BaseDownstreamConnector
     with StandardDownstreamHttpParser {
