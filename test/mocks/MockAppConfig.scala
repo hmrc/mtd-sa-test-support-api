@@ -28,6 +28,8 @@ trait MockAppConfig extends MockFactory {
   object MockAppConfig {
     // Stub Config
     def stubDownstreamConfig: CallHandler[DownstreamConfig] = (() => mockAppConfig.stubDownstreamConfig).expects()
+    def stubEnv: CallHandler[String]                        = (() => mockAppConfig.stubEnv).expects()
+    def stubToken: CallHandler[String]                      = (() => mockAppConfig.stubToken).expects()
 
     // API Config
     def featureSwitches: CallHandler[Configuration]             = (() => mockAppConfig.featureSwitches).expects()

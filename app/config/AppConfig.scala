@@ -25,7 +25,7 @@ import javax.inject.{Inject, Singleton}
 
 trait AppConfig {
 
-  def stubDownstreamConfig: DownstreamConfig
+  def businessDetailsConfig: DownstreamConfig
 
   // API Config
   def apiGatewayContext: String
@@ -33,6 +33,11 @@ trait AppConfig {
   def apiStatus(version: String): String
   def featureSwitches: Configuration
   def endpointsEnabled(version: String): Boolean
+
+  // Stub Config
+  def stubDownstreamConfig: DownstreamConfig
+  def stubEnv: String
+  def stubToken: String
 
 }
 
@@ -42,8 +47,26 @@ class AppConfigImpl @Inject() (config: ServicesConfig, configuration: Configurat
   lazy val stubDownstreamConfig: DownstreamConfig = {
     val stubBaseUrl            = config.baseUrl("stub")
     val stubEnvironmentHeaders = configuration.getOptional[Seq[String]]("microservice.services.stub.environmentHeaders")
+    val stubEnv                = config.getString("microservice.services.stub.env")
+    val stubToken              = config.getString("microservice.services.stub.token")
 
-    DownstreamConfig(baseUrl = stubBaseUrl, environmentHeaders = stubEnvironmentHeaders)
+    DownstreamConfig(baseUrl = stubBaseUrl, env = stubEnv, token = stubToken, environmentHeaders = stubEnvironmentHeaders)
+  }
+
+  lazy val businessDetailsConfig: DownstreamConfig = {
+    // TODO: Get configuration for business details API
+    // We need this to implement HATEOAS links (see here: https://confluence.tools.tax.service.gov.uk/pages/viewpage.action?pageId=691961861 )
+    // For now, this will just return the stub base URL + config as a placeholder
+    val businessDetailsBaseUrl            = config.baseUrl("stub")
+    val businessDetailsEnvironmentHeaders = configuration.getOptional[Seq[String]]("microservice.services.stub.environmentHeaders")
+    val businessDetailsEnv                = config.getString("microservice.services.stub.env")
+    val businessDetailsToken              = config.getString("microservice.services.stub.token")
+
+    DownstreamConfig(
+      baseUrl = businessDetailsBaseUrl,
+      env = businessDetailsEnv,
+      token = businessDetailsToken,
+      environmentHeaders = businessDetailsEnvironmentHeaders)
   }
 
   // API Config
@@ -52,6 +75,10 @@ class AppConfigImpl @Inject() (config: ServicesConfig, configuration: Configurat
   def apiStatus(version: String): String           = config.getString(s"api.$version.status")
   def featureSwitches: Configuration               = configuration.getOptional[Configuration](s"feature-switch").getOrElse(Configuration.empty)
   def endpointsEnabled(version: String): Boolean   = config.getBoolean(s"api.$version.endpoints.enabled")
+
+  // Stub Config
+  val stubEnv: String   = config.getString("microservice.services.stub.env")
+  val stubToken: String = config.getString("microservice.services.stub.token")
 
 }
 

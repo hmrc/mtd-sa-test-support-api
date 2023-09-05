@@ -58,6 +58,8 @@ class BaseDownstreamConnectorSpec extends ConnectorSpec {
     }
 
     MockAppConfig.stubDownstreamConfig returns downstreamConfig
+    MockAppConfig.stubEnv returns stubEnv
+    MockAppConfig.stubToken returns stubToken
 
     def excludedRequestHeadersNames(excludedHeaderNames: String*): ValueMatcher[Request] = { request: Request =>
       val containsHeader = excludedHeaderNames.exists(headerName => request.containsHeader(headerName))
