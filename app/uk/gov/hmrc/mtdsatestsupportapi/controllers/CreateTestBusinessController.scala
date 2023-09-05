@@ -21,45 +21,45 @@ import api.hateoas.HateoasFactory
 import api.services.EnrolmentsAuthService
 import play.api.libs.json.JsValue
 import play.api.mvc.{Action, ControllerComponents}
-import uk.gov.hmrc.mtdsatestsupportapi.controllers.requestParsers.CreateBusinessRequestParser
-import uk.gov.hmrc.mtdsatestsupportapi.models.request.createBusiness.CreateBusinessRawData
-import uk.gov.hmrc.mtdsatestsupportapi.models.response.createBusiness.CreateBusinessHateoasData
-import uk.gov.hmrc.mtdsatestsupportapi.services.CreateBusinessService
+import uk.gov.hmrc.mtdsatestsupportapi.controllers.requestParsers.CreateTestBusinessRequestParser
+import uk.gov.hmrc.mtdsatestsupportapi.models.request.createTestBusiness.CreateTestBusinessRawData
+import uk.gov.hmrc.mtdsatestsupportapi.models.response.CreateTestBusiness.CreateTestBusinessHateoasData
+import uk.gov.hmrc.mtdsatestsupportapi.services.CreateTestBusinessService
 import utils.{IdGenerator, Logging}
 
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class CreateBusinessController @Inject() (val cc: ControllerComponents,
-                                          val authService: EnrolmentsAuthService,
-                                          parser: CreateBusinessRequestParser,
-                                          service: CreateBusinessService,
-                                          hateoasFactory: HateoasFactory,
-                                          idGenerator: IdGenerator)(implicit ec: ExecutionContext)
+class CreateTestBusinessController @Inject() (val cc: ControllerComponents,
+                                              val authService: EnrolmentsAuthService,
+                                              parser: CreateTestBusinessRequestParser,
+                                              service: CreateTestBusinessService,
+                                              hateoasFactory: HateoasFactory,
+                                              idGenerator: IdGenerator)(implicit ec: ExecutionContext)
     extends AuthorisedController(cc)
     with Logging {
 
   def handleRequest(nino: String): Action[JsValue] = authorisedAction().async(parse.json) { implicit request =>
-    val endpointLogContext           = EndpointLogContext(controllerName = "CreateBusinessController", endpointName = "CreateBusiness")
+    val endpointLogContext           = EndpointLogContext(controllerName = "CreateTestBusinessController", endpointName = "CreateTestBusiness")
     implicit val ctx: RequestContext = RequestContext.from(idGenerator, endpointLogContext)
 
     request.headers.get("X-Client-Id") match {
       case Some(_) =>
-        val rawData = CreateBusinessRawData(nino, request.body)
+        val rawData = CreateTestBusinessRawData(nino, request.body)
 
         val requestHandler = RequestHandler
           .withParser(parser)
-          .withService(service.createBusiness)
+          .withService(service.createTestBusiness)
           .withHateoasResultFrom(hateoasFactory)(
-            (request, response) => CreateBusinessHateoasData(request.nino, response.businessId),
+            (request, response) => CreateTestBusinessHateoasData(request.nino, response.businessId),
             CREATED
           )
 
         requestHandler.handleRequest(rawData)
 
       case None =>
-        logger.warn("[CreateBusinessController] [CreateBusiness] - No X-Client-Id header present in the request")
+        logger.warn("[CreateTestBusinessController] [CreateTestBusiness] - No X-Client-Id header present in the request")
         Future.successful(InternalServerError)
     }
 

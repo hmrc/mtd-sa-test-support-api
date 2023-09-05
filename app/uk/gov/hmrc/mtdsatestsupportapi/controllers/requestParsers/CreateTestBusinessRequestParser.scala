@@ -18,16 +18,16 @@ package uk.gov.hmrc.mtdsatestsupportapi.controllers.requestParsers
 
 import api.controllers.requestParsers.RequestParser
 import api.models.domain.Nino
-import uk.gov.hmrc.mtdsatestsupportapi.controllers.requestParsers.validators.CreateBusinessValidator
-import uk.gov.hmrc.mtdsatestsupportapi.models.request.createBusiness.{Business, CreateBusinessRawData, CreateBusinessRequest}
+import uk.gov.hmrc.mtdsatestsupportapi.controllers.requestParsers.validators.CreateTestBusinessValidator
+import uk.gov.hmrc.mtdsatestsupportapi.models.request.createTestBusiness.{Business, CreateTestBusinessRawData, CreateTestBusinessRequest}
 
 import javax.inject.{Inject, Singleton}
 
 @Singleton
-class CreateBusinessRequestParser @Inject() (val validator: CreateBusinessValidator)
-    extends RequestParser[CreateBusinessRawData, CreateBusinessRequest] {
+class CreateTestBusinessRequestParser @Inject()(val validator: CreateTestBusinessValidator)
+    extends RequestParser[CreateTestBusinessRawData, CreateTestBusinessRequest] {
 
-  override protected def requestFor(data: CreateBusinessRawData): CreateBusinessRequest =
-    CreateBusinessRequest(Nino(data.nino), data.body.as[Business])
+  override protected def requestFor(data: CreateTestBusinessRawData): CreateTestBusinessRequest =
+    CreateTestBusinessRequest(Nino(data.nino), data.body.as[Business])
 
 }

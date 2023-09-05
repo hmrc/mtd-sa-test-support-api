@@ -21,20 +21,20 @@ import api.models.errors._
 import api.models.outcomes.ResponseWrapper
 import api.services.BaseService
 import cats.implicits._
-import uk.gov.hmrc.mtdsatestsupportapi.connectors.CreateBusinessConnector
-import uk.gov.hmrc.mtdsatestsupportapi.models.request.createBusiness.CreateBusinessRequest
-import uk.gov.hmrc.mtdsatestsupportapi.models.response.createBusiness.CreateBusinessResponse
+import uk.gov.hmrc.mtdsatestsupportapi.connectors.CreateTestBusinessConnector
+import uk.gov.hmrc.mtdsatestsupportapi.models.request.createTestBusiness.CreateTestBusinessRequest
+import uk.gov.hmrc.mtdsatestsupportapi.models.response.CreateTestBusiness.CreateTestBusinessResponse
 
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class CreateBusinessService @Inject()(connector: CreateBusinessConnector) extends BaseService {
+class CreateTestBusinessService @Inject()(connector: CreateTestBusinessConnector) extends BaseService {
 
-  def createBusiness(request: CreateBusinessRequest)(implicit
-      ec: ExecutionContext,
-      rc: RequestContext): Future[Either[ErrorWrapper, ResponseWrapper[CreateBusinessResponse]]] =
-    connector.createBusiness(request).map(_.leftMap(mapDownstreamErrors(stubErrorMap)))
+  def createTestBusiness(request: CreateTestBusinessRequest)(implicit
+                                                         ec: ExecutionContext,
+                                                         rc: RequestContext): Future[Either[ErrorWrapper, ResponseWrapper[CreateTestBusinessResponse]]] =
+    connector.createTestBusiness(request).map(_.leftMap(mapDownstreamErrors(stubErrorMap)))
 
   private val stubErrorMap: Map[String, MtdError] =
     Map(

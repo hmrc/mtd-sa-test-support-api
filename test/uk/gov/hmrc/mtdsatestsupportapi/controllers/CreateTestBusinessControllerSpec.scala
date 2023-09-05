@@ -24,34 +24,34 @@ import api.models.outcomes.ResponseWrapper
 import play.api.http.HeaderNames
 import play.api.libs.json.{JsObject, Json}
 import play.api.mvc.Result
-import uk.gov.hmrc.mtdsatestsupportapi.fixtures.CreateBusinessFixtures
-import uk.gov.hmrc.mtdsatestsupportapi.mocks.requestParsers.MockCreateBusinessRequestParser
-import uk.gov.hmrc.mtdsatestsupportapi.mocks.services.MockCreateBusinessService
-import uk.gov.hmrc.mtdsatestsupportapi.models.request.createBusiness.{CreateBusinessRawData, CreateBusinessRequest}
-import uk.gov.hmrc.mtdsatestsupportapi.models.response.createBusiness.CreateBusinessHateoasData
+import uk.gov.hmrc.mtdsatestsupportapi.fixtures.CreateTestBusinessFixtures
+import uk.gov.hmrc.mtdsatestsupportapi.mocks.requestParsers.MockCreateTestBusinessRequestParser
+import uk.gov.hmrc.mtdsatestsupportapi.mocks.services.MockCreateTestBusinessService
+import uk.gov.hmrc.mtdsatestsupportapi.models.request.createTestBusiness.{CreateTestBusinessRawData, CreateTestBusinessRequest}
+import uk.gov.hmrc.mtdsatestsupportapi.models.response.CreateTestBusiness.CreateTestBusinessHateoasData
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
-class CreateBusinessControllerSpec
+class CreateTestBusinessControllerSpec
     extends ControllerBaseSpec
     with ControllerTestRunner
-    with CreateBusinessFixtures
-    with MockCreateBusinessRequestParser
-    with MockCreateBusinessService
+    with CreateTestBusinessFixtures
+    with MockCreateTestBusinessRequestParser
+    with MockCreateTestBusinessService
     with MockHateoasFactory
     with ControllerSpecHateoasSupport {
 
   trait Test extends ControllerTest {
     val nino           = "AA123456A"
     val vendorClientId = "someId"
-    val businessId     = ExampleCreateBusinessResponse.businessId
+    val businessId     = ExampleCreateTestBusinessResponse.businessId
 
-    val rawData: CreateBusinessRawData     = CreateBusinessRawData(nino, MinimalCreateBusinessRequest.mtdBusinessJson)
-    val requestData: CreateBusinessRequest = CreateBusinessRequest(Nino(nino), MinimalCreateBusinessRequest.business)
-    val response                           = ExampleCreateBusinessResponse.response
+    val rawData: CreateTestBusinessRawData     = CreateTestBusinessRawData(nino, MinimalCreateTestBusinessRequest.mtdBusinessJson)
+    val requestData: CreateTestBusinessRequest = CreateTestBusinessRequest(Nino(nino), MinimalCreateTestBusinessRequest.business)
+    val response                           = ExampleCreateTestBusinessResponse.response
 
-    val controller = new CreateBusinessController(
+    val controller = new CreateTestBusinessController(
       cc = cc,
       authService = mockEnrolmentsAuthService,
       parser = mockParser,
@@ -64,21 +64,21 @@ class CreateBusinessControllerSpec
 
   }
 
-  "CreateBusinessController" must {
+  "CreateTestBusinessController" must {
     "return 201 Created" when {
       "a valid request is sent" in new Test {
         override protected def callController(): Future[Result] =
           controller.handleRequest(nino)(
             fakeRequest
-              .withBody(MinimalCreateBusinessRequest.mtdBusinessJson)
+              .withBody(MinimalCreateTestBusinessRequest.mtdBusinessJson)
               .withHeaders(HeaderNames.AUTHORIZATION -> "Bearer Token", "X-Client-Id" -> vendorClientId))
 
-        MockCreateBusinessRequestParser.parseRequest(rawData).returns(Right(requestData))
+        MockCreateTestBusinessRequestParser.parseRequest(rawData).returns(Right(requestData))
 
-        MockCreateBusinessService.createBusiness(requestData).returns(Future.successful(Right(ResponseWrapper(correlationId, response))))
+        MockCreateTestBusinessService.CreateTestBusiness(requestData).returns(Future.successful(Right(ResponseWrapper(correlationId, response))))
 
         MockHateoasFactory
-          .wrap(response, CreateBusinessHateoasData(Nino(nino), businessId))
+          .wrap(response, CreateTestBusinessHateoasData(Nino(nino), businessId))
           .returns(HateoasWrapper(response, hateoaslinks))
 
         runOkTest(expectedStatus = CREATED, maybeExpectedResponseBody = Some(hateoasResponse))
@@ -88,7 +88,7 @@ class CreateBusinessControllerSpec
       "the request lacks an X-Client-Id header" in new Test {
         override protected def callController(): Future[Result] =
           controller.handleRequest(nino)(
-            fakeRequest.withBody(MinimalCreateBusinessRequest.mtdBusinessJson).withHeaders(HeaderNames.AUTHORIZATION -> "Bearer Token"))
+            fakeRequest.withBody(MinimalCreateTestBusinessRequest.mtdBusinessJson).withHeaders(HeaderNames.AUTHORIZATION -> "Bearer Token"))
 
         val result: Future[Result] = callController()
 
@@ -98,10 +98,10 @@ class CreateBusinessControllerSpec
         override protected def callController(): Future[Result] =
           controller.handleRequest(nino)(
             fakeRequest
-              .withBody(MinimalCreateBusinessRequest.mtdBusinessJson)
+              .withBody(MinimalCreateTestBusinessRequest.mtdBusinessJson)
               .withHeaders(HeaderNames.AUTHORIZATION -> "Bearer Token", "X-Client-Id" -> vendorClientId))
 
-        MockCreateBusinessRequestParser.parseRequest(rawData).returns(Left(ErrorWrapper(correlationId, NinoFormatError, None)))
+        MockCreateTestBusinessRequestParser.parseRequest(rawData).returns(Left(ErrorWrapper(correlationId, NinoFormatError, None)))
 
         runErrorTest(NinoFormatError)
       }
@@ -109,13 +109,13 @@ class CreateBusinessControllerSpec
         override protected def callController(): Future[Result] =
           controller.handleRequest(nino)(
             fakeRequest
-              .withBody(MinimalCreateBusinessRequest.mtdBusinessJson)
+              .withBody(MinimalCreateTestBusinessRequest.mtdBusinessJson)
               .withHeaders(HeaderNames.AUTHORIZATION -> "Bearer Token", "X-Client-Id" -> vendorClientId))
 
-        MockCreateBusinessRequestParser.parseRequest(rawData).returns(Right(requestData))
+        MockCreateTestBusinessRequestParser.parseRequest(rawData).returns(Right(requestData))
 
-        MockCreateBusinessService
-          .createBusiness(requestData)
+        MockCreateTestBusinessService
+          .CreateTestBusiness(requestData)
           .returns(Future.successful(Left(ErrorWrapper(correlationId, RulePropertyBusinessAddedError))))
 
         runErrorTest(RulePropertyBusinessAddedError)

@@ -39,11 +39,11 @@ import play.api.libs.json.{JsObject, Json}
 import play.api.libs.ws.{WSRequest, WSResponse}
 import play.api.test.Helpers.AUTHORIZATION
 import support.IntegrationBaseSpec
-import uk.gov.hmrc.mtdsatestsupportapi.fixtures.CreateBusinessFixtures
+import uk.gov.hmrc.mtdsatestsupportapi.fixtures.CreateTestBusinessFixtures
 
 import java.time.LocalDate
 
-class CreateBusinessControllerISpec extends IntegrationBaseSpec with CreateBusinessFixtures {
+class CreateTestBusinessControllerISpec extends IntegrationBaseSpec with CreateTestBusinessFixtures {
 
   trait Test {
 
@@ -55,7 +55,7 @@ class CreateBusinessControllerISpec extends IntegrationBaseSpec with CreateBusin
 
     def setupStubs(): StubMapping = {
       AuthStub.authorised()
-      DownstreamStub.onSuccess(POST, downstreamUri, CREATED, ExampleCreateBusinessResponse.downstreamResponseJson)
+      DownstreamStub.onSuccess(POST, downstreamUri, CREATED, ExampleCreateTestBusinessResponse.downstreamResponseJson)
     }
 
     def request(): WSRequest = {
@@ -96,7 +96,7 @@ class CreateBusinessControllerISpec extends IntegrationBaseSpec with CreateBusin
     "return a 201 status code" when {
       "a valid request is made" in new Test {
 
-        val response: WSResponse = await(request().post(MinimalCreateBusinessRequest.mtdBusinessJson))
+        val response: WSResponse = await(request().post(MinimalCreateTestBusinessRequest.mtdBusinessJson))
 
         response.status shouldBe CREATED
         response.header("X-CorrelationId") should not be empty
@@ -118,35 +118,35 @@ class CreateBusinessControllerISpec extends IntegrationBaseSpec with CreateBusin
       }
 
       val input = Seq(
-        ("BAD_NINO", MinimalCreateBusinessRequest.mtdBusinessJson, BAD_REQUEST, NinoFormatError),
+        ("BAD_NINO", MinimalCreateTestBusinessRequest.mtdBusinessJson, BAD_REQUEST, NinoFormatError),
         ("AA123456A", Json.obj("typeOfBusiness" -> "invalid business type"), BAD_REQUEST, TypeOfBusinessFormatError),
         (
           "AA123456A",
-          MinimalCreateBusinessRequest.mtdBusinessJson ++ Json.obj("firstAccountingPeriodStartDate" -> "not a valid date"),
+          MinimalCreateTestBusinessRequest.mtdBusinessJson ++ Json.obj("firstAccountingPeriodStartDate" -> "not a valid date"),
           BAD_REQUEST,
           DateFormatError.withExtraPath("/firstAccountingPeriodStartDate")
         ),
         (
           "AA123456A",
-          MinimalCreateBusinessRequest.mtdBusinessJson ++ Json.obj("accountingType" -> "not a valid accountingType"),
+          MinimalCreateTestBusinessRequest.mtdBusinessJson ++ Json.obj("accountingType" -> "not a valid accountingType"),
           BAD_REQUEST,
           AccountingTypeFormatError
         ),
         (
           "AA123456A",
-          MinimalCreateBusinessRequest.mtdBusinessJson ++ Json.obj("commencementDate" -> LocalDate.now.plusYears(1)),
+          MinimalCreateTestBusinessRequest.mtdBusinessJson ++ Json.obj("commencementDate" -> LocalDate.now.plusYears(1)),
           BAD_REQUEST,
           RuleCommencementDateNotSupported
         ),
         (
           "AA123456A",
-          MinimalCreateBusinessRequest.mtdBusinessJson ++ Json.obj("businessAddressPostcode" -> "not a valid postcode"),
+          MinimalCreateTestBusinessRequest.mtdBusinessJson ++ Json.obj("businessAddressPostcode" -> "not a valid postcode"),
           BAD_REQUEST,
           PostcodeFormatError
         ),
         (
           "AA123456A",
-          MinimalCreateBusinessRequest.mtdBusinessJson ++ Json.obj(
+          MinimalCreateTestBusinessRequest.mtdBusinessJson ++ Json.obj(
             "latencyDetails" -> Json
               .parse("""
                      |{
@@ -162,13 +162,13 @@ class CreateBusinessControllerISpec extends IntegrationBaseSpec with CreateBusin
         ),
         (
           "AA123456A",
-          MinimalCreateBusinessRequest.mtdBusinessJson ++ Json.obj("businessAddressCountryCode" -> "GB"),
+          MinimalCreateTestBusinessRequest.mtdBusinessJson ++ Json.obj("businessAddressCountryCode" -> "GB"),
           BAD_REQUEST,
           MissingPostcodeError
         ),
         (
           "AA123456A",
-          MinimalCreateBusinessRequest.mtdBusinessJson ++ Json.obj("businessAddressCountryCode" -> "not a valid code"),
+          MinimalCreateTestBusinessRequest.mtdBusinessJson ++ Json.obj("businessAddressCountryCode" -> "not a valid code"),
           BAD_REQUEST,
           CountryCodeFormatError
         ),
@@ -180,7 +180,7 @@ class CreateBusinessControllerISpec extends IntegrationBaseSpec with CreateBusin
         ),
         (
           "AA123456A",
-          MinimalCreateBusinessRequest.mtdBusinessJson ++ Json.obj(
+          MinimalCreateTestBusinessRequest.mtdBusinessJson ++ Json.obj(
             "latencyDetails" -> Json
               .parse("""
                        |{
@@ -196,7 +196,7 @@ class CreateBusinessControllerISpec extends IntegrationBaseSpec with CreateBusin
         ),
         (
           "AA123456A",
-          MinimalCreateBusinessRequest.mtdBusinessJson ++ Json.obj(
+          MinimalCreateTestBusinessRequest.mtdBusinessJson ++ Json.obj(
             "latencyDetails" -> Json
               .parse("""
                        |{
@@ -225,7 +225,7 @@ class CreateBusinessControllerISpec extends IntegrationBaseSpec with CreateBusin
             DownstreamStub.onError(POST, downstreamUri, stubErrorStatus, downstreamErrorBody(stubErrorCode))
           }
 
-          val response: WSResponse = await(request().post(MinimalCreateBusinessRequest.mtdBusinessJson))
+          val response: WSResponse = await(request().post(MinimalCreateTestBusinessRequest.mtdBusinessJson))
           response.status shouldBe expectedStatus
           response.json shouldBe Json.toJson(expectedError)
         }

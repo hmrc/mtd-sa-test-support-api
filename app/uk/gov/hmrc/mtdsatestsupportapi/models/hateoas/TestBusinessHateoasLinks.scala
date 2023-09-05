@@ -21,7 +21,7 @@ import api.hateoas.Method.{DELETE, GET}
 import api.models.domain.Nino
 import config.AppConfig
 
-trait BusinessHateoasLinks {
+trait TestBusinessHateoasLinks {
 
   val SELF = "self"
 
@@ -31,7 +31,7 @@ trait BusinessHateoasLinks {
   private def businessDetailsBaseUrl(appConfig: AppConfig) =
     s"/${appConfig.businessDetailsApiGatewayContext}"
 
-  def deleteBusiness(appConfig: AppConfig, nino: Nino, businessId: String): Link =
+  def deleteTestBusiness(appConfig: AppConfig, nino: Nino, businessId: String): Link =
     Link(href = s"${baseUrl(appConfig)}/$nino/$businessId", method = DELETE, rel = "delete-business")
 
   def listAllBusinesses(appConfig: AppConfig, nino: Nino): Link =

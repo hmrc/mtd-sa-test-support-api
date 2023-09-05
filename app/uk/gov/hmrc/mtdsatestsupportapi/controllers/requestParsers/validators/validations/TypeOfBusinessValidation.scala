@@ -18,7 +18,7 @@ package uk.gov.hmrc.mtdsatestsupportapi.controllers.requestParsers.validators.va
 
 import api.controllers.requestParsers.validators.validations.EnumValidation
 import api.models.errors.{MtdError, TypeOfBusinessFormatError}
-import uk.gov.hmrc.mtdsatestsupportapi.models.request.createBusiness.TypeOfBusiness
+import uk.gov.hmrc.mtdsatestsupportapi.models.request.createTestBusiness.TypeOfBusiness
 
 object TypeOfBusinessValidation extends EnumValidation[TypeOfBusiness] {
 

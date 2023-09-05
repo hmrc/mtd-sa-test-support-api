@@ -19,17 +19,17 @@ package uk.gov.hmrc.mtdsatestsupportapi.mocks.requestParsers
 import api.models.errors.ErrorWrapper
 import org.scalamock.handlers.CallHandler
 import org.scalamock.scalatest.MockFactory
-import uk.gov.hmrc.mtdsatestsupportapi.controllers.requestParsers.CreateBusinessRequestParser
-import uk.gov.hmrc.mtdsatestsupportapi.models.request.createBusiness.{CreateBusinessRawData, CreateBusinessRequest}
+import uk.gov.hmrc.mtdsatestsupportapi.controllers.requestParsers.CreateTestBusinessRequestParser
+import uk.gov.hmrc.mtdsatestsupportapi.models.request.createTestBusiness.{CreateTestBusinessRawData, CreateTestBusinessRequest}
 
-trait MockCreateBusinessRequestParser extends MockFactory {
+trait MockCreateTestBusinessRequestParser extends MockFactory {
 
-  val mockParser = mock[CreateBusinessRequestParser]
+  val mockParser = mock[CreateTestBusinessRequestParser]
 
-  object MockCreateBusinessRequestParser {
+  object MockCreateTestBusinessRequestParser {
 
-    def parseRequest(rawData: CreateBusinessRawData): CallHandler[Either[ErrorWrapper, CreateBusinessRequest]] =
-      (mockParser.parseRequest(_: CreateBusinessRawData)(_: String)).expects(rawData, *)
+    def parseRequest(rawData: CreateTestBusinessRawData): CallHandler[Either[ErrorWrapper, CreateTestBusinessRequest]] =
+      (mockParser.parseRequest(_: CreateTestBusinessRawData)(_: String)).expects(rawData, *)
 
   }
 

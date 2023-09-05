@@ -21,20 +21,20 @@ import api.models.errors.ErrorWrapper
 import api.models.outcomes.ResponseWrapper
 import org.scalamock.handlers.CallHandler
 import org.scalamock.scalatest.MockFactory
-import uk.gov.hmrc.mtdsatestsupportapi.models.request.createBusiness.CreateBusinessRequest
-import uk.gov.hmrc.mtdsatestsupportapi.models.response.createBusiness.CreateBusinessResponse
-import uk.gov.hmrc.mtdsatestsupportapi.services.CreateBusinessService
+import uk.gov.hmrc.mtdsatestsupportapi.models.request.createTestBusiness.CreateTestBusinessRequest
+import uk.gov.hmrc.mtdsatestsupportapi.models.response.CreateTestBusiness.CreateTestBusinessResponse
+import uk.gov.hmrc.mtdsatestsupportapi.services.CreateTestBusinessService
 
 import scala.concurrent.{ExecutionContext, Future}
 
-trait MockCreateBusinessService extends MockFactory {
+trait MockCreateTestBusinessService extends MockFactory {
 
-  val mockService = mock[CreateBusinessService]
+  val mockService = mock[CreateTestBusinessService]
 
-  object MockCreateBusinessService {
+  object MockCreateTestBusinessService {
 
-    def createBusiness(request: CreateBusinessRequest): CallHandler[Future[Either[ErrorWrapper, ResponseWrapper[CreateBusinessResponse]]]] =
-      (mockService.createBusiness(_: CreateBusinessRequest)(_: ExecutionContext, _: RequestContext)).expects(request, *, *)
+    def CreateTestBusiness(request: CreateTestBusinessRequest): CallHandler[Future[Either[ErrorWrapper, ResponseWrapper[CreateTestBusinessResponse]]]] =
+      (mockService.createTestBusiness(_: CreateTestBusinessRequest)(_: ExecutionContext, _: RequestContext)).expects(request, *, *)
 
   }
 

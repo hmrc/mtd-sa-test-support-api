@@ -21,16 +21,16 @@ import api.controllers.requestParsers.validators.validations._
 import api.models.errors._
 import play.api.libs.json.{JsDefined, JsLookupResult, JsValue}
 import uk.gov.hmrc.mtdsatestsupportapi.controllers.requestParsers.validators.validations._
-import uk.gov.hmrc.mtdsatestsupportapi.models.request.createBusiness.{Business, CreateBusinessRawData}
+import uk.gov.hmrc.mtdsatestsupportapi.models.request.createTestBusiness.{Business, CreateTestBusinessRawData}
 
 import java.time.{Clock, LocalDate}
 import javax.inject.{Inject, Singleton}
 import scala.math.Ordered.orderingToOrdered
 
 @Singleton
-class CreateBusinessValidator @Inject() (clock: Clock) extends Validator[CreateBusinessRawData] {
+class CreateTestBusinessValidator @Inject()(clock: Clock) extends Validator[CreateTestBusinessRawData] {
 
-  override def validate(data: CreateBusinessRawData): List[MtdError] =
+  override def validate(data: CreateTestBusinessRawData): List[MtdError] =
     (for {
       _ <- parameterFormatValidation(data)
       _ <- fieldFormatValidation(data.body)
@@ -38,7 +38,7 @@ class CreateBusinessValidator @Inject() (clock: Clock) extends Validator[CreateB
       _ <- bodyRuleValidation(data)
     } yield ()).swap.getOrElse(Nil)
 
-  private def parameterFormatValidation(data: CreateBusinessRawData): Either[List[MtdError], Unit] = {
+  private def parameterFormatValidation(data: CreateTestBusinessRawData): Either[List[MtdError], Unit] = {
     val errors = NinoValidation.validate(data.nino)
 
     errorsResult(errors)
@@ -74,7 +74,7 @@ class CreateBusinessValidator @Inject() (clock: Clock) extends Validator[CreateB
     errorsResult(errors)
   }
 
-  private def bodyFormatValidation(data: CreateBusinessRawData): Either[List[MtdError], Unit] = {
+  private def bodyFormatValidation(data: CreateTestBusinessRawData): Either[List[MtdError], Unit] = {
     val errors = JsonFormatValidation.validate[Business](data.body) match {
       case Nil          => NoValidationErrors
       case schemaErrors => schemaErrors
@@ -83,7 +83,7 @@ class CreateBusinessValidator @Inject() (clock: Clock) extends Validator[CreateB
     errorsResult(errors)
   }
 
-  private def bodyRuleValidation(data: CreateBusinessRawData): Either[List[MtdError], Unit] = {
+  private def bodyRuleValidation(data: CreateTestBusinessRawData): Either[List[MtdError], Unit] = {
     val business = data.body.as[Business]
 
     val errors =

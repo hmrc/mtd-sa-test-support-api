@@ -14,24 +14,24 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.mtdsatestsupportapi.models.request.createBusiness
+package uk.gov.hmrc.mtdsatestsupportapi.models.request.createTestBusiness
 
-import play.api.libs.json.{JsString, Reads, Writes}
+import play.api.libs.json.{JsBoolean, Reads, Writes}
 import utils.enums.Enums
 
-sealed trait LatencyIndicator
+sealed trait AccountingType
 
-object LatencyIndicator {
-  case object A extends LatencyIndicator
-  case object Q extends LatencyIndicator
+object AccountingType {
+  case object CASH     extends AccountingType
+  case object ACCRUALS extends AccountingType
 
-  implicit val reads: Reads[LatencyIndicator] = Enums.reads[LatencyIndicator]
+  implicit val reads: Reads[AccountingType] = Enums.reads[AccountingType]
 
-  implicit val writes: Writes[LatencyIndicator] = {
-    case LatencyIndicator.A => JsString("A")
-    case LatencyIndicator.Q => JsString("Q")
+  implicit val writes: Writes[AccountingType] = {
+    case AccountingType.CASH     => JsBoolean(false)
+    case AccountingType.ACCRUALS => JsBoolean(true)
   }
 
-  implicit val parser: PartialFunction[String, LatencyIndicator] = Enums.parser[LatencyIndicator]
+  implicit val parser: PartialFunction[String, AccountingType] = Enums.parser[AccountingType]
 
 }

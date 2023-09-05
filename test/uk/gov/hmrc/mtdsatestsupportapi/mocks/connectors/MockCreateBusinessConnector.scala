@@ -20,21 +20,21 @@ import api.connectors.DownstreamOutcome
 import org.scalamock.handlers.CallHandler
 import org.scalamock.scalatest.MockFactory
 import uk.gov.hmrc.http.HeaderCarrier
-import uk.gov.hmrc.mtdsatestsupportapi.connectors.CreateBusinessConnector
-import uk.gov.hmrc.mtdsatestsupportapi.models.request.createBusiness.CreateBusinessRequest
-import uk.gov.hmrc.mtdsatestsupportapi.models.response.createBusiness.CreateBusinessResponse
+import uk.gov.hmrc.mtdsatestsupportapi.connectors.CreateTestBusinessConnector
+import uk.gov.hmrc.mtdsatestsupportapi.models.request.createTestBusiness.CreateTestBusinessRequest
+import uk.gov.hmrc.mtdsatestsupportapi.models.response.CreateTestBusiness.CreateTestBusinessResponse
 
 import scala.concurrent.{ExecutionContext, Future}
 
-trait MockCreateBusinessConnector extends MockFactory {
+trait MockCreateTestBusinessConnector extends MockFactory {
 
-  val mockCreateBusinessConnector: CreateBusinessConnector = mock[CreateBusinessConnector]
+  val mockCreateTestBusinessConnector: CreateTestBusinessConnector = mock[CreateTestBusinessConnector]
 
-  object MockCreateBusinessConnector {
+  object MockCreateTestBusinessConnector {
 
-    def createBusiness(requestData: CreateBusinessRequest): CallHandler[Future[DownstreamOutcome[CreateBusinessResponse]]] =
-      (mockCreateBusinessConnector
-        .createBusiness(_: CreateBusinessRequest)(
+    def CreateTestBusiness(requestData: CreateTestBusinessRequest): CallHandler[Future[DownstreamOutcome[CreateTestBusinessResponse]]] =
+      (mockCreateTestBusinessConnector
+        .createTestBusiness(_: CreateTestBusinessRequest)(
           _: HeaderCarrier,
           _: ExecutionContext,
           _: String

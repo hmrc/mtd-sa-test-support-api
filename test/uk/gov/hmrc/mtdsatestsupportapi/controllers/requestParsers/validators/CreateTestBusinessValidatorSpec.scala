@@ -20,12 +20,12 @@ import api.models.errors._
 import api.utils.JsonErrorValidators
 import play.api.libs.json.{JsString, Json}
 import support.UnitSpec
-import uk.gov.hmrc.mtdsatestsupportapi.fixtures.CreateBusinessFixtures
-import uk.gov.hmrc.mtdsatestsupportapi.models.request.createBusiness.CreateBusinessRawData
+import uk.gov.hmrc.mtdsatestsupportapi.fixtures.CreateTestBusinessFixtures
+import uk.gov.hmrc.mtdsatestsupportapi.models.request.createTestBusiness.CreateTestBusinessRawData
 
 import java.time._
 
-class CreateBusinessValidatorSpec extends UnitSpec with JsonErrorValidators with CreateBusinessFixtures {
+class CreateTestBusinessValidatorSpec extends UnitSpec with JsonErrorValidators with CreateTestBusinessFixtures {
 
   private val validNino = "AA123456A"
 
@@ -59,28 +59,28 @@ class CreateBusinessValidatorSpec extends UnitSpec with JsonErrorValidators with
       |}
       |""".stripMargin)
 
-  val validator = new CreateBusinessValidator(clock)
+  val validator = new CreateTestBusinessValidator(clock)
 
-  "CreateBusinessValidator" must {
+  "CreateTestBusinessValidator" must {
     "return no errors" when {
       "a valid business is supplied" in {
-        validator.validate(CreateBusinessRawData(validNino, body)) shouldBe Nil
+        validator.validate(CreateTestBusinessRawData(validNino, body)) shouldBe Nil
       }
 
       "a valid minimal business is supplied" in {
-        validator.validate(CreateBusinessRawData(validNino, MinimalCreateBusinessRequest.mtdBusinessJson)) shouldBe Nil
+        validator.validate(CreateTestBusinessRawData(validNino, MinimalCreateTestBusinessRequest.mtdBusinessJson)) shouldBe Nil
       }
     }
 
     "return FORMAT_NINO error" when {
       "format of the nino is not valid" in {
-        validator.validate(CreateBusinessRawData("BAD NINO", body)) shouldBe Seq(NinoFormatError)
+        validator.validate(CreateTestBusinessRawData("BAD NINO", body)) shouldBe Seq(NinoFormatError)
       }
     }
 
     "return FORMAT_TYPE_OF_BUSINESS error" when {
       "format of the business type field is not valid" in {
-        validator.validate(CreateBusinessRawData(validNino, body.update("/typeOfBusiness", JsString("badValue")))) shouldBe Seq(
+        validator.validate(CreateTestBusinessRawData(validNino, body.update("/typeOfBusiness", JsString("badValue")))) shouldBe Seq(
           TypeOfBusinessFormatError)
       }
     }
@@ -93,7 +93,7 @@ class CreateBusinessValidatorSpec extends UnitSpec with JsonErrorValidators with
 
       def testWith(path: String): Unit =
         s"when the format of a tax year is not valid for $path" in {
-          validator.validate(CreateBusinessRawData(validNino, body.update(path, JsString("badValue")))) shouldBe
+          validator.validate(CreateTestBusinessRawData(validNino, body.update(path, JsString("badValue")))) shouldBe
             Seq(TaxYearFormatError.withExtraPath(path))
         }
     }
@@ -106,7 +106,7 @@ class CreateBusinessValidatorSpec extends UnitSpec with JsonErrorValidators with
 
       def testWith(path: String): Unit =
         s"when a tax year has an invalid range for $path" in {
-          validator.validate(CreateBusinessRawData(validNino, body.update(path, JsString("2020-22")))) shouldBe
+          validator.validate(CreateTestBusinessRawData(validNino, body.update(path, JsString("2020-22")))) shouldBe
             Seq(RuleTaxYearRangeInvalidError.withExtraPath(path))
         }
     }
@@ -123,28 +123,28 @@ class CreateBusinessValidatorSpec extends UnitSpec with JsonErrorValidators with
 
       def testWith(path: String): Unit =
         s"when the format of a date is not valid for $path" in {
-          validator.validate(CreateBusinessRawData(validNino, body.update(path, JsString("badValue")))) shouldBe
+          validator.validate(CreateTestBusinessRawData(validNino, body.update(path, JsString("badValue")))) shouldBe
             Seq(DateFormatError.withExtraPath(path))
         }
     }
 
     "return FORMAT_ACCOUNTING_TYPE error" when {
       "format of the accounting type field is not valid" in {
-        validator.validate(CreateBusinessRawData(validNino, body.update("/accountingType", JsString("badValue")))) shouldBe
+        validator.validate(CreateTestBusinessRawData(validNino, body.update("/accountingType", JsString("badValue")))) shouldBe
           Seq(AccountingTypeFormatError)
       }
     }
 
     "return RULE_COMMENCEMENT_DATE_NOT_SUPPORTED error" when {
       "the commencement date is not in the past" in {
-        validator.validate(CreateBusinessRawData(validNino, body.update("/commencementDate", Json.toJson(localDate(now))))) shouldBe
+        validator.validate(CreateTestBusinessRawData(validNino, body.update("/commencementDate", Json.toJson(localDate(now))))) shouldBe
           Seq(RuleCommencementDateNotSupported)
       }
     }
 
     "return FORMAT_POSTCODE error" when {
       "the format of the postcode field is not valid" in {
-        validator.validate(CreateBusinessRawData(validNino, body.update("/businessAddressPostcode", JsString("badValue")))) shouldBe
+        validator.validate(CreateTestBusinessRawData(validNino, body.update("/businessAddressPostcode", JsString("badValue")))) shouldBe
           Seq(PostcodeFormatError)
       }
     }
@@ -157,14 +157,14 @@ class CreateBusinessValidatorSpec extends UnitSpec with JsonErrorValidators with
 
       def testWith(path: String): Unit =
         s"when the format of a latency indicator is not valid for $path" in {
-          validator.validate(CreateBusinessRawData(validNino, body.update(path, JsString("badValue")))) shouldBe
+          validator.validate(CreateTestBusinessRawData(validNino, body.update(path, JsString("badValue")))) shouldBe
             Seq(LatencyIndicatorFormatError.withExtraPath(path))
         }
     }
 
     "return MISSING_POSTCODE error" when {
       "no post code is supplied when country code is GB" in {
-        validator.validate(CreateBusinessRawData(validNino, body.removeProperty("/businessAddressPostcode"))) shouldBe
+        validator.validate(CreateTestBusinessRawData(validNino, body.removeProperty("/businessAddressPostcode"))) shouldBe
           Seq(MissingPostcodeError)
       }
     }
@@ -172,7 +172,7 @@ class CreateBusinessValidatorSpec extends UnitSpec with JsonErrorValidators with
     "return no errors" when {
       "no post code is supplied when country code is not GB" in {
         validator.validate(
-          CreateBusinessRawData(
+          CreateTestBusinessRawData(
             validNino,
             body
               .removeProperty("/businessAddressPostcode")
@@ -182,7 +182,7 @@ class CreateBusinessValidatorSpec extends UnitSpec with JsonErrorValidators with
 
     "return FORMAT_COUNTRY_CODE error" when {
       "a the country code is not valid" in {
-        validator.validate(CreateBusinessRawData(validNino, body.update("/businessAddressCountryCode", JsString("badValue")))) shouldBe
+        validator.validate(CreateTestBusinessRawData(validNino, body.update("/businessAddressCountryCode", JsString("badValue")))) shouldBe
           Seq(CountryCodeFormatError)
       }
     }
@@ -200,7 +200,7 @@ class CreateBusinessValidatorSpec extends UnitSpec with JsonErrorValidators with
       def testWith(path: String): Unit =
         s"a mandatory $path field is missed" in {
           validator.validate(
-            CreateBusinessRawData(
+            CreateTestBusinessRawData(
               nino = validNino,
               body.removeProperty(path)
             )) shouldBe List(RuleIncorrectOrEmptyBodyError.withExtraPath(path))

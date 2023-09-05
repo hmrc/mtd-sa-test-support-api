@@ -18,7 +18,7 @@ package uk.gov.hmrc.mtdsatestsupportapi.controllers.requestParsers.validators.va
 
 import api.controllers.requestParsers.validators.validations.EnumValidation
 import api.models.errors.{LatencyIndicatorFormatError, MtdError}
-import uk.gov.hmrc.mtdsatestsupportapi.models.request.createBusiness.LatencyIndicator
+import uk.gov.hmrc.mtdsatestsupportapi.models.request.createTestBusiness.LatencyIndicator
 
 object LatencyIndicatorValidation extends EnumValidation[LatencyIndicator] {
 

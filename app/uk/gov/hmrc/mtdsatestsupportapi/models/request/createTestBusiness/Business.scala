@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.mtdsatestsupportapi.models.request.createBusiness
+package uk.gov.hmrc.mtdsatestsupportapi.models.request.createTestBusiness
 
 import play.api.libs.json._
 import play.api.libs.functional.syntax._

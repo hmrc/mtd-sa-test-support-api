@@ -17,13 +17,13 @@
 package uk.gov.hmrc.mtdsatestsupportapi.fixtures
 
 import play.api.libs.json.{JsObject, Json}
-import uk.gov.hmrc.mtdsatestsupportapi.models.request.createBusiness.{Business, TypeOfBusiness}
-import uk.gov.hmrc.mtdsatestsupportapi.models.response.createBusiness.CreateBusinessResponse
+import uk.gov.hmrc.mtdsatestsupportapi.models.request.createTestBusiness.{Business, TypeOfBusiness}
+import uk.gov.hmrc.mtdsatestsupportapi.models.response.CreateTestBusiness.CreateTestBusinessResponse
 
 // Reusable JSON to support testing in various places outside of detailed JSON serialization testing
-trait CreateBusinessFixtures {
+trait CreateTestBusinessFixtures {
 
-  object MinimalCreateBusinessRequest {
+  object MinimalCreateTestBusinessRequest {
 
     val mtdBusinessJson: JsObject = Json
       .parse("""{
@@ -57,9 +57,9 @@ trait CreateBusinessFixtures {
 
   }
 
-  object ExampleCreateBusinessResponse {
+  object ExampleCreateTestBusinessResponse {
     val businessId                       = "someBusinessId"
-    val response: CreateBusinessResponse = CreateBusinessResponse(businessId)
+    val response: CreateTestBusinessResponse = CreateTestBusinessResponse(businessId)
     val downstreamResponseJson: JsObject = Json.obj("incomeSourceId" -> businessId)
   }
 
