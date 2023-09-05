@@ -24,9 +24,6 @@ import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
 import javax.inject.{Inject, Singleton}
 
 trait AppConfig {
-
-  def businessDetailsConfig: DownstreamConfig
-
   // API Config
   def apiGatewayContext: String
   def confidenceLevelConfig: ConfidenceLevelConfig
@@ -51,22 +48,6 @@ class AppConfigImpl @Inject() (config: ServicesConfig, configuration: Configurat
     val stubToken              = config.getString("microservice.services.stub.token")
 
     DownstreamConfig(baseUrl = stubBaseUrl, env = stubEnv, token = stubToken, environmentHeaders = stubEnvironmentHeaders)
-  }
-
-  lazy val businessDetailsConfig: DownstreamConfig = {
-    // TODO: Get configuration for business details API
-    // We need this to implement HATEOAS links (see here: https://confluence.tools.tax.service.gov.uk/pages/viewpage.action?pageId=691961861 )
-    // For now, this will just return the stub base URL + config as a placeholder
-    val businessDetailsBaseUrl            = config.baseUrl("stub")
-    val businessDetailsEnvironmentHeaders = configuration.getOptional[Seq[String]]("microservice.services.stub.environmentHeaders")
-    val businessDetailsEnv                = config.getString("microservice.services.stub.env")
-    val businessDetailsToken              = config.getString("microservice.services.stub.token")
-
-    DownstreamConfig(
-      baseUrl = businessDetailsBaseUrl,
-      env = businessDetailsEnv,
-      token = businessDetailsToken,
-      environmentHeaders = businessDetailsEnvironmentHeaders)
   }
 
   // API Config
