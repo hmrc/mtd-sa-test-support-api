@@ -21,6 +21,9 @@ import api.controllers.requestParsers.validators.validations.{BusinessIdValidati
 import api.models.errors.MtdError
 import uk.gov.hmrc.mtdsatestsupportapi.models.request.deleteTestBusiness.DeleteTestBusinessRawData
 
+import javax.inject.Singleton
+
+@Singleton
 class DeleteTestBusinessValidator extends Validator[DeleteTestBusinessRawData] {
 
   override def validate(data: DeleteTestBusinessRawData): List[MtdError] =

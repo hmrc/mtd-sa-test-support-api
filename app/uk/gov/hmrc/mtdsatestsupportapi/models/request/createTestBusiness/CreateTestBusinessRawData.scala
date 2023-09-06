@@ -14,14 +14,9 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.mtdsatestsupportapi.models.response.createBusiness
+package uk.gov.hmrc.mtdsatestsupportapi.models.request.createTestBusiness
 
-import play.api.libs.json._
+import api.models.request.RawData
+import play.api.libs.json.JsValue
 
-case class CreateBusinessResponse(businessId: String)
-
-object CreateBusinessResponse {
-  implicit val reads: Reads[CreateBusinessResponse] = (__ \ "incomeSourceId").read[String].map(CreateBusinessResponse.apply)
-
-  implicit val writes: Writes[CreateBusinessResponse] = Json.writes
-}
+case class CreateTestBusinessRawData(nino: String, body: JsValue) extends RawData

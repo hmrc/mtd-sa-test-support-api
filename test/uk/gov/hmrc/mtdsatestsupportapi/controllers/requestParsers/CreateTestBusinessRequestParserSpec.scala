@@ -19,38 +19,38 @@ package uk.gov.hmrc.mtdsatestsupportapi.controllers.requestParsers
 import api.models.domain.Nino
 import api.models.errors._
 import support.UnitSpec
-import uk.gov.hmrc.mtdsatestsupportapi.fixtures.CreateBusinessFixtures
-import uk.gov.hmrc.mtdsatestsupportapi.mocks.validators.MockCreateBusinessValidator
-import uk.gov.hmrc.mtdsatestsupportapi.models.request.createBusiness.{CreateBusinessRawData, CreateBusinessRequest}
+import uk.gov.hmrc.mtdsatestsupportapi.fixtures.CreateTestBusinessFixtures
+import uk.gov.hmrc.mtdsatestsupportapi.mocks.validators.MockCreateTestBusinessValidator
+import uk.gov.hmrc.mtdsatestsupportapi.models.request.createTestBusiness.{CreateTestBusinessRawData, CreateTestBusinessRequest}
 
-class CreateBusinessRequestParserSpec extends UnitSpec with MockCreateBusinessValidator with CreateBusinessFixtures {
+class CreateTestBusinessRequestParserSpec extends UnitSpec with MockCreateTestBusinessValidator with CreateTestBusinessFixtures {
 
   private implicit val correlationId: String = "X-123"
 
-  private val rawData = CreateBusinessRawData("AA123456A", MinimalCreateBusinessRequest.mtdBusinessJson)
+  private val rawData = CreateTestBusinessRawData("AA123456A", MinimalCreateTestBusinessRequest.mtdBusinessJson)
 
-  private val parser = new CreateBusinessRequestParser(mockCreateBusinessValidator)
+  private val parser = new CreateTestBusinessRequestParser(mockCreateTestBusinessValidator)
 
-  "CreateBusinessRequestParser" should {
+  "CreateTestBusinessRequestParser" should {
     "return a request object" when {
       "valid request data is supplied" in {
-        MockCreateBusinessValidator.validate(rawData) returns Nil
+        MockCreateTestBusinessValidator.validate(rawData) returns Nil
 
         parser.parseRequest(rawData) shouldBe
-          Right(CreateBusinessRequest(Nino("AA123456A"), MinimalCreateBusinessRequest.business))
+          Right(CreateTestBusinessRequest(Nino("AA123456A"), MinimalCreateTestBusinessRequest.business))
       }
     }
 
     "return an error" when {
       "a single validation error occurs" in {
-        MockCreateBusinessValidator.validate(rawData) returns List(NinoFormatError)
+        MockCreateTestBusinessValidator.validate(rawData) returns List(NinoFormatError)
 
         parser.parseRequest(rawData) shouldBe
           Left(ErrorWrapper(correlationId, NinoFormatError, None))
       }
 
       "multiple validation errors occur" in {
-        MockCreateBusinessValidator.validate(rawData) returns List(StringFormatError, NinoFormatError)
+        MockCreateTestBusinessValidator.validate(rawData) returns List(StringFormatError, NinoFormatError)
 
         parser.parseRequest(rawData) shouldBe
           Left(ErrorWrapper(correlationId, BadRequestError, Some(Seq(StringFormatError, NinoFormatError))))

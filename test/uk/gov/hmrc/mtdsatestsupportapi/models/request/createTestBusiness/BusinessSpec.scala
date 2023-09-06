@@ -14,15 +14,15 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.mtdsatestsupportapi.models.request.createBusiness
+package uk.gov.hmrc.mtdsatestsupportapi.models.request.createTestBusiness
 
 import play.api.libs.json.{JsObject, Json}
 import support.UnitSpec
 import TypeOfBusiness._
 import api.models.domain.TaxYear
-import uk.gov.hmrc.mtdsatestsupportapi.fixtures.CreateBusinessFixtures
+import uk.gov.hmrc.mtdsatestsupportapi.fixtures.CreateTestBusinessFixtures
 
-class BusinessSpec extends UnitSpec with CreateBusinessFixtures {
+class BusinessSpec extends UnitSpec with CreateTestBusinessFixtures {
 
   private def business(typeOfBusiness: TypeOfBusiness = `self-employment`) = Business(
     typeOfBusiness = typeOfBusiness,
@@ -82,8 +82,8 @@ class BusinessSpec extends UnitSpec with CreateBusinessFixtures {
 
       "only mandatory fields are present" must {
         "work" in {
-          MinimalCreateBusinessRequest.mtdBusinessJson.as[Business] shouldBe
-            MinimalCreateBusinessRequest.business
+          MinimalCreateTestBusinessRequest.mtdBusinessJson.as[Business] shouldBe
+            MinimalCreateTestBusinessRequest.business
         }
       }
     }

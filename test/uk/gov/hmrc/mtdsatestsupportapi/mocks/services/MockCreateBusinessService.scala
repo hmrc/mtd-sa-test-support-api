@@ -14,32 +14,27 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.mtdsatestsupportapi.mocks.connectors
+package uk.gov.hmrc.mtdsatestsupportapi.mocks.services
 
-import api.connectors.DownstreamOutcome
+import api.controllers.RequestContext
+import api.models.errors.ErrorWrapper
+import api.models.outcomes.ResponseWrapper
 import org.scalamock.handlers.CallHandler
 import org.scalamock.scalatest.MockFactory
-import uk.gov.hmrc.http.HeaderCarrier
-import uk.gov.hmrc.mtdsatestsupportapi.connectors.CreateTestBusinessConnector
 import uk.gov.hmrc.mtdsatestsupportapi.models.request.createTestBusiness.CreateTestBusinessRequest
 import uk.gov.hmrc.mtdsatestsupportapi.models.response.CreateTestBusiness.CreateTestBusinessResponse
+import uk.gov.hmrc.mtdsatestsupportapi.services.CreateTestBusinessService
 
 import scala.concurrent.{ExecutionContext, Future}
 
-trait MockCreateTestBusinessConnector extends MockFactory {
+trait MockCreateTestBusinessService extends MockFactory {
 
-  val mockCreateTestBusinessConnector: CreateTestBusinessConnector = mock[CreateTestBusinessConnector]
+  val mockService = mock[CreateTestBusinessService]
 
-  object MockCreateTestBusinessConnector {
+  object MockCreateTestBusinessService {
 
-    def CreateTestBusiness(requestData: CreateTestBusinessRequest): CallHandler[Future[DownstreamOutcome[CreateTestBusinessResponse]]] =
-      (mockCreateTestBusinessConnector
-        .createTestBusiness(_: CreateTestBusinessRequest)(
-          _: HeaderCarrier,
-          _: ExecutionContext,
-          _: String
-        ))
-        .expects(requestData, *, *, *)
+    def CreateTestBusiness(request: CreateTestBusinessRequest): CallHandler[Future[Either[ErrorWrapper, ResponseWrapper[CreateTestBusinessResponse]]]] =
+      (mockService.createTestBusiness(_: CreateTestBusinessRequest)(_: ExecutionContext, _: RequestContext)).expects(request, *, *)
 
   }
 
