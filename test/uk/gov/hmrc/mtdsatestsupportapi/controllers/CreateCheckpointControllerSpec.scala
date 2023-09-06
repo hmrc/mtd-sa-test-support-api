@@ -19,7 +19,7 @@ package uk.gov.hmrc.mtdsatestsupportapi.controllers
 import api.controllers.{ControllerBaseSpec, ControllerSpecHateoasSupport, ControllerTestRunner}
 import api.hateoas.{HateoasWrapper, MockHateoasFactory}
 import api.mocks.MockIdGenerator
-import api.mocks.services.MockEnrolmentsAuthService
+import api.mocks.services.MockAuthService
 import api.models.domain.{CheckpointId, Nino}
 import api.models.errors._
 import api.models.outcomes.ResponseWrapper
@@ -40,7 +40,7 @@ class CreateCheckpointControllerSpec
     with ControllerTestRunner
     with MockCreateCheckpointService
     with MockCreateCheckpointRequestParser
-    with MockEnrolmentsAuthService
+    with MockAuthService
     with MockHateoasFactory
     with MockIdGenerator {
 

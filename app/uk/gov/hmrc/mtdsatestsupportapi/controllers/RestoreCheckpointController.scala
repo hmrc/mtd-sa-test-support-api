@@ -18,7 +18,7 @@ package uk.gov.hmrc.mtdsatestsupportapi.controllers
 
 import api.controllers.{AuthorisedController, EndpointLogContext, RequestContext, RequestHandler}
 import api.hateoas.HateoasFactory
-import api.services.EnrolmentsAuthService
+import api.services.AuthService
 import play.api.mvc.{Action, AnyContent, ControllerComponents}
 import uk.gov.hmrc.mtdsatestsupportapi.controllers.requestParsers.RestoreCheckpointRequestParser
 import uk.gov.hmrc.mtdsatestsupportapi.models.request.restoreCheckpoint.RestoreCheckpointRawData
@@ -32,7 +32,7 @@ import scala.concurrent._
 
 @Singleton
 class RestoreCheckpointController @Inject() (cc: ControllerComponents,
-                                             val authService: EnrolmentsAuthService,
+                                             val authService: AuthService,
                                              parser: RestoreCheckpointRequestParser,
                                              service: RestoreCheckpointService,
                                              hateoasFactory: HateoasFactory,

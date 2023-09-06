@@ -18,7 +18,7 @@ package api.controllers
 
 import api.models.auth.UserDetails
 import api.models.errors._
-import api.services.EnrolmentsAuthService
+import api.services.AuthService
 import play.api.libs.json.Json
 import play.api.mvc._
 import uk.gov.hmrc.http.HeaderCarrier
@@ -30,7 +30,7 @@ case class UserRequest[A](userDetails: UserDetails, request: Request[A]) extends
 
 abstract class AuthorisedController(cc: ControllerComponents)(implicit ec: ExecutionContext) extends BackendController(cc) {
 
-  val authService: EnrolmentsAuthService
+  val authService: AuthService
 
   def authorisedAction(): ActionBuilder[UserRequest, AnyContent] = new ActionBuilder[UserRequest, AnyContent] {
 

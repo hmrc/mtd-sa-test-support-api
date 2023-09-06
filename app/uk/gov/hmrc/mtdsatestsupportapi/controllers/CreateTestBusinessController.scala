@@ -18,7 +18,7 @@ package uk.gov.hmrc.mtdsatestsupportapi.controllers
 
 import api.controllers.{AuthorisedController, EndpointLogContext, RequestContext, RequestHandler}
 import api.hateoas.HateoasFactory
-import api.services.EnrolmentsAuthService
+import api.services.AuthService
 import play.api.libs.json.JsValue
 import play.api.mvc.{Action, ControllerComponents}
 import uk.gov.hmrc.mtdsatestsupportapi.controllers.requestParsers.CreateTestBusinessRequestParser
@@ -32,7 +32,7 @@ import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
 class CreateTestBusinessController @Inject() (val cc: ControllerComponents,
-                                              val authService: EnrolmentsAuthService,
+                                              val authService: AuthService,
                                               parser: CreateTestBusinessRequestParser,
                                               service: CreateTestBusinessService,
                                               hateoasFactory: HateoasFactory,

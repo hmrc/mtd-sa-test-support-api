@@ -18,7 +18,7 @@ package uk.gov.hmrc.mtdsatestsupportapi.controllers
 
 import api.controllers._
 import api.hateoas.HateoasFactory
-import api.services.EnrolmentsAuthService
+import api.services.AuthService
 import play.api.mvc._
 import uk.gov.hmrc.mtdsatestsupportapi.controllers.requestParsers.ListCheckpointsRequestParser
 import uk.gov.hmrc.mtdsatestsupportapi.models.request.listCheckpoints.ListCheckpointsRawData
@@ -30,7 +30,7 @@ import javax.inject.{Inject, Singleton}
 import scala.concurrent._
 
 @Singleton
-class ListCheckpointsController @Inject() (val authService: EnrolmentsAuthService,
+class ListCheckpointsController @Inject() (val authService: AuthService,
                                            cc: ControllerComponents,
                                            parser: ListCheckpointsRequestParser,
                                            service: ListCheckpointsService,

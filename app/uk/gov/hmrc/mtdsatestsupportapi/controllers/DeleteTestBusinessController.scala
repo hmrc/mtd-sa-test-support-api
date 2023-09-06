@@ -17,7 +17,7 @@
 package uk.gov.hmrc.mtdsatestsupportapi.controllers
 
 import api.controllers.{AuthorisedController, EndpointLogContext, RequestContext, RequestHandler}
-import api.services.EnrolmentsAuthService
+import api.services.AuthService
 import play.api.mvc.{Action, AnyContent, ControllerComponents}
 import uk.gov.hmrc.mtdsatestsupportapi.controllers.requestParsers.DeleteTestBusinessRequestParser
 import uk.gov.hmrc.mtdsatestsupportapi.models.request.deleteTestBusiness.DeleteTestBusinessRawData
@@ -29,7 +29,7 @@ import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
 class DeleteTestBusinessController @Inject() (cc: ControllerComponents,
-                                              val authService: EnrolmentsAuthService,
+                                              val authService: AuthService,
                                               parser: DeleteTestBusinessRequestParser,
                                               service: DeleteTestBusinessService,
                                               idGenerator: IdGenerator)(implicit ec: ExecutionContext)
