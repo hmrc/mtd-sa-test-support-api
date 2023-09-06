@@ -2,10 +2,11 @@ summary: Delete Stateful Test Data
 description: |
   This endpoint allows a developer to delete stateful test data supplied by them in the sandbox environment.
   When the endpoint is called, all stateful test data stored against the vendor is deleted from the sandbox database.
-  Any stateful test data that has not been deleted by the developer is automatically deleted from database 7 days after its creation.
+  Any stateful test data that has not been deleted by the developer is automatically deleted from database 7 days after 
+  its creation.
 
 security:
-  - User-Restricted:
+  - Application-Restricted:
       - write:self-assessment
 
 responses:

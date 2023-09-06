@@ -15,7 +15,7 @@ delete:
     - $ref: './common/headers.yaml#/components/parameters/testScenarioHeader'
 
   security:
-    - User-Restricted:
+    - Application-Restricted:
         - write:self-assessment
 
   responses:

@@ -12,7 +12,7 @@ delete:
     - Checkpoint for Vendor Data
 
   security:
-    - User-Restricted:
+    - Application-Restricted:
         - write:self-assessment
   parameters:
     - $ref: './common/headers.yaml#/components/parameters/acceptHeader'

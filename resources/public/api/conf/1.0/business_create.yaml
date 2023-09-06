@@ -18,7 +18,7 @@ post:
     - $ref: './common/headers.yaml#/components/parameters/correlationId'
 
   security:
-    - User-Restricted:
+    - Application-Restricted:
         - write:self-assessment
 
   requestBody:
