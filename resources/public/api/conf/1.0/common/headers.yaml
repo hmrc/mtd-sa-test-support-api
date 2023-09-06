@@ -43,6 +43,7 @@ components:
       required: true
 
     correlationId:
+      name: "X-CorrelationId"
       in: header
       type: string
       description: |

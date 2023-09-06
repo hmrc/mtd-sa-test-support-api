@@ -20,30 +20,30 @@ import api.models.domain.Nino
 import api.models.errors._
 import api.models.outcomes.ResponseWrapper
 import api.services.ServiceSpec
-import uk.gov.hmrc.mtdsatestsupportapi.fixtures.CreateBusinessFixtures
-import uk.gov.hmrc.mtdsatestsupportapi.mocks.connectors.MockCreateBusinessConnector
-import uk.gov.hmrc.mtdsatestsupportapi.models.request.createBusiness.CreateBusinessRequest
-import uk.gov.hmrc.mtdsatestsupportapi.models.response.createBusiness.CreateBusinessResponse
+import uk.gov.hmrc.mtdsatestsupportapi.fixtures.CreateTestBusinessFixtures
+import uk.gov.hmrc.mtdsatestsupportapi.mocks.connectors.MockCreateTestBusinessConnector
+import uk.gov.hmrc.mtdsatestsupportapi.models.request.createTestBusiness.CreateTestBusinessRequest
+import uk.gov.hmrc.mtdsatestsupportapi.models.response.CreateTestBusiness.CreateTestBusinessResponse
 
 import scala.concurrent.Future
 
-class CreateBusinessServiceSpec extends ServiceSpec with MockCreateBusinessConnector with CreateBusinessFixtures {
-  import MinimalCreateBusinessRequest._
+class CreateTestBusinessServiceSpec extends ServiceSpec with MockCreateTestBusinessConnector with CreateTestBusinessFixtures {
+  import MinimalCreateTestBusinessRequest._
 
-  private val service = new CreateBusinessService(mockCreateBusinessConnector)
+  private val service = new CreateTestBusinessService(mockCreateTestBusinessConnector)
 
-  private val request  = CreateBusinessRequest(nino = Nino("TC663795B"), business)
-  private val response = CreateBusinessResponse("someBusinessId")
+  private val request  = CreateTestBusinessRequest(nino = Nino("TC663795B"), business)
+  private val response = CreateTestBusinessResponse("someBusinessId")
 
-  "CreateBusinessService" when {
+  "CreateTestBusinessService" when {
 
     "the service call is successful" should {
       "return the result" in {
-        MockCreateBusinessConnector
-          .createBusiness(request)
+        MockCreateTestBusinessConnector
+          .CreateTestBusiness(request)
           .returns(Future.successful(Right(ResponseWrapper(correlationId, response))))
 
-        await(service.createBusiness(request)) shouldBe Right(ResponseWrapper(correlationId, response))
+        await(service.createTestBusiness(request)) shouldBe Right(ResponseWrapper(correlationId, response))
       }
     }
 
@@ -52,11 +52,11 @@ class CreateBusinessServiceSpec extends ServiceSpec with MockCreateBusinessConne
         def serviceError(stubErrorCode: String, mtdError: MtdError): Unit =
           s"a $stubErrorCode error is returned from the service" in {
 
-            MockCreateBusinessConnector
-              .createBusiness(request)
+            MockCreateTestBusinessConnector
+              .CreateTestBusiness(request)
               .returns(Future.successful(Left(ResponseWrapper(correlationId, DownstreamErrors.single(DownstreamErrorCode(stubErrorCode))))))
 
-            await(service.createBusiness(request)) shouldBe Left(ErrorWrapper(correlationId, mtdError))
+            await(service.createTestBusiness(request)) shouldBe Left(ErrorWrapper(correlationId, mtdError))
           }
 
         val stubErrors: List[(String, MtdError)] = List(

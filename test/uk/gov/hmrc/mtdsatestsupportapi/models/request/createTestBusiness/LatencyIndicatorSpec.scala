@@ -14,25 +14,25 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.mtdsatestsupportapi.models.request.createBusiness
+package uk.gov.hmrc.mtdsatestsupportapi.models.request.createTestBusiness
 
-import play.api.libs.json.{JsBoolean, JsString, Json}
+import play.api.libs.json.{JsString, Json}
 import support.UnitSpec
 
-class AccountingTypeSpec extends UnitSpec {
+class LatencyIndicatorSpec extends UnitSpec {
 
-  "AccountingType" when {
+  "LatencyIndicator" when {
     "deserialized from API JSON" must {
       "work" in {
-        JsString("CASH").as[AccountingType] shouldBe AccountingType.CASH
-        JsString("ACCRUALS").as[AccountingType] shouldBe AccountingType.ACCRUALS
+        JsString("A").as[LatencyIndicator] shouldBe LatencyIndicator.A
+        JsString("Q").as[LatencyIndicator] shouldBe LatencyIndicator.Q
       }
     }
 
     "serialized to downstream JSON" must {
       "work" in {
-        Json.toJson[AccountingType](AccountingType.CASH) shouldBe JsBoolean(false)
-        Json.toJson[AccountingType](AccountingType.ACCRUALS) shouldBe JsBoolean(true)
+        Json.toJson[LatencyIndicator](LatencyIndicator.A) shouldBe JsString("A")
+        Json.toJson[LatencyIndicator](LatencyIndicator.Q) shouldBe JsString("Q")
       }
     }
   }

@@ -19,18 +19,18 @@ package uk.gov.hmrc.mtdsatestsupportapi.mocks.validators
 import api.models.errors.MtdError
 import org.scalamock.handlers.CallHandler
 import org.scalamock.scalatest.MockFactory
-import uk.gov.hmrc.mtdsatestsupportapi.controllers.requestParsers.validators.CreateBusinessValidator
-import uk.gov.hmrc.mtdsatestsupportapi.models.request.createBusiness.CreateBusinessRawData
+import uk.gov.hmrc.mtdsatestsupportapi.controllers.requestParsers.validators.CreateTestBusinessValidator
+import uk.gov.hmrc.mtdsatestsupportapi.models.request.createTestBusiness.CreateTestBusinessRawData
 
-trait MockCreateBusinessValidator extends MockFactory {
+trait MockCreateTestBusinessValidator extends MockFactory {
 
-  val mockCreateBusinessValidator: CreateBusinessValidator = mock[CreateBusinessValidator]
+  val mockCreateTestBusinessValidator: CreateTestBusinessValidator = mock[CreateTestBusinessValidator]
 
-  object MockCreateBusinessValidator {
+  object MockCreateTestBusinessValidator {
 
-    def validate(data: CreateBusinessRawData): CallHandler[List[MtdError]] =
-      (mockCreateBusinessValidator
-        .validate(_: CreateBusinessRawData))
+    def validate(data: CreateTestBusinessRawData): CallHandler[List[MtdError]] =
+      (mockCreateTestBusinessValidator
+        .validate(_: CreateTestBusinessRawData))
         .expects(data)
 
   }

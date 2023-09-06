@@ -14,19 +14,19 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.mtdsatestsupportapi.models.response.createBusiness
+package uk.gov.hmrc.mtdsatestsupportapi.models.response.CreateTestBusiness
 
 import play.api.libs.json.Json
 import support.UnitSpec
 
-class CreateBusinessResponseSpec extends UnitSpec {
+class CreateTestBusinessResponseSpec extends UnitSpec {
 
-  private val response: CreateBusinessResponse = CreateBusinessResponse("someId")
+  private val response: CreateTestBusinessResponse = CreateTestBusinessResponse("someId")
 
-  "CreateBusinessResponse" when {
+  "CreateTestBusinessResponse" when {
     "deserialized from downstream" must {
       "work" in {
-        Json.obj("incomeSourceId" -> "someId").as[CreateBusinessResponse] shouldBe response
+        Json.obj("incomeSourceId" -> "someId").as[CreateTestBusinessResponse] shouldBe response
       }
     }
 

@@ -22,24 +22,24 @@ import api.models.errors.{DownstreamErrorCode, DownstreamErrors}
 import api.models.outcomes.ResponseWrapper
 import play.api.http.Status.CREATED
 import play.api.libs.json.{JsValue, Json}
-import uk.gov.hmrc.mtdsatestsupportapi.fixtures.CreateBusinessFixtures
-import uk.gov.hmrc.mtdsatestsupportapi.models.request.createBusiness.CreateBusinessRequest
+import uk.gov.hmrc.mtdsatestsupportapi.fixtures.CreateTestBusinessFixtures
+import uk.gov.hmrc.mtdsatestsupportapi.models.request.createTestBusiness.CreateTestBusinessRequest
 
-class CreateBusinessConnectorSpec extends ConnectorSpec with CreateBusinessFixtures {
+class CreateTestBusinessConnectorSpec extends ConnectorSpec with CreateTestBusinessFixtures {
 
-  import ExampleCreateBusinessResponse._
-  import MinimalCreateBusinessRequest._
+  import ExampleCreateTestBusinessResponse._
+  import MinimalCreateTestBusinessRequest._
 
   private val nino    = "AA123456A"
-  private val request = CreateBusinessRequest(Nino(nino), business)
+  private val request = CreateTestBusinessRequest(Nino(nino), business)
 
   trait Test {
     _: ConnectorTest =>
 
-    protected val connector = new CreateBusinessConnector(httpClientV2, mockAppConfig)
+    protected val connector = new CreateTestBusinessConnector(httpClientV2, mockAppConfig)
   }
 
-  "CreateBusinessConnector" when {
+  "CreateTestBusinessConnector" when {
     "the downstream returns a successful 201 response" must {
       "return a success result with the businessId" in new StubTest with Test {
         when(POST, s"/test-support/business-details/$nino")
@@ -47,7 +47,7 @@ class CreateBusinessConnectorSpec extends ConnectorSpec with CreateBusinessFixtu
           .withHeaders(requiredHeaders)
           .thenReturn[JsValue](CREATED, headers = responseHeaders, body = downstreamResponseJson)
 
-        await(connector.createBusiness(request)) shouldBe Right(ResponseWrapper(responseCorrelationId, response))
+        await(connector.createTestBusiness(request)) shouldBe Right(ResponseWrapper(responseCorrelationId, response))
       }
     }
 
@@ -58,7 +58,7 @@ class CreateBusinessConnectorSpec extends ConnectorSpec with CreateBusinessFixtu
           .withHeaders(requiredHeaders)
           .thenReturn(400, Json.obj("code" -> "SOME_ERROR", "reason" -> "Some message"), responseHeaders)
 
-        await(connector.createBusiness(request)) shouldBe Left(
+        await(connector.createTestBusiness(request)) shouldBe Left(
           ResponseWrapper(responseCorrelationId, DownstreamErrors.single(DownstreamErrorCode("SOME_ERROR"))))
       }
     }

@@ -4,6 +4,10 @@ get:
   description: |
     This endpoint allows a developer to get all the checkpoints created for the vendor ID. 
     A National Insurance number can be provided to filter the results.
+
+  tags:
+    - Checkpoint for Vendor Data
+
   security:
     - User-Restricted:
         - write:self-assessment

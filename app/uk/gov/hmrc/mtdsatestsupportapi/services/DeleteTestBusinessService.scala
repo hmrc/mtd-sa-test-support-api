@@ -24,9 +24,10 @@ import cats.implicits.toBifunctorOps
 import uk.gov.hmrc.mtdsatestsupportapi.connectors.DeleteTestBusinessConnector
 import uk.gov.hmrc.mtdsatestsupportapi.models.request.deleteTestBusiness.DeleteTestBusinessRequest
 
-import javax.inject.Inject
+import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 
+@Singleton
 class DeleteTestBusinessService @Inject() (connector: DeleteTestBusinessConnector) extends BaseService {
 
   def deleteTestBusiness(

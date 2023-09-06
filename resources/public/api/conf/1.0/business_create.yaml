@@ -1,0 +1,93 @@
+post:
+  summary: Create a Test Business
+  description: |
+    This endpoint allows a developer to create a test business for use within the Sandbox environment.
+    
+    Customer may have multiple Self-Employment businesses but only one of each Property business is allowed. 
+    MTD supports only one accounting period per year so this must be a full tax year period e.g. April 6th to April 5th. 
+    Any test business that has not been deleted by the developer is automatically purged from database 7 days after its
+    creation.
+
+  tags:
+    - Business Income Source
+
+  parameters:
+    - $ref: './common/pathParameters.yaml#/components/parameters/nino'
+    - $ref: './common/headers.yaml#/components/parameters/acceptHeader'
+    - $ref: './common/headers.yaml#/components/parameters/authorizationWriteScopeHeader'
+    - $ref: './common/headers.yaml#/components/parameters/correlationId'
+
+  security:
+    - User-Restricted:
+        - write:self-assessment
+
+  requestBody:
+    content:
+      application/json:
+        schema:
+          $ref: './schemas/businesses/create_request.json'
+        examples:
+          example-request:
+            description:
+            value:
+              $ref: './examples/businesses/create_request.json'
+
+  responses:
+    201:
+      description: Success
+      headers:
+        X-CorrelationId:
+          $ref: './common/headers.yaml#/components/parameters/correlationId'
+      content:
+        application/json:
+          schema:
+            $ref: './schemas/businesses/create_response.json'
+          examples:
+            example-response:
+              description: Example Response
+              value:
+                $ref: './examples/businesses/create_response.json'
+
+    "400":
+      description: Bad request
+      content:
+        application/json:
+          schema:
+            $ref: './schemas/error_response.yaml'
+          examples:
+            FORMAT_NINO:
+              $ref: './common/errors.yaml#/components/examples/formatNino'
+            FORMAT_TYPE_OF_BUSINESS:
+              $ref: './common/errors.yaml#/components/examples/formatTypeOfBusiness'
+            FORMAT_DATE:
+              $ref: './common/errors.yaml#/components/examples/formatDate'
+            FORMAT_TAX_YEAR:
+              $ref: './common/errors.yaml#/components/examples/formatTaxYear'
+            FORMAT_ACCOUNTING_TYPE:
+              $ref: './common/errors.yaml#/components/examples/formatAccountingType'
+            FORMAT_POSTCODE:
+              $ref: './common/errors.yaml#/components/examples/formatPostcode'
+            FORMAT_LATENCY_INDICATOR:
+              $ref: './common/errors.yaml#/components/examples/formatLatencyIndicator'
+            MISSING_POSTCODE:
+              $ref: './common/errors.yaml#/components/examples/missingPostcode'
+            FORMAT_COUNTRY_CODE:
+              $ref: './common/errors.yaml#/components/examples/formatCountryCode'
+            RULE_COMMENCEMENT_DATE_NOT_SUPPORTED:
+              $ref: './common/errors.yaml#/components/examples/ruleCommencementDateNotSupported'
+            RULE_PROPERTY_BUSINESS_ADDED:
+              $ref: './common/errors.yaml#/components/examples/rulePropertyBusinessAdded'
+            RULE_INCORRECT_OR_EMPTY_BODY_SUBMITTED:
+              $ref: './common/errors.yaml#/components/examples/ruleIncorrectOrEmptyBodySubmitted'
+            RULE_TAX_YEAR_RANGE_INVALID:
+              $ref: './common/errors.yaml#/components/examples/ruleTaxYearRangeInvalid'
+
+    "403":
+      description: Forbidden
+      content:
+        application/json:
+          schema:
+            $ref: './schemas/error_response.yaml'
+          examples:
+            CLIENT_OR_AGENT_NOT_AUTHORISED:
+              $ref: './common/errors.yaml#/components/examples/clientOrAgentNotAuthorised'

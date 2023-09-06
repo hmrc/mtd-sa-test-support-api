@@ -14,9 +14,8 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.mtdsatestsupportapi.models.request.createBusiness
+package uk.gov.hmrc.mtdsatestsupportapi.models.request.createTestBusiness
 
-import api.models.request.RawData
-import play.api.libs.json.JsValue
+import api.models.domain.Nino
 
-case class CreateBusinessRawData(nino: String, body: JsValue) extends RawData
+case class CreateTestBusinessRequest(nino: Nino, business: Business)

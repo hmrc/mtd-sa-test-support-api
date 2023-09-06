@@ -1,0 +1,145 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "title": "Create a Test Business",
+  "type": "object",
+  "properties": {
+    "typeOfBusiness": {
+      "type": "string",
+      "description": "The type of business income source.",
+      "enum": [
+        "self-employment",
+        "uk-property",
+        "foreign-property",
+        "property-unspecified"
+      ]
+    },
+    "tradingName": {
+      "type": "string",
+      "description": "The trading name of the business.",
+      "example": "ABC Ltd."
+    },
+    "firstAccountingPeriodStartDate": {
+      "type": "string",
+      "description": "The first accounting period start date",
+      "format": "YYYY-MM-DD",
+      "example": "2019-09-30"
+    },
+    "firstAccountingPeriodEndDate": {
+      "type": "string",
+      "description": "The first accounting period end date",
+      "format": "YYYY-MM-DD",
+      "example": "2020-02-29"
+    },
+    "latencyDetails": {
+      "type": "object",
+      "description": "Income source latency details",
+      "properties": {
+        "latencyEndDate": {
+          "type": "string",
+          "description": "End date of latency period for the income source.",
+          "example": "2020-02-27",
+          "format": "YYYY-MM-DD"
+        },
+        "taxYear1": {
+          "type": "string",
+          "description": "First tax year for the income source.",
+          "example": "2018-19",
+          "format": "YYYY-YY",
+          "minimum": 7,
+          "maximum": 7
+        },
+        "latencyIndicator1": {
+          "type": "string",
+          "description": "Self assessment submission frequency ('A' - Annual, 'Q' - Quarterly).",
+          "enum": [
+            "A",
+            "Q"
+          ],
+          "example": "A"
+        },
+        "taxYear2": {
+          "type": "string",
+          "description": "Second tax year for the income source.",
+          "example": "2019-20",
+          "format": "YYYY-YY",
+          "minimum": 7,
+          "maximum": 7
+        },
+        "latencyIndicator2": {
+          "type": "string",
+          "description": "Self assessment submission frequency ('A' - Annual, 'Q' - Quarterly).",
+          "enum": [
+            "A",
+            "Q"
+          ],
+          "example": "A"
+        }
+      },
+      "required": [
+        "latencyEndDate",
+        "taxYear1",
+        "latencyIndicator1",
+        "taxYear2",
+        "latencyIndicator2"
+      ]
+    },
+    "accountingType": {
+      "description": "CASH if you used the cash basis, money actually received and paid out, to calculate your income and expenses. Otherwise ACCRUALS.",
+      "type": "string",
+      "enum": [
+        "CASH",
+        "ACCRUALS"
+      ]
+    },
+    "commencementDate": {
+      "description": "Business start date, must be in the past.",
+      "type": "string",
+      "format": "YYYY-MM-DD",
+      "example": "2016-09-24"
+    },
+    "cessationDate": {
+      "description": "Business cessation date.",
+      "type": "string",
+      "format": "YYYY-MM-DD",
+      "example": "2020-03-24"
+    },
+    "businessAddressLineOne": {
+      "description": "First line of the business address.",
+      "type": "string",
+      "maximum": 35,
+      "example": "1 ABC Rd."
+    },
+    "businessAddressLineTwo": {
+      "description": "Second line of the business address.",
+      "type": "string",
+      "maximum": 35,
+      "example": "London"
+    },
+    "businessAddressLineThree": {
+      "description": "Third line of the business address.",
+      "type": "string",
+      "maximum": 35,
+      "example": "Greater London"
+    },
+    "businessAddressLineFour": {
+      "description": "Fourth line of the business address.",
+      "type": "string",
+      "maximum": 35,
+      "example": "United Kingdom"
+    },
+    "businessAddressPostcode": {
+      "description": "Business postcode.",
+      "type": "string",
+      "example": "M1 1AG"
+    },
+    "businessAddressCountryCode": {
+      "description": "The two letter code for a country must adhere to ISO 3166.",
+      "type": "string",
+      "example": "GB"
+    }
+  },
+  "required": [
+    "typeOfBusiness"
+  ],
+  "additionalProperties": false
+}

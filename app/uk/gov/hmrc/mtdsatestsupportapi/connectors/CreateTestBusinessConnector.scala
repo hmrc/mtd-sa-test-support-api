@@ -23,26 +23,27 @@ import config.AppConfig
 import play.api.http.Status.CREATED
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.http.client.HttpClientV2
-import uk.gov.hmrc.mtdsatestsupportapi.models.request.createBusiness.CreateBusinessRequest
-import uk.gov.hmrc.mtdsatestsupportapi.models.response.createBusiness.CreateBusinessResponse
+import uk.gov.hmrc.mtdsatestsupportapi.models.request.createTestBusiness.CreateTestBusinessRequest
+import uk.gov.hmrc.mtdsatestsupportapi.models.response.CreateTestBusiness.CreateTestBusinessResponse
 
-import javax.inject.Inject
+import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 
-class CreateBusinessConnector @Inject() (val http: HttpClientV2, val appConfig: AppConfig)
+@Singleton
+class CreateTestBusinessConnector @Inject() (val http: HttpClientV2, val appConfig: AppConfig)
     extends BaseDownstreamConnector
     with StandardDownstreamHttpParser {
 
-  def createBusiness(request: CreateBusinessRequest)(implicit
-      hc: HeaderCarrier,
-      ec: ExecutionContext,
-      correlationId: String): Future[DownstreamOutcome[CreateBusinessResponse]] = {
+  def createTestBusiness(request: CreateTestBusinessRequest)(implicit
+                                                         hc: HeaderCarrier,
+                                                         ec: ExecutionContext,
+                                                         correlationId: String): Future[DownstreamOutcome[CreateTestBusinessResponse]] = {
     import request._
 
     implicit val successCode: SuccessCode  = SuccessCode(CREATED)
     implicit val context: ConnectorContext = ConnectorContext(appConfig.stubDownstreamConfig)
 
-    post(business, DownstreamUri[CreateBusinessResponse](s"test-support/business-details/${nino.value}"))
+    post(business, DownstreamUri[CreateTestBusinessResponse](s"test-support/business-details/${nino.value}"))
   }
 
 }
