@@ -10,7 +10,7 @@ get:
 
   security:
     - Application-Restricted:
-        - write:self-assessment
+        - read:self-assessment
   parameters:
     - $ref: './common/headers.yaml#/components/parameters/acceptHeader'
     - $ref: './common/headers.yaml#/components/parameters/authorizationWriteScopeHeader'
