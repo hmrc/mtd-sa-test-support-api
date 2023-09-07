@@ -16,7 +16,7 @@
 
 package endpoints
 
-import api.models.errors.{AccountingTypeFormatError, CountryCodeFormatError, DateFormatError, LatencyIndicatorFormatError, MissingPostcodeError, MtdError, NinoFormatError, PostcodeFormatError, RuleCommencementDateNotSupported, RuleIncorrectOrEmptyBodyError, RulePropertyBusinessAddedError, RuleTaxYearRangeInvalidError, TaxYearFormatError, TypeOfBusinessFormatError}
+import api.models.errors._
 import com.github.tomakehurst.wiremock.stubbing.StubMapping
 import play.api.http.HeaderNames.ACCEPT
 import play.api.http.Status.{BAD_REQUEST, CREATED}
