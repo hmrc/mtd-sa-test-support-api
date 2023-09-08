@@ -22,8 +22,7 @@ components:
     Application-Restricted:
       type: oauth2
       description: |
-        HMRC supports OAuth 2.0 for authenticating [Application-Restricted](https://developer.service.hmrc.gov.uk/api-documentation/docs/authorisation/application-restricted-endpoints) API requests using an OAuth 2.0 Bearer Token
-        in the AUTHORIZATION header.
+        HMRC supports OAuth 2.0 for authenticating [Application-Restricted](https://developer.service.hmrc.gov.uk/api-documentation/docs/authorisation/application-restricted-endpoints) API requests using an OAuth 2.0 Bearer Token.
       flows:
         clientCredentials:
           tokenUrl: https://api.service.hmrc.gov.uk/oauth/token
