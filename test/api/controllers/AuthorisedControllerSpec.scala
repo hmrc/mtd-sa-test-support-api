@@ -16,9 +16,9 @@
 
 package api.controllers
 
-import api.mocks.services.MockEnrolmentsAuthService
+import api.mocks.services.MockAuthService
 import api.models.errors.{ClientNotAuthenticatedError, ClientNotAuthorisedError, InternalError, InvalidBearerTokenError, MtdError}
-import api.services.EnrolmentsAuthService
+import api.services.AuthService
 import play.api.libs.json.Json
 import play.api.mvc.{Action, AnyContent}
 import uk.gov.hmrc.auth.core.Enrolment
@@ -30,11 +30,11 @@ import scala.concurrent.Future
 
 class AuthorisedControllerSpec extends ControllerBaseSpec {
 
-  trait Test extends MockEnrolmentsAuthService {
+  trait Test extends MockAuthService {
     val hc: HeaderCarrier = HeaderCarrier()
 
     class TestController extends AuthorisedController(cc) {
-      override val authService: EnrolmentsAuthService = mockEnrolmentsAuthService
+      override val authService: AuthService = mockEnrolmentsAuthService
 
       def action(): Action[AnyContent] = authorisedAction().async {
         Future.successful(Ok(Json.obj()))

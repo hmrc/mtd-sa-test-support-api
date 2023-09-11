@@ -17,7 +17,7 @@
 package uk.gov.hmrc.mtdsatestsupportapi.controllers
 
 import api.controllers.{AuthorisedController, EndpointLogContext, RequestContext, RequestHandler}
-import api.services.EnrolmentsAuthService
+import api.services.AuthService
 import play.api.mvc.{Action, AnyContent, ControllerComponents}
 import uk.gov.hmrc.mtdsatestsupportapi.controllers.requestParsers.DeleteCheckpointRequestParser
 import uk.gov.hmrc.mtdsatestsupportapi.models.request.deleteCheckpoint.DeleteCheckpointRawData
@@ -29,7 +29,7 @@ import scala.concurrent._
 
 @Singleton
 class DeleteCheckpointController @Inject() (cc: ControllerComponents,
-                                            val authService: EnrolmentsAuthService,
+                                            val authService: AuthService,
                                             parser: DeleteCheckpointRequestParser,
                                             service: DeleteCheckpointService,
                                             idGenerator: IdGenerator)(implicit ec: ExecutionContext)

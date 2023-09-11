@@ -18,7 +18,7 @@ package uk.gov.hmrc.mtdsatestsupportapi.controllers
 
 import api.controllers.{ControllerBaseSpec, ControllerTestRunner}
 import api.mocks.MockIdGenerator
-import api.mocks.services.MockEnrolmentsAuthService
+import api.mocks.services.MockAuthService
 import api.models.domain.Nino
 import api.models.errors._
 import api.models.outcomes.ResponseWrapper
@@ -36,7 +36,7 @@ class DeleteVendorStateControllerSpec
     with ControllerTestRunner
     with MockDeleteVendorStateService
     with MockStatefulTestDataRequestParser
-    with MockEnrolmentsAuthService
+    with MockAuthService
     with MockIdGenerator {
 
   trait Test extends ControllerTest {
