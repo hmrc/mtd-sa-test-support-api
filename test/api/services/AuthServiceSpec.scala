@@ -22,8 +22,7 @@ import mocks.MockAppConfig
 import org.scalamock.handlers.CallHandler
 import uk.gov.hmrc.auth.core._
 import uk.gov.hmrc.auth.core.authorise.{EmptyPredicate, Predicate}
-import uk.gov.hmrc.auth.core.retrieve.Retrieval
-import uk.gov.hmrc.auth.core.retrieve.v2.Retrievals._
+import uk.gov.hmrc.auth.core.retrieve.{EmptyRetrieval, Retrieval}
 import uk.gov.hmrc.http.HeaderCarrier
 
 import scala.concurrent.{ExecutionContext, Future}
@@ -32,12 +31,9 @@ class AuthServiceSpec extends ServiceSpec with MockAppConfig {
 
   "calling .authorised" when {
     "allow authorised users" in new Test {
-      // As all affinity groups are handled the same way
-      val someAffinityGroup: AffinityGroup = AffinityGroup.Agent
-
       MockedAuthConnector
-        .authorised(emptyPredicate, affinityGroup)
-        .returns(Future.successful(Some(someAffinityGroup)))
+        .authorised()
+        .returns(Future.unit)
 
       await(target.authorised) shouldBe Right(UserDetails("Authorised", None))
     }
@@ -53,7 +49,7 @@ class AuthServiceSpec extends ServiceSpec with MockAppConfig {
 
     def authFailure(authException: AuthorisationException, expectedError: MtdError): Unit = new Test {
       MockedAuthConnector
-        .authorised(emptyPredicate, affinityGroup)
+        .authorised()
         .returns(Future.failed(authException))
 
       await(target.authorised) shouldBe Left(expectedError)
@@ -65,13 +61,14 @@ class AuthServiceSpec extends ServiceSpec with MockAppConfig {
     lazy val target                      = new AuthService(mockAuthConnector, mockAppConfig)
 
     protected val emptyPredicate: EmptyPredicate.type = EmptyPredicate
+    private val emptyRetrieval                        = EmptyRetrieval
 
     object MockedAuthConnector {
 
-      def authorised[A](predicate: Predicate, retrievals: Retrieval[A]): CallHandler[Future[A]] = {
+      def authorised(): CallHandler[Future[Unit]] = {
         (mockAuthConnector
-          .authorise[A](_: Predicate, _: Retrieval[A])(_: HeaderCarrier, _: ExecutionContext))
-          .expects(predicate, retrievals, *, *)
+          .authorise(_: Predicate, _: Retrieval[Unit])(_: HeaderCarrier, _: ExecutionContext))
+          .expects(emptyPredicate, emptyRetrieval, *, *)
       }
 
     }

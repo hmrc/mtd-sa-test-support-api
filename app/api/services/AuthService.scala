@@ -21,7 +21,6 @@ import api.models.errors.{ClientNotAuthenticatedError, InternalError, InvalidBea
 import api.models.outcomes.AuthOutcome
 import config.AppConfig
 import uk.gov.hmrc.auth.core._
-import uk.gov.hmrc.auth.core.retrieve.v2.Retrievals.affinityGroup
 import uk.gov.hmrc.http.HeaderCarrier
 import utils.Logging
 
@@ -36,12 +35,8 @@ class AuthService @Inject() (val connector: AuthConnector, val appConfig: AppCon
   }
 
   def authorised(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[AuthOutcome] = {
-    authFunction.authorised().retrieve(affinityGroup) {
-      case Some(_) => Future.successful(Right(UserDetails("Authorised", None)))
-
-      case _ =>
-        logger.warn(s"[EnrolmentsAuthService][authorised] Invalid AffinityGroup.")
-        Future.successful(Left(ClientNotAuthenticatedError))
+    authFunction.authorised() {
+      Future.successful(Right(UserDetails("Authorised", None)))
     } recoverWith {
       case authException: AuthorisationException =>
         logger.warn(s"Auth failed. Reason: ${authException.reason}")
