@@ -18,7 +18,7 @@ package uk.gov.hmrc.mtdsatestsupportapi.controllers
 
 import api.controllers._
 import api.mocks.MockIdGenerator
-import api.mocks.services.MockEnrolmentsAuthService
+import api.mocks.services.MockAuthService
 import api.models.domain.CheckpointId
 import api.models.errors.{CheckpointIdFormatError, ErrorWrapper, InternalError, NotFoundError}
 import api.models.outcomes.ResponseWrapper
@@ -38,7 +38,7 @@ class DeleteCheckpointControllerSpec
     with UnitSpec
     with MockDeleteCheckpointRequestParser
     with MockDeleteCheckpointService
-    with MockEnrolmentsAuthService
+    with MockAuthService
     with MockIdGenerator {
 
   trait Test extends ControllerTest {

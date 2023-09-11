@@ -16,34 +16,19 @@
 
 package endpoints
 
-import api.models.errors.{
-  AccountingTypeFormatError,
-  CountryCodeFormatError,
-  DateFormatError,
-  LatencyIndicatorFormatError,
-  MissingPostcodeError,
-  MtdError,
-  NinoFormatError,
-  PostcodeFormatError,
-  RuleCommencementDateNotSupported,
-  RuleIncorrectOrEmptyBodyError,
-  RulePropertyBusinessAddedError,
-  RuleTaxYearRangeInvalidError,
-  TaxYearFormatError,
-  TypeOfBusinessFormatError
-}
+import api.models.errors._
 import com.github.tomakehurst.wiremock.stubbing.StubMapping
 import play.api.http.HeaderNames.ACCEPT
 import play.api.http.Status.{BAD_REQUEST, CREATED}
 import play.api.libs.json.{JsObject, Json}
 import play.api.libs.ws.{WSRequest, WSResponse}
 import play.api.test.Helpers.AUTHORIZATION
-import support.IntegrationBaseSpec
+import support.{IntegrationBaseSpec, UnitSpec}
 import uk.gov.hmrc.mtdsatestsupportapi.fixtures.CreateTestBusinessFixtures
 
 import java.time.LocalDate
 
-class CreateTestBusinessControllerISpec extends IntegrationBaseSpec with CreateTestBusinessFixtures {
+class CreateTestBusinessControllerISpec extends UnitSpec with IntegrationBaseSpec with CreateTestBusinessFixtures {
 
   trait Test {
 
@@ -68,7 +53,7 @@ class CreateTestBusinessControllerISpec extends IntegrationBaseSpec with CreateT
         )
     }
 
-    val expectedResponseBody =
+    val expectedResponseBody: String =
       s"""{
         |  "businessId": "$businessId",
         |  "links": [
