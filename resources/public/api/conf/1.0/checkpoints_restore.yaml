@@ -1,5 +1,4 @@
 post:
-  $ref: "./checkpoints_restore.yaml"
   summary: Restore to checkpoint
   description: |
     This endpoint allows a developer to reset the stateful data back to the checkpoint created in the sandbox environment.

@@ -1,5 +1,4 @@
 get:
-  $ref: "./checkpoints_list.yaml"
   summary: List checkpoints
   description: |
     This endpoint allows a developer to get all the checkpoints created for the vendor ID. 

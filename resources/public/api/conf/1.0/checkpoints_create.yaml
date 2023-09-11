@@ -1,5 +1,4 @@
 post:
-  $ref: "./checkpoints_create.yaml"
   summary: Create a checkpoint
   description: |
     This endpoint allows a developer to set up a checkpoint for the stateful data in the sandbox environment for a given National Insurance number.
