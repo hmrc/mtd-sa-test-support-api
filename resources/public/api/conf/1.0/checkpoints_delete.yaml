@@ -1,5 +1,4 @@
 delete:
-  $ref: "./checkpoints_delete.yaml"
   summary: Delete a checkpoint
   description: |
     This endpoint allows a developer to delete the checkpoint created in sandbox for a given ‘checkpointId’.

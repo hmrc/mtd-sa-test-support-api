@@ -12,7 +12,6 @@ delete:
     - $ref: './common/pathParameters.yaml#/components/parameters/businessId'
     - $ref: './common/headers.yaml#/components/parameters/acceptHeader'
     - $ref: './common/headers.yaml#/components/parameters/authorizationWriteScopeHeader'
-    - $ref: './common/headers.yaml#/components/parameters/testScenarioHeader'
 
   security:
     - Application-Restricted:
@@ -24,7 +23,6 @@ delete:
       headers:
         X-CorrelationId:
           $ref: './common/headers.yaml#/components/parameters/correlationId'
-      content: {}
 
     "400":
       description: Bad request
