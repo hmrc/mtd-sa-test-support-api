@@ -12,7 +12,7 @@
           "href": {
             "description": "The relative url of the endpoint.",
             "type": "string",
-            "example": "https://test-api.service.hmrc.gov.uk/individuals/self-assessment-test-support/vendor-state/checkpoints"
+            "example": "/individuals/self-assessment-test-support/vendor-state/checkpoints"
           },
           "method": {
             "description": "The HTTP method type for the endpoint.",
