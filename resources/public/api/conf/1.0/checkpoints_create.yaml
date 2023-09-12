@@ -1,68 +1,70 @@
-post:
-  summary: Create a checkpoint
-  description: |
-    This endpoint allows a developer to set up a checkpoint for the stateful data in the sandbox environment for a given National Insurance number.
-    
-    A National Insurance number must be provided.
-    
-    The developer will be able to reset the data back to the checkpoint created using the 'Restore to Checkpoint' endpoint.
-    
-    Note: To prevent data loss or unexpected behaviour, the checkpoint restore should not be performed while other stateful checkpoint operations 
-    are in progress for the same National insurance number.
+summary: Create a checkpoint
+description: |
+  This endpoint allows a developer to set up a checkpoint for the stateful data in the sandbox environment for a given National Insurance number.
+  
+  A National Insurance number must be provided.
+  
+  The developer will be able to reset the data back to the checkpoint created using the 'Restore to Checkpoint' endpoint.
+  
+  Note: To prevent data loss or unexpected behaviour, the checkpoint restore should not be performed while other stateful checkpoint operations 
+  are in progress for the same National insurance number.
 
-  security:
-    - User-Restricted:
-        - write:self-assessment
+tags:
+  - Checkpoint for Vendor Data
 
-  parameters:
-    - $ref: './common/queryParameters.yaml#/components/parameters/ninoCreateCheckpoint'
-    - $ref: './common/headers.yaml#/components/parameters/acceptHeader'
-    - $ref: './common/headers.yaml#/components/parameters/authorizationWriteScopeHeader'
+security:
+  - User-Restricted:
+      - write:self-assessment
 
-  responses:
-    201:
-      description: Success
-      headers:
-        X-CorrelationId:
-          $ref: './common/headers.yaml#/components/parameters/correlationId'
-      content:
-        application/json:
-          schema:
-            $ref: './schemas/checkpoints/create_response.json'
-          examples:
-            example-response:
-              description: Example Response
-              value:
-                $ref: './examples/checkpoints/create_response.json'
+parameters:
+  - $ref: './common/queryParameters.yaml#/components/parameters/ninoCreateCheckpoint'
+  - $ref: './common/headers.yaml#/components/parameters/acceptHeader'
+  - $ref: './common/headers.yaml#/components/parameters/authorizationWriteScopeHeader'
 
-    400:
-      description: Bad Request
-      content:
-        application/json:
-          schema:
-            $ref: './schemas/error_response.yaml'
-          examples:
-            FORMAT_NINO:
-              $ref: './common/errors.yaml#/components/examples/formatNino'
+responses:
+  201:
+    description: Success
+    headers:
+      X-CorrelationId:
+        $ref: './common/headers.yaml#/components/parameters/correlationId'
+    content:
+      application/json:
+        schema:
+          $ref: './schemas/checkpoints/create_response.json'
+        examples:
+          example-response:
+            description: Example Response
+            value:
+              $ref: './examples/checkpoints/create_response.json'
 
-    403:
-      description: Forbidden
-      content:
-        application/json:
-          schema:
-            $ref: './schemas/error_response.yaml'
-          examples:
-            CLIENT_OR_AGENT_NOT_AUTHORISED:
-              $ref: './common/errors.yaml#/components/examples/clientOrAgentNotAuthorised'
+  400:
+    description: Bad Request
+    content:
+      application/json:
+        schema:
+          $ref: './schemas/error_response.yaml'
+        examples:
+          FORMAT_NINO:
+            $ref: './common/errors.yaml#/components/examples/formatNino'
 
-    404:
-      description: Not Found
-      content:
-        application/json:
-          schema:
-            $ref: './schemas/error_response.yaml'
-          examples:
-            MATCHING_RESOURCE_NOT_FOUND:
-              $ref: './common/errors.yaml#/components/examples/notFoundCreateCheckpoint'
+  403:
+    description: Forbidden
+    content:
+      application/json:
+        schema:
+          $ref: './schemas/error_response.yaml'
+        examples:
+          CLIENT_OR_AGENT_NOT_AUTHORISED:
+            $ref: './common/errors.yaml#/components/examples/clientOrAgentNotAuthorised'
+
+  404:
+    description: Not Found
+    content:
+      application/json:
+        schema:
+          $ref: './schemas/error_response.yaml'
+        examples:
+          MATCHING_RESOURCE_NOT_FOUND:
+            $ref: './common/errors.yaml#/components/examples/notFoundCreateCheckpoint'
 
 

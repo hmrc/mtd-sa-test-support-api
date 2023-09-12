@@ -1,49 +1,51 @@
-get:
-  summary: List checkpoints
-  description: |
-    This endpoint allows a developer to get all the checkpoints created for the vendor ID. 
-    A National Insurance number can be provided to filter the results.
+summary: List checkpoints
+description: |
+  This endpoint allows a developer to get all the checkpoints created for the vendor ID. 
+  A National Insurance number can be provided to filter the results.
 
-  security:
-    - User-Restricted:
-        - write:self-assessment
-  parameters:
-    - $ref: './common/headers.yaml#/components/parameters/acceptHeader'
-    - $ref: './common/headers.yaml#/components/parameters/authorizationWriteScopeHeader'
-    - $ref: './common/queryParameters.yaml#/components/parameters/ninoListCheckpoint'
+tags:
+  - Checkpoint for Vendor Data
 
-  responses:
-    200:
-      description: Success
-      headers:
-        X-CorrelationId:
-          $ref: './common/headers.yaml#/components/parameters/correlationId'
-      content:
-        application/json:
-          schema:
-            $ref: './schemas/checkpoints/list_response.json'
-          examples:
-            example-response:
-              description: Example Response
-              value:
-                $ref: './examples/checkpoints/list_response.json'
+security:
+  - User-Restricted:
+      - write:self-assessment
+parameters:
+  - $ref: './common/headers.yaml#/components/parameters/acceptHeader'
+  - $ref: './common/headers.yaml#/components/parameters/authorizationWriteScopeHeader'
+  - $ref: './common/queryParameters.yaml#/components/parameters/ninoListCheckpoint'
 
-    400:
-      description: Bad Request
-      content:
-        application/json:
-          schema:
-            $ref: './schemas/error_response.yaml'
-          examples:
-            FORMAT_NINO:
-              $ref: './common/errors.yaml#/components/examples/formatNino'
+responses:
+  200:
+    description: Success
+    headers:
+      X-CorrelationId:
+        $ref: './common/headers.yaml#/components/parameters/correlationId'
+    content:
+      application/json:
+        schema:
+          $ref: './schemas/checkpoints/list_response.json'
+        examples:
+          example-response:
+            description: Example Response
+            value:
+              $ref: './examples/checkpoints/list_response.json'
 
-    403:
-      description: Forbidden
-      content:
-        application/json:
-          schema:
-            $ref: './schemas/error_response.yaml'
-          examples:
-            CLIENT_OR_AGENT_NOT_AUTHORISED:
-              $ref: './common/errors.yaml#/components/examples/clientOrAgentNotAuthorised'
+  400:
+    description: Bad Request
+    content:
+      application/json:
+        schema:
+          $ref: './schemas/error_response.yaml'
+        examples:
+          FORMAT_NINO:
+            $ref: './common/errors.yaml#/components/examples/formatNino'
+
+  403:
+    description: Forbidden
+    content:
+      application/json:
+        schema:
+          $ref: './schemas/error_response.yaml'
+        examples:
+          CLIENT_OR_AGENT_NOT_AUTHORISED:
+            $ref: './common/errors.yaml#/components/examples/clientOrAgentNotAuthorised'
