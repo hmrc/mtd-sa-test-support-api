@@ -4,6 +4,8 @@ get:
   security:
     - User-Restricted:
         - read:self-assessment
+  tags:
+    - Checkpoint for Vendor Data
 
 post:
   $ref: "./checkpoints_create.yaml"
@@ -11,3 +13,5 @@ post:
   security:
     - User-Restricted:
         - write:self-assessment
+  tags:
+    - Checkpoint for Vendor Data
