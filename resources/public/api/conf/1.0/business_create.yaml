@@ -15,7 +15,6 @@ post:
     - $ref: './common/pathParameters.yaml#/components/parameters/nino'
     - $ref: './common/headers.yaml#/components/parameters/acceptHeader'
     - $ref: './common/headers.yaml#/components/parameters/authorizationWriteScopeHeader'
-    - $ref: './common/headers.yaml#/components/parameters/correlationId'
 
   security:
     - User-Restricted:
