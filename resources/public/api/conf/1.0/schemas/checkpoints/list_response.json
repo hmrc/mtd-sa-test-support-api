@@ -18,7 +18,7 @@
           },
           "checkpointcreationTimestamp": {
             "type": "string",
-            "description": "The timestamp of when the checkpoint was created in ISO 8601 UTC format: `YYYY-MM-DDThh:mm:ss.SSSZ`.",
+            "description": "The timestamp of when the checkpoint was created in ISO 8601 UTC format.",
             "pattern": "^[YYYY-MM-DDThh:mm:ss.SSSZ.]$",
             "example": " 2019-07-13T07:51:43.112Z"
           }
