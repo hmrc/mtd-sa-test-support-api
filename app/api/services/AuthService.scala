@@ -35,7 +35,7 @@ class AuthService @Inject() (val connector: AuthConnector, val appConfig: AppCon
   }
 
   def authorised(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[AuthOutcome] = {
-    authFunction.authorised() {
+    authFunction.authorised(AuthProviders(AuthProvider.StandardApplication, AuthProvider.GovernmentGateway)) {
       Future.successful(Right(UserDetails("Authorised", None)))
     } recoverWith {
       case authException: AuthorisationException =>
