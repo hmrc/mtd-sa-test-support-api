@@ -1,9 +1,9 @@
 {
   "links": [
     {
-      "href": "/individuals/self-assessment-test-support/vendor-state/checkpoints/a1e8057e-fbbc-47a8-a8b4-78d9f015c253/restore",
-      "method": "POST",
-      "rel": "restore-checkpoint"
+      "href": "/individuals/self-assessment-test-support/vendor-state/checkpoints/b2e4050e-fbbc-47a8-d5b4-65d9f015c253",
+      "method": "DELETE",
+      "rel": "delete-checkpoint"
     }
   ]
 }

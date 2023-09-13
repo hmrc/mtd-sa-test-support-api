@@ -3,7 +3,7 @@
   "title": "List checkpoints",
   "type": "object",
   "properties": {
-    "Checkpoints": {
+    "checkpoints": {
       "type": "array",
       "description": "The array holding all the checkpoint details.",
 
@@ -12,20 +12,19 @@
         "properties": {
           "checkpointId": {
             "type": "string",
-            "description": "The unique identifier of the calculation.",
+            "description": "The unique identifier of the checkpoint.",
             "pattern": "^[A-Za-z0-9]{36}$",
             "example": "a1e8057e-fbbc-47a8-a8b4-78d9f015c253"
           },
-          "checkpointcreationTimestamp": {
+          "checkpointCreationTimestamp": {
             "type": "string",
-            "description": "The timestamp of when the checkpoint was created in ISO 8601 UTC format.",
-            "pattern": "^[YYYY-MM-DDThh:mm:ss.SSSZ.]$",
+            "description": "The timestamp of when the checkpoint was created in ISO 8601 UTC format: `YYYY-MM-DDThh:mm:ss.SSSZ`.",
             "example": " 2019-07-13T07:51:43.112Z"
           }
         },
         "required": [
           "checkpointId",
-          "checkpointcreationTimestamp"
+          "checkpointCreationTimestamp"
         ]
       }
     },
@@ -38,7 +37,7 @@
           "href": {
             "description": "The relative url of the endpoint.",
             "type": "string",
-            "example": "https://test-api.service.hmrc.gov.uk/individuals/self-assessment-test-support/vendor-state/checkpoints"
+            "example": "/individuals/self-assessment-test-support/vendor-state/checkpoints"
           },
           "method": {
             "description": "The HTTP method type for the endpoint.",

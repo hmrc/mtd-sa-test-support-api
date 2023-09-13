@@ -5,7 +5,7 @@
   "properties": {
     "checkpointId": {
       "type": "string",
-      "description": "The unique ID of the checkpoint.",
+      "description": "The unique identifier of the checkpoint.",
       "pattern": "^[A-Za-z0-9\\-]{36}$"
     },
     "links": {
@@ -17,7 +17,7 @@
           "href": {
             "description": "The relative url of the endpoint.",
             "type": "string",
-            "example": "https://test-api.service.hmrc.gov.uk/individuals/self-assessment-test-support/vendor-state/checkpoints"
+            "example": "/individuals/self-assessment-test-support/vendor-state/checkpoints"
           },
           "method": {
             "description": "The HTTP method type for the endpoint.",
