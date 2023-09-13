@@ -68,7 +68,7 @@ class AuthServiceSpec extends ServiceSpec with MockAppConfig {
       def authorised(): CallHandler[Future[Unit]] = {
         (mockAuthConnector
           .authorise(_: Predicate, _: Retrieval[Unit])(_: HeaderCarrier, _: ExecutionContext))
-          .expects(AuthProviders(AuthProvider.StandardApplication, AuthProvider.GovernmentGateway), emptyRetrieval, *, *)
+          .expects(AuthProviders(AuthProvider.StandardApplication), emptyRetrieval, *, *)
       }
 
     }
