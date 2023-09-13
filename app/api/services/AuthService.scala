@@ -19,7 +19,7 @@ package api.services
 import api.models.auth.UserDetails
 import api.models.errors.{ClientNotAuthenticatedError, InternalError, InvalidBearerTokenError}
 import api.models.outcomes.AuthOutcome
-import config.AppConfig
+import config.{AppConfig, FeatureSwitches}
 import uk.gov.hmrc.auth.core._
 import uk.gov.hmrc.http.HeaderCarrier
 import utils.Logging
@@ -34,23 +34,31 @@ class AuthService @Inject() (val connector: AuthConnector, val appConfig: AppCon
     override def authConnector: AuthConnector = connector
   }
 
+  private val successOutcome = Future.successful(Right(UserDetails("Authorised", None)))
+
+  private lazy val callAuth = {
+    val featureSwitches: FeatureSwitches = FeatureSwitches(appConfig.featureSwitches)
+
+    featureSwitches.isEnabled("callAuth")
+  }
+
   def authorised(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[AuthOutcome] = {
-    authFunction.authorised() {
-      Future.successful(Right(UserDetails("Authorised", None)))
-    } recoverWith {
-      case authException: AuthorisationException =>
-        logger.warn(s"Auth failed. Reason: ${authException.reason}")
+    if (callAuth)
+      authFunction.authorised()(successOutcome) recoverWith {
+        case authException: AuthorisationException =>
+          logger.warn(s"Auth failed. Reason: ${authException.reason}")
 
-        authException match {
-          case _: MissingBearerToken     => Future.successful(Left(InvalidBearerTokenError))
-          case _: InvalidBearerToken     => Future.successful(Left(InvalidBearerTokenError))
-          case _: AuthorisationException => Future.successful(Left(ClientNotAuthenticatedError))
-        }
+          authException match {
+            case _: MissingBearerToken     => Future.successful(Left(InvalidBearerTokenError))
+            case _: InvalidBearerToken     => Future.successful(Left(InvalidBearerTokenError))
+            case _: AuthorisationException => Future.successful(Left(ClientNotAuthenticatedError))
+          }
 
-      case error =>
-        logger.warn(s"[EnrolmentsAuthService][authorised] An unexpected error occurred: $error")
-        Future.successful(Left(InternalError))
-    }
+        case error =>
+          logger.warn(s"[EnrolmentsAuthService][authorised] An unexpected error occurred: $error")
+          Future.successful(Left(InternalError))
+      }
+    else successOutcome
   }
 
 }

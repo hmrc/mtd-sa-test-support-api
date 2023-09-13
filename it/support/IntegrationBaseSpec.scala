@@ -33,7 +33,8 @@ trait IntegrationBaseSpec extends UnitSpec with WireMockSupport with DownstreamS
     "microservice.services.stub.port" -> wireMockPort.toString,
     "microservice.services.auth.host" -> wireMockHost,
     "microservice.services.auth.port" -> wireMockPort.toString,
-    "auditing.consumer.baseUri.port"  -> wireMockPort.toString
+    "auditing.consumer.baseUri.port"  -> wireMockPort.toString,
+    "feature-switch.callAuth.enabled"  -> "true"
   )
 
   override implicit lazy val app: Application = new GuiceApplicationBuilder()
@@ -59,11 +60,11 @@ trait IntegrationBaseSpec extends UnitSpec with WireMockSupport with DownstreamS
     when(POST, "/write/audit").thenReturnNoContent()
   }
 
-  def downstreamErrorBody(code: String): JsValue = Json.parse(
-    s"""
+  def downstreamErrorBody(code: String): JsValue = Json.parse(s"""
        |{
        |   "code": "$code",
        |   "reason": "Downstream message"
        |}
     """.stripMargin)
+
 }
