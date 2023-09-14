@@ -14,7 +14,7 @@ delete:
     - $ref: './common/headers.yaml#/components/parameters/authorizationWriteScopeHeader'
 
   security:
-    - User-Restricted:
+    - Application-Restricted:
         - write:self-assessment
 
   responses:

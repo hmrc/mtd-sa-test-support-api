@@ -7,8 +7,8 @@ tags:
   - Checkpoint for Vendor Data
 
 security:
-  - User-Restricted:
-      - write:self-assessment
+  - Application-Restricted:
+      - read:self-assessment
 parameters:
   - $ref: './common/headers.yaml#/components/parameters/acceptHeader'
   - $ref: './common/headers.yaml#/components/parameters/authorizationWriteScopeHeader'

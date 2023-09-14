@@ -19,14 +19,13 @@ servers:
 
 components:
   securitySchemes:
-    User-Restricted:
+    Application-Restricted:
       type: oauth2
-      description: HMRC supports OAuth 2.0 for authenticating [User-restricted](https://developer.qa.tax.service.gov.uk/api-documentation/docs/authorisation/user-restricted-endpoints) API requests
+      description: |
+        HMRC supports OAuth 2.0 for authenticating [Application-Restricted](https://developer.service.hmrc.gov.uk/api-documentation/docs/authorisation/application-restricted-endpoints) API requests using an OAuth 2.0 Bearer Token.
       flows:
-        authorizationCode:
-          authorizationUrl: https://api.service.hmrc.gov.uk/oauth/authorize
+        clientCredentials:
           tokenUrl: https://api.service.hmrc.gov.uk/oauth/token
-          refreshUrl: https://api.service.hmrc.gov.uk/oauth/refresh
           scopes:
             write:self-assessment: Grant write access
             read:self-assessment: Grant read access
