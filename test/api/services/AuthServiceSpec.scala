@@ -18,7 +18,6 @@ package api.services
 
 import api.models.auth.UserDetails
 import api.models.errors.{ClientNotAuthenticatedError, InvalidBearerTokenError, MtdError}
-import com.typesafe.config.ConfigFactory
 import mocks.MockAppConfig
 import org.scalamock.handlers.CallHandler
 import play.api.Configuration
@@ -58,22 +57,16 @@ class AuthServiceSpec extends ServiceSpec with MockAppConfig {
     }
 
     "calling auth is bypassed" must {
-      "do nothing (but return a successful result anyway)" in new BaseTest {
-        lazy val featureSwitches: Configuration = Configuration(ConfigFactory.parseString("callAuth.enabled = false"))
-
+      "do nothing (but return a successful result anyway)" in new BaseTest(callAuthEnabled = false) {
         await(target.authorised) shouldBe Right(UserDetails("Authorised", None))
       }
     }
   }
 
-  class Test extends BaseTest {
-    lazy val featureSwitches: Configuration = Configuration.empty
-  }
+  class Test extends BaseTest(callAuthEnabled = true)
 
-  trait BaseTest {
-    val featureSwitches: Configuration
-
-    MockAppConfig.featureSwitches.returns(featureSwitches).anyNumberOfTimes()
+  abstract class BaseTest(callAuthEnabled: Boolean) {
+    MockAppConfig.featureSwitches.returns(Configuration("callAuth.enabled" -> callAuthEnabled)).anyNumberOfTimes()
 
     val mockAuthConnector: AuthConnector = mock[AuthConnector]
     lazy val target                      = new AuthService(mockAuthConnector, mockAppConfig)

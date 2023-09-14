@@ -55,4 +55,34 @@ class FeatureSwitchesSpec extends UnitSpec with ScalaCheckPropertyChecks {
       }
     }
   }
+
+  "a feature switch" should {
+    val switchName = "someSwitch"
+
+    "be true" when {
+      "absent from the config" in {
+        val configuration   = Configuration.empty
+        val featureSwitches = FeatureSwitches(configuration)
+
+        featureSwitches.isEnabled(switchName) shouldBe true
+      }
+
+      "explicitly enabled" in {
+        val configuration   = Configuration(s"$switchName.enabled" -> true)
+        val featureSwitches = FeatureSwitches(configuration)
+
+        featureSwitches.isEnabled(switchName) shouldBe true
+      }
+    }
+
+    "be false" when {
+      "explicitly disabled" in {
+        val configuration   = Configuration(s"$switchName.enabled" -> false)
+        val featureSwitches = FeatureSwitches(configuration)
+
+        featureSwitches.isEnabled(switchName) shouldBe false
+      }
+    }
+  }
+
 }
