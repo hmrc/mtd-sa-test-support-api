@@ -24,6 +24,33 @@ import java.time.LocalDate
 class TaxYearSpec extends UnitSpec with TableDrivenPropertyChecks {
 
   "a TaxYear" when {
+    "unsafe construction" when {
+      final case class TaxYearBad(endYear: Int) // Badly implemented foil with unsafe constructors.
+      object TaxYearBad {
+        def ending(endYear: Int): TaxYearBad = new TaxYearBad(endYear)
+      }
+      val _ = TaxYearBad.ending(2020)
+
+      "done through the constructor" must {
+        "not compile" in {
+          "new TaxYearBad(2020)" should compile
+          "new TaxYear(2020)" shouldNot compile
+        }
+      }
+      "done through the apply method" must {
+        "not compile" in {
+          "TaxYearBad(2020)" should compile
+          "TaxYear(2020)" shouldNot compile
+        }
+      }
+      "done through the copy method" must {
+        "not compile" in {
+          "TaxYearBad.ending(2020).copy(2021)" should compile
+          "TaxYear.ending(2020).copy(2021)" shouldNot compile
+        }
+      }
+    }
+
     "constructed from a date" must {
       "be the expected year, taking into account the UK tax year start date" in {
         forAll(

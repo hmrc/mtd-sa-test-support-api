@@ -21,7 +21,8 @@ import utils.DateTimeSupport
 import scala.math.Ordering.Implicits._
 import java.time.LocalDate
 
-final class TaxYear private (val endYear: Int) {
+/** Opaque wrapper around tax years, irrespective of their format/presentation. */
+sealed abstract case class TaxYear(endYear: Int) {
   def startYear: Int = endYear - 1
 
   def startDate: LocalDate = TaxYear.startInYear(startYear)
@@ -48,14 +49,6 @@ final class TaxYear private (val endYear: Int) {
 
   override def toString: String = s"TaxYear($startYear - $endYear)"
 
-  override def hashCode(): Int = endYear.hashCode
-
-  override def equals(that: Any): Boolean =
-    that match {
-      case ty: TaxYear => ty.endYear == endYear
-      case _           => false
-    }
-
 }
 
 object TaxYear extends DateTimeSupport {
@@ -69,7 +62,7 @@ object TaxYear extends DateTimeSupport {
   private val yyyyEndYearRegex  = """(\d{4})""".r
   private val mtdStartYearRegex = """(\d{4})-\d{2}""".r
 
-  def ending(year: Int): TaxYear = new TaxYear(year)
+  def ending(year: Int): TaxYear = new TaxYear(year) {}
 
   /*
    * Gets a TaxYear from YY-YY (e.g. 22-23) format
@@ -104,7 +97,7 @@ object TaxYear extends DateTimeSupport {
   def containing(date: LocalDate): TaxYear = {
     val endYear = if (date < startInYear(date.getYear)) date.getYear else date.getYear + 1
 
-    new TaxYear(endYear)
+    TaxYear.ending(endYear)
   }
 
   private def startInYear(year: Int): LocalDate =
