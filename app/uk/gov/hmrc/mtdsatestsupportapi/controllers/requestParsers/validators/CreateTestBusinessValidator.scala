@@ -19,6 +19,7 @@ package uk.gov.hmrc.mtdsatestsupportapi.controllers.requestParsers.validators
 import api.controllers.requestParsers.validators.Validator
 import api.controllers.requestParsers.validators.validations._
 import api.models.errors._
+import config.FeatureSwitches
 import play.api.libs.json.{JsDefined, JsLookupResult, JsValue}
 import uk.gov.hmrc.mtdsatestsupportapi.controllers.requestParsers.validators.validations._
 import uk.gov.hmrc.mtdsatestsupportapi.models.request.createTestBusiness.{Business, CreateTestBusinessRawData}
@@ -28,7 +29,7 @@ import javax.inject.{Inject, Singleton}
 import scala.math.Ordered.orderingToOrdered
 
 @Singleton
-class CreateTestBusinessValidator @Inject() (clock: Clock) extends Validator[CreateTestBusinessRawData] {
+class CreateTestBusinessValidator @Inject() (clock: Clock, featureSwitches: FeatureSwitches) extends Validator[CreateTestBusinessRawData] {
 
   override def validate(data: CreateTestBusinessRawData): List[MtdError] =
     (for {
@@ -101,15 +102,15 @@ class CreateTestBusinessValidator @Inject() (clock: Clock) extends Validator[Cre
     }
   }
 
-  private def validateAccountingPeriod(business: Business): Seq[MtdError] = {
-
-    (business.firstAccountingPeriodStartDate, business.firstAccountingPeriodEndDate) match {
-      case (Some(start), Some(end)) => TaxYearAlignmentDateRangeValidation.validate(start, end, RuleFirstAccountingDateRangeInvalid)
-      case (None, Some(_)) => Seq(MissingFirstAccountintPeriodStartDateError)
-      case (Some(_), None) => Seq(MissingFirstAccountintPeriodEndDateError)
-      case _ => Nil
-    }
-  }
+  private def validateAccountingPeriod(business: Business): Seq[MtdError] =
+    if (featureSwitches.isEnabled("release5"))
+      (business.firstAccountingPeriodStartDate, business.firstAccountingPeriodEndDate) match {
+        case (Some(start), Some(end)) => TaxYearAlignmentDateRangeValidation.validate(start, end, RuleFirstAccountingDateRangeInvalid)
+        case (None, Some(_))          => Seq(MissingFirstAccountintPeriodStartDateError)
+        case (Some(_), None)          => Seq(MissingFirstAccountintPeriodEndDateError)
+        case _                        => Nil
+      }
+    else Nil
 
   private def validateCommencementDate(date: LocalDate): List[MtdError] = {
     val today = LocalDate.now(clock)

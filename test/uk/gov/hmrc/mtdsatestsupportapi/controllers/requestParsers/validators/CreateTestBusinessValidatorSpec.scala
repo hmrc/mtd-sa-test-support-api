@@ -18,6 +18,7 @@ package uk.gov.hmrc.mtdsatestsupportapi.controllers.requestParsers.validators
 
 import api.models.errors._
 import api.utils.JsonErrorValidators
+import config.FeatureSwitches
 import play.api.libs.json.{JsString, Json}
 import support.UnitSpec
 import uk.gov.hmrc.mtdsatestsupportapi.fixtures.CreateTestBusinessFixtures
@@ -59,27 +60,32 @@ class CreateTestBusinessValidatorSpec extends UnitSpec with JsonErrorValidators 
       |}
       |""".stripMargin)
 
-  val validator = new CreateTestBusinessValidator(clock)
+  class Test {
+    private val featureSwitches = mock[FeatureSwitches]
+    (featureSwitches.isEnabled(_: String)).stubs("release5").returns(true)
+
+    val validator = new CreateTestBusinessValidator(clock, featureSwitches)
+  }
 
   "CreateTestBusinessValidator" must {
     "return no errors" when {
-      "a valid business is supplied" in {
+      "a valid business is supplied" in new Test {
         validator.validate(CreateTestBusinessRawData(validNino, body)) shouldBe Nil
       }
 
-      "a valid minimal business is supplied" in {
+      "a valid minimal business is supplied" in new Test {
         validator.validate(CreateTestBusinessRawData(validNino, MinimalCreateTestBusinessRequest.mtdBusinessJson)) shouldBe Nil
       }
     }
 
     "return FORMAT_NINO error" when {
-      "format of the nino is not valid" in {
+      "format of the nino is not valid" in new Test {
         validator.validate(CreateTestBusinessRawData("BAD NINO", body)) shouldBe Seq(NinoFormatError)
       }
     }
 
     "return FORMAT_TYPE_OF_BUSINESS error" when {
-      "format of the business type field is not valid" in {
+      "format of the business type field is not valid" in new Test {
         validator.validate(CreateTestBusinessRawData(validNino, body.update("/typeOfBusiness", JsString("badValue")))) shouldBe Seq(
           TypeOfBusinessFormatError)
       }
@@ -92,7 +98,7 @@ class CreateTestBusinessValidatorSpec extends UnitSpec with JsonErrorValidators 
       ).foreach(testWith)
 
       def testWith(path: String): Unit =
-        s"when the format of a tax year is not valid for $path" in {
+        s"when the format of a tax year is not valid for $path" in new Test {
           validator.validate(CreateTestBusinessRawData(validNino, body.update(path, JsString("badValue")))) shouldBe
             Seq(TaxYearFormatError.withExtraPath(path))
         }
@@ -105,7 +111,7 @@ class CreateTestBusinessValidatorSpec extends UnitSpec with JsonErrorValidators 
       ).foreach(testWith)
 
       def testWith(path: String): Unit =
-        s"when a tax year has an invalid range for $path" in {
+        s"when a tax year has an invalid range for $path" in new Test {
           validator.validate(CreateTestBusinessRawData(validNino, body.update(path, JsString("2020-22")))) shouldBe
             Seq(RuleTaxYearRangeInvalidError.withExtraPath(path))
         }
@@ -122,28 +128,28 @@ class CreateTestBusinessValidatorSpec extends UnitSpec with JsonErrorValidators 
       ).foreach(testWith)
 
       def testWith(path: String): Unit =
-        s"when the format of a date is not valid for $path" in {
+        s"when the format of a date is not valid for $path" in new Test {
           validator.validate(CreateTestBusinessRawData(validNino, body.update(path, JsString("badValue")))) shouldBe
             Seq(DateFormatError.withExtraPath(path))
         }
     }
 
-    "return RULE_FIRST_ACCOUNTING_DATE_RANGE_INVALID when the first accounting period date range is not a full tax year" in {
+    "return RULE_FIRST_ACCOUNTING_DATE_RANGE_INVALID when the first accounting period date range is not a full tax year" in new Test {
       validator.validate(CreateTestBusinessRawData(validNino, body.update("/firstAccountingPeriodStartDate", JsString("2023-01-01")))) shouldBe
         Seq(RuleFirstAccountingDateRangeInvalid)
     }
 
-    "return MISSING_FIRST_ACCOUNTING_PERIOD_START_DATE when the the first accounting period start date is missing" in {
+    "return MISSING_FIRST_ACCOUNTING_PERIOD_START_DATE when the the first accounting period start date is missing" in new Test {
       validator.validate(CreateTestBusinessRawData(validNino, body.removeProperty("/firstAccountingPeriodStartDate"))) shouldBe
         Seq(MissingFirstAccountintPeriodStartDateError)
     }
 
-    "return MISSING_FIRST_ACCOUNTING_PERIOD_END_DATE when the the first accounting period end date is missing" in {
+    "return MISSING_FIRST_ACCOUNTING_PERIOD_END_DATE when the the first accounting period end date is missing" in new Test {
       validator.validate(CreateTestBusinessRawData(validNino, body.removeProperty("/firstAccountingPeriodEndDate"))) shouldBe
         Seq(MissingFirstAccountintPeriodEndDateError)
     }
 
-    "return no errors when both the the first accounting period start and end dates are missing" in {
+    "return no errors when both the the first accounting period start and end dates are missing" in new Test {
       validator.validate(
         CreateTestBusinessRawData(
           validNino,
@@ -153,21 +159,21 @@ class CreateTestBusinessValidatorSpec extends UnitSpec with JsonErrorValidators 
     }
 
     "return FORMAT_ACCOUNTING_TYPE error" when {
-      "format of the accounting type field is not valid" in {
+      "format of the accounting type field is not valid" in new Test {
         validator.validate(CreateTestBusinessRawData(validNino, body.update("/accountingType", JsString("badValue")))) shouldBe
           Seq(AccountingTypeFormatError)
       }
     }
 
     "return RULE_COMMENCEMENT_DATE_NOT_SUPPORTED error" when {
-      "the commencement date is not in the past" in {
+      "the commencement date is not in the past" in new Test {
         validator.validate(CreateTestBusinessRawData(validNino, body.update("/commencementDate", Json.toJson(localDate(now))))) shouldBe
           Seq(RuleCommencementDateNotSupported)
       }
     }
 
     "return FORMAT_POSTCODE error" when {
-      "the format of the postcode field is not valid" in {
+      "the format of the postcode field is not valid" in new Test {
         validator.validate(CreateTestBusinessRawData(validNino, body.update("/businessAddressPostcode", JsString("badValue")))) shouldBe
           Seq(PostcodeFormatError)
       }
@@ -180,21 +186,21 @@ class CreateTestBusinessValidatorSpec extends UnitSpec with JsonErrorValidators 
       ).foreach(testWith)
 
       def testWith(path: String): Unit =
-        s"when the format of a latency indicator is not valid for $path" in {
+        s"when the format of a latency indicator is not valid for $path" in new Test {
           validator.validate(CreateTestBusinessRawData(validNino, body.update(path, JsString("badValue")))) shouldBe
             Seq(LatencyIndicatorFormatError.withExtraPath(path))
         }
     }
 
     "return MISSING_POSTCODE error" when {
-      "no post code is supplied when country code is GB" in {
+      "no post code is supplied when country code is GB" in new Test {
         validator.validate(CreateTestBusinessRawData(validNino, body.removeProperty("/businessAddressPostcode"))) shouldBe
           Seq(MissingPostcodeError)
       }
     }
 
     "return no errors" when {
-      "no post code is supplied when country code is not GB" in {
+      "no post code is supplied when country code is not GB" in new Test {
         validator.validate(
           CreateTestBusinessRawData(
             validNino,
@@ -205,7 +211,7 @@ class CreateTestBusinessValidatorSpec extends UnitSpec with JsonErrorValidators 
     }
 
     "return FORMAT_COUNTRY_CODE error" when {
-      "a the country code is not valid" in {
+      "a the country code is not valid" in new Test {
         validator.validate(CreateTestBusinessRawData(validNino, body.update("/businessAddressCountryCode", JsString("badValue")))) shouldBe
           Seq(CountryCodeFormatError)
       }
@@ -222,7 +228,7 @@ class CreateTestBusinessValidatorSpec extends UnitSpec with JsonErrorValidators 
       ).foreach(testWith)
 
       def testWith(path: String): Unit =
-        s"a mandatory $path field is missed" in {
+        s"a mandatory $path field is missed" in new Test {
           validator.validate(
             CreateTestBusinessRawData(
               nino = validNino,
