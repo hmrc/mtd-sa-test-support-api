@@ -38,8 +38,8 @@ class CreateTestBusinessValidatorSpec extends UnitSpec with JsonErrorValidators 
   private val body = Json.parse(s"""{
       |  "typeOfBusiness": "self-employment",
       |  "tradingName": "Abc Ltd",
-      |  "firstAccountingPeriodStartDate": "2002-02-02",
-      |  "firstAccountingPeriodEndDate": "2012-12-12",
+      |  "firstAccountingPeriodStartDate": "2022-04-06",
+      |  "firstAccountingPeriodEndDate": "2023-04-05",
       |  "latencyDetails": {
       |    "latencyEndDate": "2020-01-01",
       |    "taxYear1": "2020-21",
@@ -126,6 +126,30 @@ class CreateTestBusinessValidatorSpec extends UnitSpec with JsonErrorValidators 
           validator.validate(CreateTestBusinessRawData(validNino, body.update(path, JsString("badValue")))) shouldBe
             Seq(DateFormatError.withExtraPath(path))
         }
+    }
+
+    "return RULE_FIRST_ACCOUNTING_DATE_RANGE_INVALID when the first accounting period date range is not a full tax year" in {
+      validator.validate(CreateTestBusinessRawData(validNino, body.update("/firstAccountingPeriodStartDate", JsString("2023-01-01")))) shouldBe
+        Seq(RuleFirstAccountingDateRangeInvalid)
+    }
+
+    "return MISSING_FIRST_ACCOUNTING_PERIOD_START_DATE when the the first accounting period start date is missing" in {
+      validator.validate(CreateTestBusinessRawData(validNino, body.removeProperty("/firstAccountingPeriodStartDate"))) shouldBe
+        Seq(MissingFirstAccountintPeriodStartDateError)
+    }
+
+    "return MISSING_FIRST_ACCOUNTING_PERIOD_END_DATE when the the first accounting period end date is missing" in {
+      validator.validate(CreateTestBusinessRawData(validNino, body.removeProperty("/firstAccountingPeriodEndDate"))) shouldBe
+        Seq(MissingFirstAccountintPeriodEndDateError)
+    }
+
+    "return no errors when both the the first accounting period start and end dates are missing" in {
+      validator.validate(
+        CreateTestBusinessRawData(
+          validNino,
+          body
+            .removeProperty("/firstAccountingPeriodStartDate")
+            .removeProperty("/firstAccountingPeriodEndDate"))) shouldBe Nil
     }
 
     "return FORMAT_ACCOUNTING_TYPE error" when {

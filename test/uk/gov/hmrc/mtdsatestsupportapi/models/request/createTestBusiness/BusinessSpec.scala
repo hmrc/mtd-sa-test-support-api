@@ -22,13 +22,15 @@ import TypeOfBusiness._
 import api.models.domain.TaxYear
 import uk.gov.hmrc.mtdsatestsupportapi.fixtures.CreateTestBusinessFixtures
 
+import java.time.LocalDate
+
 class BusinessSpec extends UnitSpec with CreateTestBusinessFixtures {
 
   private def business(typeOfBusiness: TypeOfBusiness = `self-employment`) = Business(
     typeOfBusiness = typeOfBusiness,
     tradingName = Some("Abc Ltd"),
-    firstAccountingPeriodStartDate = Some("2002-02-02"),
-    firstAccountingPeriodEndDate = Some("2012-12-12"),
+    firstAccountingPeriodStartDate = Some(LocalDate.parse("2002-02-02")),
+    firstAccountingPeriodEndDate = Some(LocalDate.parse("2012-12-12")),
     latencyDetails = Some(
       LatencyDetails(
         latencyEndDate = "2020-01-01",
@@ -38,8 +40,8 @@ class BusinessSpec extends UnitSpec with CreateTestBusinessFixtures {
         latencyIndicator2 = LatencyIndicator.Q
       )),
     accountingType = Some(AccountingType.CASH),
-    commencementDate = Some("2000-01-01"),
-    cessationDate = Some("2030-01-01"),
+    commencementDate = Some(LocalDate.parse("2000-01-01")),
+    cessationDate = Some(LocalDate.parse("2030-01-01")),
     businessAddressLineOne = Some("L1"),
     businessAddressLineTwo = Some("L2"),
     businessAddressLineThree = Some("L3"),

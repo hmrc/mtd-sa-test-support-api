@@ -125,6 +125,26 @@ class CreateTestBusinessControllerISpec extends UnitSpec with IntegrationBaseSpe
         ),
         (
           "AA123456A",
+          MinimalCreateTestBusinessRequest.mtdBusinessJson ++ Json.obj("firstAccountingPeriodEndDate" -> LocalDate.now),
+          BAD_REQUEST,
+          MissingFirstAccountintPeriodStartDateError
+        ),
+        (
+          "AA123456A",
+          MinimalCreateTestBusinessRequest.mtdBusinessJson ++ Json.obj("firstAccountingPeriodStartDate" -> LocalDate.now),
+          BAD_REQUEST,
+          MissingFirstAccountintPeriodEndDateError
+        ),
+        (
+          "AA123456A",
+          MinimalCreateTestBusinessRequest.mtdBusinessJson ++ Json.obj(
+            "firstAccountingPeriodStartDate" -> LocalDate.now,
+            "firstAccountingPeriodEndDate"   -> LocalDate.now),
+          BAD_REQUEST,
+          RuleFirstAccountingDateRangeInvalid
+        ),
+        (
+          "AA123456A",
           MinimalCreateTestBusinessRequest.mtdBusinessJson ++ Json.obj("businessAddressPostcode" -> "not a valid postcode"),
           BAD_REQUEST,
           PostcodeFormatError

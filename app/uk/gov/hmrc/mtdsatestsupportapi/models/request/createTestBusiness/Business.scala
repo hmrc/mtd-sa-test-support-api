@@ -20,15 +20,17 @@ import play.api.libs.json._
 import play.api.libs.functional.syntax._
 import utils.enums.Enums
 
+import java.time.LocalDate
+
 case class Business(
     typeOfBusiness: TypeOfBusiness,
     tradingName: Option[String],
-    firstAccountingPeriodStartDate: Option[String],
-    firstAccountingPeriodEndDate: Option[String],
+    firstAccountingPeriodStartDate: Option[LocalDate],
+    firstAccountingPeriodEndDate: Option[LocalDate],
     latencyDetails: Option[LatencyDetails],
     accountingType: Option[AccountingType],
-    commencementDate: Option[String],
-    cessationDate: Option[String],
+    commencementDate: Option[LocalDate],
+    cessationDate: Option[LocalDate],
     businessAddressLineOne: Option[String],
     businessAddressLineTwo: Option[String],
     businessAddressLineThree: Option[String],
@@ -58,12 +60,12 @@ object Business {
   implicit val writes: OWrites[Business] = (
     __.write[TypeOfBusiness] and
       (__ \ "tradingName").writeNullable[String] and
-      (__ \ "firstAccountingPeriodStartDate").writeNullable[String] and
-      (__ \ "firstAccountingPeriodEndDate").writeNullable[String] and
+      (__ \ "firstAccountingPeriodStartDate").writeNullable[LocalDate] and
+      (__ \ "firstAccountingPeriodEndDate").writeNullable[LocalDate] and
       (__ \ "latencyDetails").writeNullable[LatencyDetails] and
       (__ \ "cashOrAccruals").writeNullable[AccountingType] and
-      (__ \ "tradingStartDate").writeNullable[String] and
-      (__ \ "cessationDate").writeNullable[String] and
+      (__ \ "tradingStartDate").writeNullable[LocalDate] and
+      (__ \ "cessationDate").writeNullable[LocalDate] and
       (__ \ "businessAddressDetails" \ "addressLine1").writeNullable[String] and
       (__ \ "businessAddressDetails" \ "addressLine2").writeNullable[String] and
       (__ \ "businessAddressDetails" \ "addressLine3").writeNullable[String] and

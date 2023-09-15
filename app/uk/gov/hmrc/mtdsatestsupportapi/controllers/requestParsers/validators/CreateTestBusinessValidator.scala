@@ -28,7 +28,7 @@ import javax.inject.{Inject, Singleton}
 import scala.math.Ordered.orderingToOrdered
 
 @Singleton
-class CreateTestBusinessValidator @Inject()(clock: Clock) extends Validator[CreateTestBusinessRawData] {
+class CreateTestBusinessValidator @Inject() (clock: Clock) extends Validator[CreateTestBusinessRawData] {
 
   override def validate(data: CreateTestBusinessRawData): List[MtdError] =
     (for {
@@ -88,6 +88,7 @@ class CreateTestBusinessValidator @Inject()(clock: Clock) extends Validator[Crea
 
     val errors =
       validateMissingPostcode(business) ++
+        validateAccountingPeriod(business) ++
         business.commencementDate.map(validateCommencementDate).getOrElse(Nil)
 
     errorsResult(errors)
@@ -100,9 +101,17 @@ class CreateTestBusinessValidator @Inject()(clock: Clock) extends Validator[Crea
     }
   }
 
-  private def validateCommencementDate(commencementDate: String): List[MtdError] = {
-    // Safe as we will already have checked that it parses successfully
-    val date  = LocalDate.parse(commencementDate, dateFormat)
+  private def validateAccountingPeriod(business: Business): Seq[MtdError] = {
+
+    (business.firstAccountingPeriodStartDate, business.firstAccountingPeriodEndDate) match {
+      case (Some(start), Some(end)) => TaxYearAlignmentDateRangeValidation.validate(start, end, RuleFirstAccountingDateRangeInvalid)
+      case (None, Some(_)) => Seq(MissingFirstAccountintPeriodStartDateError)
+      case (Some(_), None) => Seq(MissingFirstAccountintPeriodEndDateError)
+      case _ => Nil
+    }
+  }
+
+  private def validateCommencementDate(date: LocalDate): List[MtdError] = {
     val today = LocalDate.now(clock)
 
     if (date < today) Nil else List(RuleCommencementDateNotSupported)
