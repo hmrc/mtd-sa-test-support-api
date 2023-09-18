@@ -21,7 +21,8 @@ import utils.DateTimeSupport
 import scala.math.Ordering.Implicits._
 import java.time.LocalDate
 
-/** Opaque wrapper around tax years, irrespective of their format/presentation. */
+/** Opaque representation of a tax year A single-year representation, e.g. "2024" represents the tax year 2023-24
+  */
 sealed abstract case class TaxYear(endYear: Int) {
   def startYear: Int = endYear - 1
 
