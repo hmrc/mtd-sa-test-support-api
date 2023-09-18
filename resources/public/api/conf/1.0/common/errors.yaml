@@ -104,6 +104,24 @@ components:
         code: RULE_TAX_YEAR_RANGE_INVALID
         message: The tax year range is invalid
 
+    missingFirstAccountingPeriodStartDate:
+      description: When firstAccountingPeriodEndDate is provided then the firstAccountingPeriodStartDate should also be provided.
+      value:
+        code: MISSING_FIRST_ACCOUNTING_PERIOD_START_DATE
+        message: The firstAccountingPeriodStartDate is missing
+
+    missingFirstAccountingPeriodEndDate:
+      description: When firstAccountingPeriodStartDate is provided then the firstAccountingPeriodEndDate should also be provided.
+      value:
+        code: MISSING_FIRST_ACCOUNTING_PERIOD_END_DATE
+        message: The firstAccountingPeriodEndDate is missing
+
+    ruleFirstAccountingDateRangeInvalid:
+      description: The firstAccountingPeriodStartDate and firstAccountingPeriodEndDate must align with a single tax year.
+                   i.e. 6th April of one year to the 5th April of the following year.
+      value:
+        code: RULE_FIRST_ACCOUNTING_DATE_RANGE_INVALID
+        message: The first accounting period does not align with a tax year
 
     # 403
 
