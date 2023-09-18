@@ -26,10 +26,6 @@ class TaxYearSpec extends UnitSpec with TableDrivenPropertyChecks {
   "a TaxYear" when {
     "unsafe construction" when {
       final case class TaxYearBad(endYear: Int) // Badly implemented foil with unsafe constructors.
-      object TaxYearBad {
-        def ending(endYear: Int): TaxYearBad = new TaxYearBad(endYear)
-      }
-      val _ = TaxYearBad.ending(2020)
 
       "done through the constructor" must {
         "not compile" in {
@@ -45,8 +41,11 @@ class TaxYearSpec extends UnitSpec with TableDrivenPropertyChecks {
       }
       "done through the copy method" must {
         "not compile" in {
-          "TaxYearBad.ending(2020).copy(2021)" should compile
-          "TaxYear.ending(2020).copy(2021)" shouldNot compile
+          val taxYearBad = TaxYearBad(2020)
+          val taxYearGood: TaxYear = TaxYear.ending(2020)
+          val _ = (taxYearBad, taxYearGood)
+          "taxYearBad.copy(2021)" should compile
+          "taxYearGood.copy(2021)" shouldNot compile
         }
       }
     }
