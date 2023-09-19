@@ -30,3 +30,12 @@ object PostcodeFormatError         extends MtdError("FORMAT_POSTCODE", "The prov
 object LatencyIndicatorFormatError extends MtdError("FORMAT_LATENCY_INDICATOR", "The format of a latency indicator field is incorrect", BAD_REQUEST)
 object MissingPostcodeError        extends MtdError("MISSING_POSTCODE", "Missing postcode", BAD_REQUEST)
 object CountryCodeFormatError      extends MtdError("FORMAT_COUNTRY_CODE", "The provided country code is invalid", BAD_REQUEST)
+
+object RuleFirstAccountingDateRangeInvalid
+    extends MtdError("RULE_FIRST_ACCOUNTING_DATE_RANGE_INVALID", "The first accounting period does not align with a tax year", BAD_REQUEST)
+
+object MissingFirstAccountintPeriodStartDateError
+    extends MtdError("MISSING_FIRST_ACCOUNTING_PERIOD_START_DATE", "The firstAccountingPeriodStartDate is missing", BAD_REQUEST)
+
+object MissingFirstAccountintPeriodEndDateError
+    extends MtdError("MISSING_FIRST_ACCOUNTING_PERIOD_END_DATE", "The firstAccountingPeriodEndDate is missing", BAD_REQUEST)

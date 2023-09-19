@@ -16,118 +16,104 @@
 
 package api.models.domain
 
+import org.scalatest.prop.TableDrivenPropertyChecks
 import support.UnitSpec
 
-import java.time.{LocalDate, ZoneId}
+import java.time.LocalDate
 
-class TaxYearSpec extends UnitSpec {
+class TaxYearSpec extends UnitSpec with TableDrivenPropertyChecks {
 
-  "TaxYear" when {
-
-    val taxYear = TaxYear.fromMtd("2023-24")
-
-    "constructed from an MTD tax year" should {
-      "return the downstream tax value" in {
-        taxYear.asDownstream shouldBe "2024"
+  "a TaxYear" when {
+    "unsafe construction" when {
+      "done through the constructor" must {
+        "not compile" in {
+          "new TaxYear(2020)" shouldNot compile
+        }
       }
-
-      "return the MTD tax year" in {
-        taxYear.asMtd shouldBe "2023-24"
+      "done through the apply method" must {
+        "not compile" in {
+          "TaxYear(2020)" shouldNot compile
+        }
       }
-
-      "return the tax year in the 'Tax Year Specific API' format" in {
-        taxYear.asTysDownstream shouldBe "23-24"
+      "done through the copy method" must {
+        "not compile" in {
+          val taxYearGood: TaxYear = TaxYear.ending(2020)
+          val _ = taxYearGood
+          "taxYearGood.copy(2021)" shouldNot compile
+        }
       }
     }
 
-    "constructed from localDate" should {
+    "constructed from a date" must {
       "be the expected year, taking into account the UK tax year start date" in {
-        def test(datesAndExpectedYears: Seq[(LocalDate, Int)]): Unit = {
-          datesAndExpectedYears.foreach { case (date, expectedYear) =>
-            withClue(s"Given $date:") {
-              val result = TaxYear.fromLocalDate(date)
-              result.year shouldBe expectedYear
-            }
+        forAll(
+          Table(
+            ("date", "end year"),
+            ("2025-01-01", 2025),
+            ("2025-04-01", 2025),
+            ("2025-04-06", 2026),
+            ("2023-06-01", 2024),
+            ("2026-01-01", 2026),
+            ("2021-12-31", 2022))) { case (date, expectedYear) =>
+          withClue(s"Given $date:") {
+            val result = TaxYear.containing(LocalDate.parse(date))
+            result.endYear shouldBe expectedYear
           }
         }
-
-        val input = List(
-          LocalDate.of(2025, 1, 1)   -> 2025,
-          LocalDate.of(2025, 4, 1)   -> 2025,
-          LocalDate.of(2025, 4, 6)   -> 2026,
-          LocalDate.of(2023, 6, 1)   -> 2024,
-          LocalDate.of(2026, 1, 1)   -> 2026,
-          LocalDate.of(2021, 12, 31) -> 2022
-        )
-
-        test(input)
       }
     }
 
-    "constructed from an ISO date" should {
-      "be the expected year, taking into account the UK tax year start date" in {
-
-        def test(datesAndExpectedYears: Seq[(String, Int)]): Unit = {
-          datesAndExpectedYears.foreach { case (date, expectedYear) =>
-            withClue(s"Given $date:") {
-              val result = TaxYear.fromIso(date)
-              result.year shouldBe expectedYear
-            }
-          }
-        }
-
-        val input = List(
-          "2025-01-01" -> 2025,
-          "2025-04-01" -> 2025,
-          "2025-04-06" -> 2026,
-          "2023-06-01" -> 2024,
-          "2026-01-01" -> 2026,
-          "2021-12-31" -> 2022
-        )
-
-        test(input)
+    "constructed from TYS format" must {
+      "work" in {
+        TaxYear.fromTys("23-24") shouldBe TaxYear.ending(2024)
       }
     }
 
-    "constructed from a downstream tax year" should {
-      "return the downstream tax value" in {
-        TaxYear.fromDownstream("2019").asDownstream shouldBe "2019"
-      }
-
-      "allow the MTD tax year to be extracted" in {
-        TaxYear.fromDownstream("2019").asMtd shouldBe "2018-19"
+    "constructed from YYYY format" must {
+      "work" in {
+        TaxYear.fromDownstream("2024") shouldBe TaxYear.ending(2024)
       }
     }
 
-    "TaxYear.now()" should {
-      "return the current tax year" in {
-        val now  = LocalDate.now(ZoneId.of("UTC"))
-        val year = now.getYear
-
-        val expectedYear = {
-          val taxYearStartDate = LocalDate.of(year, 4, 6)
-          if (now.isBefore(taxYearStartDate)) year else year + 1
-        }
-
-        val result = TaxYear.now()
-        result.year shouldBe expectedYear
+    "constructed from MTD format" must {
+      "work" in {
+        TaxYear.fromMtd("2023-24") shouldBe TaxYear.ending(2024)
       }
     }
 
-    "constructed directly" should {
-      "not compile" in {
-        """new TaxYear("2021-22")""" shouldNot compile
+    "getting in TYS format" must {
+      "work" in {
+        TaxYear.ending(2024).asTys shouldBe "23-24"
       }
     }
 
-    "compared with equals" should {
-      "have equality based on content" in {
-        val taxYear = TaxYear.fromMtd("2021-22")
-        taxYear shouldBe TaxYear.fromDownstream("2022")
-        taxYear should not be TaxYear.fromDownstream("2021")
+    "getting in YYYY format" must {
+      "work" in {
+        TaxYear.ending(2024).asDownstream shouldBe "2024"
+      }
+    }
+
+    "getting in MTD format" must {
+      "work" in {
+        TaxYear.ending(2024).asMtd shouldBe "2023-24"
+      }
+    }
+
+    "getting the start and end" must {
+      "get April 5th and April 6th when ending on non-leap years" in {
+        val taxYear = TaxYear.ending(2023)
+
+        taxYear.startDate shouldBe LocalDate.parse("2022-04-06")
+        taxYear.endDate shouldBe LocalDate.parse("2023-04-05")
+      }
+
+      "get April 5th and April 6th when ending on leap years" in {
+        val taxYear = TaxYear.ending(2020)
+
+        taxYear.startDate shouldBe LocalDate.parse("2019-04-06")
+        taxYear.endDate shouldBe LocalDate.parse("2020-04-05")
       }
     }
   }
 
 }
-
