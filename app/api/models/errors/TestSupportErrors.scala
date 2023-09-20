@@ -32,10 +32,10 @@ object MissingPostcodeError        extends MtdError("MISSING_POSTCODE", "Missing
 object CountryCodeFormatError      extends MtdError("FORMAT_COUNTRY_CODE", "The provided country code is invalid", BAD_REQUEST)
 
 object RuleFirstAccountingDateRangeInvalid
-    extends MtdError("RULE_FIRST_ACCOUNTING_DATE_RANGE_INVALID", "The first accounting period does not align with a tax year", BAD_REQUEST)
+    extends MtdError("RULE_FIRST_ACCOUNTING_DATE_RANGE_INVALID", "The first accounting period is not a single complete tax year", BAD_REQUEST)
 
 object MissingFirstAccountintPeriodStartDateError
-    extends MtdError("MISSING_FIRST_ACCOUNTING_PERIOD_START_DATE", "The firstAccountingPeriodStartDate is missing", BAD_REQUEST)
+    extends MtdError("MISSING_FIRST_ACCOUNTING_PERIOD_START_DATE", "Missing firstAccountingPeriodStartDate value", BAD_REQUEST)
 
 object MissingFirstAccountintPeriodEndDateError
-    extends MtdError("MISSING_FIRST_ACCOUNTING_PERIOD_END_DATE", "The firstAccountingPeriodEndDate is missing", BAD_REQUEST)
+    extends MtdError("MISSING_FIRST_ACCOUNTING_PERIOD_END_DATE", "Missing firstAccountingPeriodEndDate value", BAD_REQUEST)
