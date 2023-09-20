@@ -108,7 +108,7 @@ components:
       description: When firstAccountingPeriodEndDate is provided, firstAccountingPeriodStartDate must also be provided.
       value:
         code: MISSING_FIRST_ACCOUNTING_PERIOD_START_DATE
-        message: Missing firstAccountingPeriodEndDate value
+        message: Missing firstAccountingPeriodStartDate value
 
     missingFirstAccountingPeriodEndDate:
       description: When firstAccountingPeriodStartDate is provided,  firstAccountingPeriodEndDate must also be provided.
