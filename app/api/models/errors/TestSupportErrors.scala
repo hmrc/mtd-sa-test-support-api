@@ -35,7 +35,7 @@ object RuleFirstAccountingDateRangeInvalid
     extends MtdError("RULE_FIRST_ACCOUNTING_DATE_RANGE_INVALID", "The first accounting period is not a single complete tax year", BAD_REQUEST)
 
 object MissingFirstAccountintPeriodStartDateError
-    extends MtdError("MISSING_FIRST_ACCOUNTING_PERIOD_START_DATE", "Missing firstAccountingPeriodEndDate value", BAD_REQUEST)
+    extends MtdError("MISSING_FIRST_ACCOUNTING_PERIOD_START_DATE", "Missing firstAccountingPeriodStartDate value", BAD_REQUEST)
 
 object MissingFirstAccountintPeriodEndDateError
     extends MtdError("MISSING_FIRST_ACCOUNTING_PERIOD_END_DATE", "Missing firstAccountingPeriodEndDate value", BAD_REQUEST)
