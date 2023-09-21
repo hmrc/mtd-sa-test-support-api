@@ -22,22 +22,32 @@ import utils.enums.Enums
 
 import java.time.LocalDate
 
-case class Business(
-    typeOfBusiness: TypeOfBusiness,
-    tradingName: Option[String],
-    firstAccountingPeriodStartDate: Option[LocalDate],
-    firstAccountingPeriodEndDate: Option[LocalDate],
-    latencyDetails: Option[LatencyDetails],
-    accountingType: Option[AccountingType],
-    commencementDate: Option[LocalDate],
-    cessationDate: Option[LocalDate],
-    businessAddressLineOne: Option[String],
-    businessAddressLineTwo: Option[String],
-    businessAddressLineThree: Option[String],
-    businessAddressLineFour: Option[String],
-    businessAddressPostcode: Option[String],
-    businessAddressCountryCode: Option[String]
-)
+case class Business(typeOfBusiness: TypeOfBusiness,
+                    tradingName: Option[String],
+                    firstAccountingPeriodStartDate: Option[LocalDate],
+                    firstAccountingPeriodEndDate: Option[LocalDate],
+                    latencyDetails: Option[LatencyDetails],
+                    accountingType: Option[AccountingType],
+                    commencementDate: Option[LocalDate],
+                    cessationDate: Option[LocalDate],
+                    businessAddressLineOne: Option[String],
+                    businessAddressLineTwo: Option[String],
+                    businessAddressLineThree: Option[String],
+                    businessAddressLineFour: Option[String],
+                    businessAddressPostcode: Option[String],
+                    businessAddressCountryCode: Option[String]
+                   ) {
+
+  def hasAnyBusinessAddressDetails: Boolean = {
+    businessAddressLineOne.isDefined ||
+    businessAddressLineTwo.isDefined ||
+    businessAddressLineThree.isDefined ||
+    businessAddressLineFour.isDefined ||
+    businessAddressPostcode.isDefined ||
+    businessAddressCountryCode.isDefined
+  }
+
+}
 
 object Business {
   implicit val reads: Reads[Business] = Json.reads
@@ -48,7 +58,7 @@ object Business {
     val defaultWrites: Writes[TypeOfBusiness] = Enums.writes[TypeOfBusiness]
 
     (typeOfBusiness: TypeOfBusiness) => {
-      val propertyIncomeJson = Json.obj("propertyIncome" -> isProperty(typeOfBusiness))
+      val propertyIncomeJson = Json.obj("propertyIncome" -> typeOfBusiness.isProperty)
 
       typeOfBusiness match {
         case `uk-property` | `foreign-property` => propertyIncomeJson + ("incomeSourceType" -> Json.toJson(typeOfBusiness)(defaultWrites))

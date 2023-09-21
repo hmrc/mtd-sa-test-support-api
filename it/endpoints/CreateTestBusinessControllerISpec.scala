@@ -18,6 +18,7 @@ package endpoints
 
 import api.models.errors._
 import com.github.tomakehurst.wiremock.stubbing.StubMapping
+import org.scalactic.source.Position
 import play.api.http.HeaderNames.ACCEPT
 import play.api.http.Status.{BAD_REQUEST, CREATED}
 import play.api.libs.json.{JsObject, Json}
@@ -79,17 +80,26 @@ class CreateTestBusinessControllerISpec extends UnitSpec with IntegrationBaseSpe
 
   "Calling the create Business endpoint" should {
     "return a 201 status code" when {
-      "a valid request is made" in new Test {
+      "a valid request is made with a self-employment business" in new Test {
+        val response: WSResponse = await(request().post(MinimalCreateTestBusinessRequest.SelfEmployment.mtdBusinessJson))
 
-        val response: WSResponse = await(request().post(MinimalCreateTestBusinessRequest.mtdBusinessJson))
+        response.status shouldBe CREATED
+        response.header("X-CorrelationId") should not be empty
+        response.json shouldBe Json.parse(expectedResponseBody)
+      }
+
+      "a valid request is made with a uk-property business" in new Test {
+        val response: WSResponse = await(request().post(MinimalCreateTestBusinessRequest.UkProperty.mtdBusinessJson))
 
         response.status shouldBe CREATED
         response.header("X-CorrelationId") should not be empty
         response.json shouldBe Json.parse(expectedResponseBody)
       }
     }
+
     "return validation error according to spec" when {
-      def validationErrorTest(requestNino: String, requestBody: JsObject, expectedStatus: Int, expectedBody: MtdError): Unit = {
+      def validationErrorTest(requestNino: String, requestBody: JsObject, expectedStatus: Int, expectedBody: MtdError)
+                             (implicit pos: Position): Unit = {
         s"validation fails with ${expectedBody.code} error" in new Test {
           override val nino: String = requestNino
 
@@ -102,58 +112,66 @@ class CreateTestBusinessControllerISpec extends UnitSpec with IntegrationBaseSpe
         }
       }
 
-      val input = Seq(
-        ("BAD_NINO", MinimalCreateTestBusinessRequest.mtdBusinessJson, BAD_REQUEST, NinoFormatError),
-        ("AA123456A", Json.obj("typeOfBusiness" -> "invalid business type"), BAD_REQUEST, TypeOfBusinessFormatError),
-        (
-          "AA123456A",
-          MinimalCreateTestBusinessRequest.mtdBusinessJson ++ Json.obj("firstAccountingPeriodStartDate" -> "not a valid date"),
-          BAD_REQUEST,
-          DateFormatError.withExtraPath("/firstAccountingPeriodStartDate")
-        ),
-        (
-          "AA123456A",
-          MinimalCreateTestBusinessRequest.mtdBusinessJson ++ Json.obj("accountingType" -> "not a valid accountingType"),
-          BAD_REQUEST,
-          AccountingTypeFormatError
-        ),
-        (
-          "AA123456A",
-          MinimalCreateTestBusinessRequest.mtdBusinessJson ++ Json.obj("commencementDate" -> LocalDate.now.plusYears(1)),
-          BAD_REQUEST,
-          RuleCommencementDateNotSupported
-        ),
-        (
-          "AA123456A",
-          MinimalCreateTestBusinessRequest.mtdBusinessJson ++ Json.obj("firstAccountingPeriodEndDate" -> LocalDate.now),
-          BAD_REQUEST,
-          MissingFirstAccountintPeriodStartDateError
-        ),
-        (
-          "AA123456A",
-          MinimalCreateTestBusinessRequest.mtdBusinessJson ++ Json.obj("firstAccountingPeriodStartDate" -> LocalDate.now),
-          BAD_REQUEST,
-          MissingFirstAccountintPeriodEndDateError
-        ),
-        (
-          "AA123456A",
-          MinimalCreateTestBusinessRequest.mtdBusinessJson ++ Json.obj(
-            "firstAccountingPeriodStartDate" -> LocalDate.now,
-            "firstAccountingPeriodEndDate"   -> LocalDate.now),
-          BAD_REQUEST,
-          RuleFirstAccountingDateRangeInvalid
-        ),
-        (
-          "AA123456A",
-          MinimalCreateTestBusinessRequest.mtdBusinessJson ++ Json.obj("businessAddressPostcode" -> "not a valid postcode"),
-          BAD_REQUEST,
-          PostcodeFormatError
-        ),
-        (
-          "AA123456A",
-          MinimalCreateTestBusinessRequest.mtdBusinessJson ++ Json.obj(
-            "latencyDetails" -> Json
-              .parse("""
+      validationErrorTest("BAD_NINO", MinimalCreateTestBusinessRequest.SelfEmployment.mtdBusinessJson, BAD_REQUEST, NinoFormatError)
+
+      validationErrorTest("AA123456A", Json.obj("typeOfBusiness" -> "invalid business type"), BAD_REQUEST, TypeOfBusinessFormatError)
+
+      validationErrorTest(
+        "AA123456A",
+        MinimalCreateTestBusinessRequest.SelfEmployment.mtdBusinessJson ++ Json.obj("firstAccountingPeriodStartDate" -> "not a valid date"),
+        BAD_REQUEST,
+        DateFormatError.withExtraPath("/firstAccountingPeriodStartDate")
+      )
+
+      validationErrorTest(
+        "AA123456A",
+        MinimalCreateTestBusinessRequest.SelfEmployment.mtdBusinessJson ++ Json.obj("accountingType" -> "not a valid accountingType"),
+        BAD_REQUEST,
+        AccountingTypeFormatError
+      )
+
+      validationErrorTest(
+        "AA123456A",
+        MinimalCreateTestBusinessRequest.SelfEmployment.mtdBusinessJson ++ Json.obj("commencementDate" -> LocalDate.now.plusYears(1)),
+        BAD_REQUEST,
+        RuleCommencementDateNotSupported
+      )
+
+      validationErrorTest(
+        "AA123456A",
+        MinimalCreateTestBusinessRequest.SelfEmployment.mtdBusinessJson ++ Json.obj("firstAccountingPeriodEndDate" -> LocalDate.now),
+        BAD_REQUEST,
+        MissingFirstAccountintPeriodStartDateError
+      )
+
+      validationErrorTest(
+        "AA123456A",
+        MinimalCreateTestBusinessRequest.SelfEmployment.mtdBusinessJson ++ Json.obj("firstAccountingPeriodStartDate" -> LocalDate.now),
+        BAD_REQUEST,
+        MissingFirstAccountintPeriodEndDateError
+      )
+
+      validationErrorTest(
+        "AA123456A",
+        MinimalCreateTestBusinessRequest.SelfEmployment.mtdBusinessJson ++ Json.obj(
+          "firstAccountingPeriodStartDate" -> LocalDate.now,
+          "firstAccountingPeriodEndDate"   -> LocalDate.now),
+        BAD_REQUEST,
+        RuleFirstAccountingDateRangeInvalid
+      )
+
+      validationErrorTest(
+        "AA123456A",
+        MinimalCreateTestBusinessRequest.SelfEmployment.mtdBusinessJson ++ Json.obj("businessAddressPostcode" -> "not a valid postcode"),
+        BAD_REQUEST,
+        PostcodeFormatError
+      )
+
+      validationErrorTest(
+        "AA123456A",
+        MinimalCreateTestBusinessRequest.SelfEmployment.mtdBusinessJson ++ Json.obj(
+          "latencyDetails" -> Json
+            .parse("""
                      |{
                      |  "latencyEndDate": "2024-12-12",
                      |  "taxYear1": "2022-23",
@@ -162,67 +180,97 @@ class CreateTestBusinessControllerISpec extends UnitSpec with IntegrationBaseSpe
                      |  "latencyIndicator2":"Q"
                      |}
                      |""".stripMargin)),
-          BAD_REQUEST,
-          LatencyIndicatorFormatError.withExtraPath("/latencyDetails/latencyIndicator1")
-        ),
-        (
-          "AA123456A",
-          MinimalCreateTestBusinessRequest.mtdBusinessJson ++ Json.obj("businessAddressCountryCode" -> "GB"),
-          BAD_REQUEST,
-          MissingPostcodeError
-        ),
-        (
-          "AA123456A",
-          MinimalCreateTestBusinessRequest.mtdBusinessJson ++ Json.obj("businessAddressCountryCode" -> "not a valid code"),
-          BAD_REQUEST,
-          CountryCodeFormatError
-        ),
-        (
-          "AA123456A",
-          JsObject.empty,
-          BAD_REQUEST,
-          RuleIncorrectOrEmptyBodyError
-        ),
-        (
-          "AA123456A",
-          MinimalCreateTestBusinessRequest.mtdBusinessJson ++ Json.obj(
-            "latencyDetails" -> Json
-              .parse("""
-                       |{
-                       |  "latencyEndDate": "2024-12-12",
-                       |  "taxYear1": "2-3",
-                       |  "latencyIndicator1":"Q",
-                       |  "taxYear2": "2023-24",
-                       |  "latencyIndicator2":"Q"
-                       |}
-                       |""".stripMargin)),
-          BAD_REQUEST,
-          TaxYearFormatError.withExtraPath("/latencyDetails/taxYear1")
-        ),
-        (
-          "AA123456A",
-          MinimalCreateTestBusinessRequest.mtdBusinessJson ++ Json.obj(
-            "latencyDetails" -> Json
-              .parse("""
-                       |{
-                       |  "latencyEndDate": "2024-12-12",
-                       |  "taxYear1": "2021-23",
-                       |  "latencyIndicator1":"Q",
-                       |  "taxYear2": "2023-24",
-                       |  "latencyIndicator2":"Q"
-                       |}
-                       |""".stripMargin)),
-          BAD_REQUEST,
-          RuleTaxYearRangeInvalidError.withExtraPath("/latencyDetails/taxYear1")
-        )
+        BAD_REQUEST,
+        LatencyIndicatorFormatError.withExtraPath("/latencyDetails/latencyIndicator1")
       )
 
-      input.foreach(args => (validationErrorTest _).tupled(args))
+      validationErrorTest(
+        "AA123456A",
+        MinimalCreateTestBusinessRequest.SelfEmployment.mtdBusinessJson ++ Json.obj("businessAddressCountryCode" -> "GB") - "businessAddressPostcode",
+        BAD_REQUEST,
+        MissingPostcodeError
+      )
 
+      validationErrorTest(
+        "AA123456A",
+        MinimalCreateTestBusinessRequest.SelfEmployment.mtdBusinessJson ++ Json.obj("businessAddressCountryCode" -> "not a valid code"),
+        BAD_REQUEST,
+        CountryCodeFormatError
+      )
+
+      validationErrorTest(
+        "AA123456A",
+        MinimalCreateTestBusinessRequest.SelfEmployment.mtdBusinessJson - "tradingName",
+        BAD_REQUEST,
+        RuleMissingTradingName
+      )
+
+      validationErrorTest(
+        "AA123456A",
+        MinimalCreateTestBusinessRequest.UkProperty.mtdBusinessJson ++ Json.obj("tradingName" -> "Trading Name"),
+        BAD_REQUEST,
+        RuleUnexpectedTradingName
+      )
+
+      validationErrorTest(
+        "AA123456A",
+        MinimalCreateTestBusinessRequest.SelfEmployment.mtdBusinessJson - "businessAddressLineOne",
+        BAD_REQUEST,
+        RuleMissingBusinessAddress
+      )
+
+      validationErrorTest(
+        "AA123456A",
+        MinimalCreateTestBusinessRequest.UkProperty.mtdBusinessJson ++ Json.obj("businessAddressLineOne" -> "Property Address Line 1"),
+        BAD_REQUEST,
+        RuleUnexpectedBusinessAddress
+      )
+
+      validationErrorTest(
+        "AA123456A",
+        JsObject.empty,
+        BAD_REQUEST,
+        RuleIncorrectOrEmptyBodyError
+      )
+
+      validationErrorTest(
+        "AA123456A",
+        MinimalCreateTestBusinessRequest.SelfEmployment.mtdBusinessJson ++ Json.obj(
+          "latencyDetails" -> Json
+            .parse("""
+                     |{
+                     |  "latencyEndDate": "2024-12-12",
+                     |  "taxYear1": "2-3",
+                     |  "latencyIndicator1":"Q",
+                     |  "taxYear2": "2023-24",
+                     |  "latencyIndicator2":"Q"
+                     |}
+                     |""".stripMargin)),
+        BAD_REQUEST,
+        TaxYearFormatError.withExtraPath("/latencyDetails/taxYear1")
+      )
+
+      validationErrorTest(
+        "AA123456A",
+        MinimalCreateTestBusinessRequest.SelfEmployment.mtdBusinessJson ++ Json.obj(
+          "latencyDetails" -> Json
+            .parse("""
+                     |{
+                     |  "latencyEndDate": "2024-12-12",
+                     |  "taxYear1": "2021-23",
+                     |  "latencyIndicator1":"Q",
+                     |  "taxYear2": "2023-24",
+                     |  "latencyIndicator2":"Q"
+                     |}
+                     |""".stripMargin)),
+        BAD_REQUEST,
+        RuleTaxYearRangeInvalidError.withExtraPath("/latencyDetails/taxYear1")
+      )
     }
 
     "return downstream errors" when {
-      def serviceError(stubErrorStatus: Int, stubErrorCode: String, expectedStatus: Int, expectedError: MtdError): Unit = {
+      def serviceErrorTest(stubErrorStatus: Int, stubErrorCode: String, expectedStatus: Int, expectedError: MtdError)
+                          (implicit pos: Position): Unit = {
         s"stub returns a $stubErrorCode error and status $stubErrorStatus" in new Test {
 
           override def setupStubs(): StubMapping = {
@@ -230,17 +278,14 @@ class CreateTestBusinessControllerISpec extends UnitSpec with IntegrationBaseSpe
             DownstreamStub.onError(POST, downstreamUri, stubErrorStatus, downstreamErrorBody(stubErrorCode))
           }
 
-          val response: WSResponse = await(request().post(MinimalCreateTestBusinessRequest.mtdBusinessJson))
+          val response: WSResponse = await(request().post(MinimalCreateTestBusinessRequest.SelfEmployment.mtdBusinessJson))
           response.status shouldBe expectedStatus
           response.json shouldBe Json.toJson(expectedError)
         }
       }
 
-      val stubErrors = Seq(
-        (BAD_REQUEST, "DUPLICATE_PROPERTY_BUSINESS", BAD_REQUEST, RulePropertyBusinessAddedError)
-      )
+      serviceErrorTest(BAD_REQUEST, "DUPLICATE_PROPERTY_BUSINESS", BAD_REQUEST, RulePropertyBusinessAddedError)
 
-      stubErrors.foreach(elem => (serviceError _).tupled(elem))
     }
 
   }

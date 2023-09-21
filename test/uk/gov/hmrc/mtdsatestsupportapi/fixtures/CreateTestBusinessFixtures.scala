@@ -25,35 +25,85 @@ trait CreateTestBusinessFixtures {
 
   object MinimalCreateTestBusinessRequest {
 
-    val mtdBusinessJson: JsObject = Json
-      .parse("""{
-        |  "typeOfBusiness": "self-employment"
-        |}
-        |""".stripMargin)
-      .as[JsObject]
+    object SelfEmployment {
+      val mtdBusinessJson: JsObject = Json
+        .parse(
+          """{
+            |  "typeOfBusiness": "self-employment",
+            |  "tradingName": "Self Employed Name",
+            |  "businessAddressLineOne": "Line 1 of address",
+            |  "businessAddressCountryCode": "FR"
+            |}
+            |""".stripMargin
+        )
+        .as[JsObject]
 
-    val business: Business = Business(
-      typeOfBusiness = TypeOfBusiness.`self-employment`,
-      tradingName = None,
-      firstAccountingPeriodStartDate = None,
-      firstAccountingPeriodEndDate = None,
-      latencyDetails = None,
-      accountingType = None,
-      commencementDate = None,
-      cessationDate = None,
-      businessAddressLineOne = None,
-      businessAddressLineTwo = None,
-      businessAddressLineThree = None,
-      businessAddressLineFour = None,
-      businessAddressPostcode = None,
-      businessAddressCountryCode = None
-    )
+      val business: Business = Business(
+        typeOfBusiness = TypeOfBusiness.`self-employment`,
+        tradingName = Some("Self Employed Name"),
+        firstAccountingPeriodStartDate = None,
+        firstAccountingPeriodEndDate = None,
+        latencyDetails = None,
+        accountingType = None,
+        commencementDate = None,
+        cessationDate = None,
+        businessAddressLineOne = Some("Line 1 of address"),
+        businessAddressLineTwo = None,
+        businessAddressLineThree = None,
+        businessAddressLineFour = None,
+        businessAddressPostcode = None,
+        businessAddressCountryCode = Some("FR")
+      )
 
-    val downstreamBusinessJson: JsObject = Json
-      .parse("""{
-           |  "propertyIncome": false
-           |}""".stripMargin)
-      .as[JsObject]
+      val downstreamBusinessJson: JsObject = Json
+        .parse(
+          """{
+            |  "propertyIncome": false,
+            |  "tradingName": "Self Employed Name",
+            |  "businessAddressDetails": {
+            |    "countryCode": "FR",
+            |    "addressLine1": "Line 1 of address"
+            |  }
+            |}""".stripMargin
+        )
+        .as[JsObject]
+    }
+
+    object UkProperty {
+      val mtdBusinessJson: JsObject = Json
+        .parse(
+          """{
+            |  "typeOfBusiness": "uk-property"
+            |}
+            |""".stripMargin
+        )
+        .as[JsObject]
+
+      val business: Business = Business(
+        typeOfBusiness = TypeOfBusiness.`uk-property`,
+        tradingName = None,
+        firstAccountingPeriodStartDate = None,
+        firstAccountingPeriodEndDate = None,
+        latencyDetails = None,
+        accountingType = None,
+        commencementDate = None,
+        cessationDate = None,
+        businessAddressLineOne = None,
+        businessAddressLineTwo = None,
+        businessAddressLineThree = None,
+        businessAddressLineFour = None,
+        businessAddressPostcode = None,
+        businessAddressCountryCode = None
+      )
+
+      val downstreamBusinessJson: JsObject = Json
+        .parse(
+          """{
+            |  "propertyIncome": true
+            |}""".stripMargin
+        )
+        .as[JsObject]
+    }
 
   }
 

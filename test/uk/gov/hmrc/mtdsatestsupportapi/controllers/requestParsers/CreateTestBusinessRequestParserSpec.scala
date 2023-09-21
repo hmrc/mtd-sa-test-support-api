@@ -27,7 +27,7 @@ class CreateTestBusinessRequestParserSpec extends UnitSpec with MockCreateTestBu
 
   private implicit val correlationId: String = "X-123"
 
-  private val rawData = CreateTestBusinessRawData("AA123456A", MinimalCreateTestBusinessRequest.mtdBusinessJson)
+  private val rawData = CreateTestBusinessRawData("AA123456A", MinimalCreateTestBusinessRequest.SelfEmployment.mtdBusinessJson)
 
   private val parser = new CreateTestBusinessRequestParser(mockCreateTestBusinessValidator)
 
@@ -37,7 +37,7 @@ class CreateTestBusinessRequestParserSpec extends UnitSpec with MockCreateTestBu
         MockCreateTestBusinessValidator.validate(rawData) returns Nil
 
         parser.parseRequest(rawData) shouldBe
-          Right(CreateTestBusinessRequest(Nino("AA123456A"), MinimalCreateTestBusinessRequest.business))
+          Right(CreateTestBusinessRequest(Nino("AA123456A"), MinimalCreateTestBusinessRequest.SelfEmployment.business))
       }
     }
 

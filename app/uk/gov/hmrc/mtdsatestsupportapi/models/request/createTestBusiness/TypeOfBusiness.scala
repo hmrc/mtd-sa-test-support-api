@@ -19,18 +19,13 @@ package uk.gov.hmrc.mtdsatestsupportapi.models.request.createTestBusiness
 import play.api.libs.json.Reads
 import utils.enums.Enums
 
-sealed trait TypeOfBusiness
+sealed abstract class TypeOfBusiness(val isProperty: Boolean, val isSelfEmployment: Boolean)
 
 object TypeOfBusiness {
-  case object `self-employment`      extends TypeOfBusiness
-  case object `uk-property`          extends TypeOfBusiness
-  case object `foreign-property`     extends TypeOfBusiness
-  case object `property-unspecified` extends TypeOfBusiness
-
-  def isProperty(typeOfBusiness: TypeOfBusiness): Boolean = typeOfBusiness match {
-    case TypeOfBusiness.`self-employment` => false
-    case _                                => true
-  }
+  case object `self-employment`      extends TypeOfBusiness(isProperty = false, isSelfEmployment = true)
+  case object `uk-property`          extends TypeOfBusiness(isProperty = true, isSelfEmployment = false)
+  case object `foreign-property`     extends TypeOfBusiness(isProperty = true, isSelfEmployment = false)
+  case object `property-unspecified` extends TypeOfBusiness(isProperty = true, isSelfEmployment = false)
 
   implicit val reads: Reads[TypeOfBusiness]           = Enums.reads[TypeOfBusiness]
   val parser: PartialFunction[String, TypeOfBusiness] = Enums.parser[TypeOfBusiness]

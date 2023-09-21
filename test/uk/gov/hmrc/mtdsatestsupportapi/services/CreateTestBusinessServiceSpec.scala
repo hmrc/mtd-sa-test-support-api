@@ -20,6 +20,7 @@ import api.models.domain.Nino
 import api.models.errors._
 import api.models.outcomes.ResponseWrapper
 import api.services.ServiceSpec
+import org.scalactic.source.Position
 import uk.gov.hmrc.mtdsatestsupportapi.fixtures.CreateTestBusinessFixtures
 import uk.gov.hmrc.mtdsatestsupportapi.mocks.connectors.MockCreateTestBusinessConnector
 import uk.gov.hmrc.mtdsatestsupportapi.models.request.createTestBusiness.CreateTestBusinessRequest
@@ -28,7 +29,7 @@ import uk.gov.hmrc.mtdsatestsupportapi.models.response.CreateTestBusiness.Create
 import scala.concurrent.Future
 
 class CreateTestBusinessServiceSpec extends ServiceSpec with MockCreateTestBusinessConnector with CreateTestBusinessFixtures {
-  import MinimalCreateTestBusinessRequest._
+  import MinimalCreateTestBusinessRequest.SelfEmployment._
 
   private val service = new CreateTestBusinessService(mockCreateTestBusinessConnector)
 
@@ -49,7 +50,8 @@ class CreateTestBusinessServiceSpec extends ServiceSpec with MockCreateTestBusin
 
     "the service call is unsuccessful" should {
       "map the received errors from the stub" when {
-        def serviceError(stubErrorCode: String, mtdError: MtdError): Unit =
+        def serviceErrorTest(stubErrorCode: String, mtdError: MtdError)
+                            (implicit pos: Position): Unit =
           s"a $stubErrorCode error is returned from the service" in {
 
             MockCreateTestBusinessConnector
@@ -59,11 +61,7 @@ class CreateTestBusinessServiceSpec extends ServiceSpec with MockCreateTestBusin
             await(service.createTestBusiness(request)) shouldBe Left(ErrorWrapper(correlationId, mtdError))
           }
 
-        val stubErrors: List[(String, MtdError)] = List(
-          "DUPLICATE_PROPERTY_BUSINESS" -> RulePropertyBusinessAddedError
-        )
-
-        stubErrors.foreach((serviceError _).tupled)
+        serviceErrorTest("DUPLICATE_PROPERTY_BUSINESS", RulePropertyBusinessAddedError)
       }
 
     }
