@@ -141,14 +141,14 @@ class CreateTestBusinessControllerISpec extends UnitSpec with IntegrationBaseSpe
         "AA123456A",
         MinimalCreateTestBusinessRequest.SelfEmployment.mtdBusinessJson ++ Json.obj("firstAccountingPeriodEndDate" -> LocalDate.now),
         BAD_REQUEST,
-        MissingFirstAccountintPeriodStartDateError
+        MissingFirstAccountingPeriodStartDateError
       )
 
       validationErrorTest(
         "AA123456A",
         MinimalCreateTestBusinessRequest.SelfEmployment.mtdBusinessJson ++ Json.obj("firstAccountingPeriodStartDate" -> LocalDate.now),
         BAD_REQUEST,
-        MissingFirstAccountintPeriodEndDateError
+        MissingFirstAccountingPeriodEndDateError
       )
 
       validationErrorTest(

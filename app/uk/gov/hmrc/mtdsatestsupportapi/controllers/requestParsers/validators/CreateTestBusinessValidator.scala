@@ -116,8 +116,8 @@ class CreateTestBusinessValidator @Inject() (clock: Clock, featureSwitches: Feat
     if (featureSwitches.isEnabled("release5")) {
       (business.firstAccountingPeriodStartDate, business.firstAccountingPeriodEndDate) match {
         case (Some(start), Some(end)) => TaxYearAlignmentDateRangeValidation.validate(start, end, RuleFirstAccountingDateRangeInvalid)
-        case (None, Some(_))          => Seq(MissingFirstAccountintPeriodStartDateError)
-        case (Some(_), None)          => Seq(MissingFirstAccountintPeriodEndDateError)
+        case (None, Some(_))          => Seq(MissingFirstAccountingPeriodStartDateError)
+        case (Some(_), None)          => Seq(MissingFirstAccountingPeriodEndDateError)
         case _                        => Nil
       }
     } else {

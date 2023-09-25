@@ -174,12 +174,12 @@ class CreateTestBusinessValidatorSpec extends UnitSpec with JsonErrorValidators 
 
     "return MISSING_FIRST_ACCOUNTING_PERIOD_START_DATE when the the first accounting period start date is missing" in new Test {
       validator.validate(CreateTestBusinessRawData(validNino, bodySelfEmploymentValid.removeProperty("/firstAccountingPeriodStartDate"))) shouldBe
-        Seq(MissingFirstAccountintPeriodStartDateError)
+        Seq(MissingFirstAccountingPeriodStartDateError)
     }
 
     "return MISSING_FIRST_ACCOUNTING_PERIOD_END_DATE when the the first accounting period end date is missing" in new Test {
       validator.validate(CreateTestBusinessRawData(validNino, bodySelfEmploymentValid.removeProperty("/firstAccountingPeriodEndDate"))) shouldBe
-        Seq(MissingFirstAccountintPeriodEndDateError)
+        Seq(MissingFirstAccountingPeriodEndDateError)
     }
 
     "return no errors when both the the first accounting period start and end dates are missing" in new Test {
