@@ -242,7 +242,7 @@ class CreateTestBusinessValidatorSpec extends UnitSpec with JsonErrorValidators 
 
     "return RULE_UNEXPECTED_BUSINESS_ADDRESS error" when {
       def testWithForbiddenAddressField(path: String, value: String)(implicit pos: Position): Unit = {
-        s"""the forbidden $path is provided""" in new Test {
+        s"the forbidden $path is provided" in new Test {
           validator.validate(
             CreateTestBusinessRawData(
               nino = validNino,
@@ -262,7 +262,7 @@ class CreateTestBusinessValidatorSpec extends UnitSpec with JsonErrorValidators 
 
     "return RULE_MISSING_BUSINESS_ADDRESS error" when {
       def testWithMissingAddressField(path: String)(implicit pos: Position): Unit = {
-        s"""the mandatory $path is missing""" in new Test {
+        s"the mandatory $path is missing" in new Test {
           validator.validate(
             CreateTestBusinessRawData(
               nino = validNino,
