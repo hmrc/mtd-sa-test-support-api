@@ -28,7 +28,7 @@ import uk.gov.hmrc.mtdsatestsupportapi.models.request.createTestBusiness.CreateT
 class CreateTestBusinessConnectorSpec extends ConnectorSpec with CreateTestBusinessFixtures {
 
   import ExampleCreateTestBusinessResponse._
-  import MinimalCreateTestBusinessRequest._
+  import MinimalCreateTestBusinessRequest.SelfEmployment._
 
   private val nino    = "AA123456A"
   private val request = CreateTestBusinessRequest(Nino(nino), business)

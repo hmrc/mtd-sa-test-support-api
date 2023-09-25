@@ -47,8 +47,8 @@ class CreateTestBusinessControllerSpec
     val vendorClientId = "someId"
     val businessId     = ExampleCreateTestBusinessResponse.businessId
 
-    val rawData: CreateTestBusinessRawData     = CreateTestBusinessRawData(nino, MinimalCreateTestBusinessRequest.mtdBusinessJson)
-    val requestData: CreateTestBusinessRequest = CreateTestBusinessRequest(Nino(nino), MinimalCreateTestBusinessRequest.business)
+    val rawData: CreateTestBusinessRawData     = CreateTestBusinessRawData(nino, MinimalCreateTestBusinessRequest.SelfEmployment.mtdBusinessJson)
+    val requestData: CreateTestBusinessRequest = CreateTestBusinessRequest(Nino(nino), MinimalCreateTestBusinessRequest.SelfEmployment.business)
     val response                           = ExampleCreateTestBusinessResponse.response
 
     val controller = new CreateTestBusinessController(
@@ -70,7 +70,7 @@ class CreateTestBusinessControllerSpec
         override protected def callController(): Future[Result] =
           controller.handleRequest(nino)(
             fakeRequest
-              .withBody(MinimalCreateTestBusinessRequest.mtdBusinessJson)
+              .withBody(MinimalCreateTestBusinessRequest.SelfEmployment.mtdBusinessJson)
               .withHeaders(HeaderNames.AUTHORIZATION -> "Bearer Token", "X-Client-Id" -> vendorClientId))
 
         MockCreateTestBusinessRequestParser.parseRequest(rawData).returns(Right(requestData))
@@ -88,7 +88,7 @@ class CreateTestBusinessControllerSpec
       "the request lacks an X-Client-Id header" in new Test {
         override protected def callController(): Future[Result] =
           controller.handleRequest(nino)(
-            fakeRequest.withBody(MinimalCreateTestBusinessRequest.mtdBusinessJson).withHeaders(HeaderNames.AUTHORIZATION -> "Bearer Token"))
+            fakeRequest.withBody(MinimalCreateTestBusinessRequest.SelfEmployment.mtdBusinessJson).withHeaders(HeaderNames.AUTHORIZATION -> "Bearer Token"))
 
         val result: Future[Result] = callController()
 
@@ -98,7 +98,7 @@ class CreateTestBusinessControllerSpec
         override protected def callController(): Future[Result] =
           controller.handleRequest(nino)(
             fakeRequest
-              .withBody(MinimalCreateTestBusinessRequest.mtdBusinessJson)
+              .withBody(MinimalCreateTestBusinessRequest.SelfEmployment.mtdBusinessJson)
               .withHeaders(HeaderNames.AUTHORIZATION -> "Bearer Token", "X-Client-Id" -> vendorClientId))
 
         MockCreateTestBusinessRequestParser.parseRequest(rawData).returns(Left(ErrorWrapper(correlationId, NinoFormatError, None)))
@@ -109,7 +109,7 @@ class CreateTestBusinessControllerSpec
         override protected def callController(): Future[Result] =
           controller.handleRequest(nino)(
             fakeRequest
-              .withBody(MinimalCreateTestBusinessRequest.mtdBusinessJson)
+              .withBody(MinimalCreateTestBusinessRequest.SelfEmployment.mtdBusinessJson)
               .withHeaders(HeaderNames.AUTHORIZATION -> "Bearer Token", "X-Client-Id" -> vendorClientId))
 
         MockCreateTestBusinessRequestParser.parseRequest(rawData).returns(Right(requestData))
