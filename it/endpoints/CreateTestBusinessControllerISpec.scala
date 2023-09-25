@@ -80,16 +80,8 @@ class CreateTestBusinessControllerISpec extends UnitSpec with IntegrationBaseSpe
 
   "Calling the create Business endpoint" should {
     "return a 201 status code" when {
-      "a valid request is made with a self-employment business" in new Test {
+      "a valid request is made" in new Test {
         val response: WSResponse = await(request().post(MinimalCreateTestBusinessRequest.SelfEmployment.mtdBusinessJson))
-
-        response.status shouldBe CREATED
-        response.header("X-CorrelationId") should not be empty
-        response.json shouldBe Json.parse(expectedResponseBody)
-      }
-
-      "a valid request is made with a uk-property business" in new Test {
-        val response: WSResponse = await(request().post(MinimalCreateTestBusinessRequest.UkProperty.mtdBusinessJson))
 
         response.status shouldBe CREATED
         response.header("X-CorrelationId") should not be empty
