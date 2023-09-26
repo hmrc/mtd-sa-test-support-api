@@ -1,11 +1,13 @@
 delete:
   summary: Delete a checkpoint
   description: |
-    This endpoint allows a developer to delete the checkpoint created in sandbox for a given ‘checkpointId’.
+    This endpoint enables you to delete a checkpoint created in the sandbox, specified with a ‘checkpointId’.
+    
+    Any checkpoint that is not deleted is automatically removed from the database 7 days after its creation.
+    
+    Checkpoints can only be deleted with this endpoint. Deleting data with the Delete Stateful Test Data endpoint will not delete checkpoints.
   
-    Any checkpoint that has not been deleted by the developer will be automatically removed from database 7 days after its creation.
-
-    **Note**: To prevent data loss or unexpected behaviour, the checkpoint restore should not be performed while other stateful checkpoint operations are in progress for the same National insurance number.
+    **Note**: To prevent data loss or unexpected behaviour, the checkpoint delete should not be performed while other stateful checkpoint operations are in progress for the same National Insurance number.
 
   tags:
     - Checkpoint for Vendor Data
