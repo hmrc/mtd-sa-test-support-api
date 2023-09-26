@@ -116,7 +116,7 @@
       "example": "London"
     },
     "businessAddressLineThree": {
-      "description": "\t\nThird line of the business address.\n\nForbidden for property businesses.",
+      "description": "Third line of the business address.\n\nForbidden for property businesses.",
       "type": "string",
       "maximum": 35,
       "example": "Greater London"
@@ -134,7 +134,7 @@
       "example": "M1 1AG"
     },
     "businessAddressCountryCode": {
-      "description": "The two letter code for a country must adhere to ISO 3166. Forbidden for property businesses.\n\nMandatory for self-employment businesses.",
+      "description": "The two letter code for a country must adhere to ISO 3166.\n\nForbidden for property businesses.\n\nMandatory for self-employment businesses.",
       "type": "string",
       "example": "GB"
     }
