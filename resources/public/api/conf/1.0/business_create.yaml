@@ -87,6 +87,14 @@ post:
               $ref: './common/errors.yaml#/components/examples/missingFirstAccountingPeriodEndDate'
             RULE_FIRST_ACCOUNTING_DATE_RANGE_INVALID:
               $ref: './common/errors.yaml#/components/examples/ruleFirstAccountingDateRangeInvalid'
+            RULE_UNEXPECTED_BUSINESS_ADDRESS:
+              $ref: './common/errors.yaml#/components/examples/ruleUnexpectedBusinessAddress'
+            RULE_MISSING_BUSINESS_ADDRESS:
+              $ref: './common/errors.yaml#/components/examples/ruleMissingBusinessAddress'
+            RULE_UNEXPECTED_TRADING_NAME:
+              $ref: './common/errors.yaml#/components/examples/ruleUnexpectedTradingName'
+            RULE_MISSING_TRADING_NAME:
+              $ref: './common/errors.yaml#/components/examples/ruleMissingTradingName'
             # {{/if}}
 
     "403":
