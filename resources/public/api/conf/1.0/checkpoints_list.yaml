@@ -1,7 +1,7 @@
 summary: List checkpoints
 description: |
   This endpoint enables you to get all the checkpoints created for the vendor ID. 
-  A National Insurance number can be provided to to filter the results based on National Insurance number.
+  A National Insurance number can be provided to filter the results based on National Insurance number.
 
 tags:
   - Checkpoint for Vendor Data
