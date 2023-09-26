@@ -123,6 +123,30 @@ components:
         code: RULE_FIRST_ACCOUNTING_DATE_RANGE_INVALID
         message: The first accounting period is not a single complete tax year
 
+    ruleUnexpectedBusinessAddress:
+      description: When creating a property business, you are not allowed to provide any businessAddress fields.
+      value:
+        code: RULE_UNEXPECTED_BUSINESS_ADDRESS
+        message: Unexpected businessAddress provided for property business
+
+    ruleMissingBusinessAddress:
+      description: When creating a self-employment business, you need to provide values for businessAddressLineOne and businessAddressCountryCode.
+      value:
+        code: RULE_MISSING_BUSINESS_ADDRESS
+        message: businessAddress not provided for the self-employment business
+
+    ruleUnexpectedTradingName:
+      description: When creating a property business, you are not allowed to provide tradingName.
+      value:
+        code: RULE_UNEXPECTED_TRADING_NAME
+        message: Unexpected tradingName provided for property business
+
+    ruleMissingTradingName:
+      description: When creating a self-employment business, you need to provide a tradingName value.
+      value:
+        code: RULE_MISSING_TRADING_NAME
+        message: tradingName not provided for the self-employment business
+
     # 403
 
     clientOrAgentNotAuthorised:
