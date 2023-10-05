@@ -67,18 +67,4 @@ object StatusReasonEnum {
     val downstreamValue = "Income Source Latency Changes"
   }
 
-//  def toMTD(statusReason: StatusReasonEnum): String = statusReason match {
-//    case `Sign up - return available`    => "00"
-//    case `Sign up - no return available` => "01"
-//    case `ITSA final declaration`        => "02"
-//    case `ITSA Q4 declaration`           => "03"
-//    case `CESA SA return`                => "04"
-//    case `Complex`                       => "05"
-//    case `Ceased income source`          => "06"
-//    case `Reinstated income source`      => "07"
-//    case `Rollover`                      => "08"
-//    case `Income Source Latency Changes` => "09"
-//
-//  }
-
 }

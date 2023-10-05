@@ -24,7 +24,6 @@ case class ITSAStausRequestBody(taxYear: TaxYear, itsaStatusDetails: Seq[ITSASta
 
 object ITSAStausRequestBody {
   private implicit val taxYearReads: Reads[TaxYear] = implicitly[Reads[String]].map(fromMtd)
-//  private implicit val taxYearWrites: Writes[TaxYear] = implicitly[Writes[String]].contramap(_.asDownstream)
 
   implicit val reads: Reads[ITSAStausRequestBody] = Json.reads
 }
