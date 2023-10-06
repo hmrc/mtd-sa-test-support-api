@@ -16,7 +16,6 @@
 
 package uk.gov.hmrc.mtdsatestsupportapi.models.request.createAmendITSAStatus
 
-import play.api.libs.functional.syntax._
 import play.api.libs.json._
 import uk.gov.hmrc.mtdsatestsupportapi.models.domain.{StatusEnum, StatusReasonEnum}
 
@@ -24,11 +23,7 @@ case class ITSAStatusDetails(submittedOn: String, status: StatusEnum, statusReas
 
 object ITSAStatusDetails {
 
-  implicit val reads: Reads[ITSAStatusDetails] =
-    ((JsPath \ "submittedOn").read[String] and
-      (JsPath \ "status").read[StatusEnum] and
-      (JsPath \ "statusReason").read[StatusReasonEnum] and
-      (JsPath \ "businessIncome2YearsPrior").readNullable[BigDecimal])(ITSAStatusDetails.apply _)
+  implicit val reads: Reads[ITSAStatusDetails] = Json.reads
 
   implicit val writes: OWrites[ITSAStatusDetails] = Json.writes[ITSAStatusDetails]
 
