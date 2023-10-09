@@ -16,7 +16,8 @@
 
 package uk.gov.hmrc.mtdsatestsupportapi.models.domain
 
-import play.api.libs.json.{JsError, JsString, JsSuccess, Reads, Writes}
+import play.api.libs.json.{Reads, Writes}
+import utils.enums.Enums
 
 sealed trait StatusReason {
   val downstreamValue: String
@@ -24,21 +25,9 @@ sealed trait StatusReason {
 
 object StatusReason {
 
-  implicit val writes: Writes[StatusReason] = (obj: StatusReason) => JsString(obj.downstreamValue)
+  implicit val writes: Writes[StatusReason] = implicitly[Writes[String]].contramap(_.downstreamValue)
 
-  implicit val reads: Reads[StatusReason] = {
-    case JsString("00") => JsSuccess(`00`)
-    case JsString("01") => JsSuccess(`01`)
-    case JsString("02") => JsSuccess(`02`)
-    case JsString("03") => JsSuccess(`03`)
-    case JsString("04") => JsSuccess(`04`)
-    case JsString("05") => JsSuccess(`05`)
-    case JsString("06") => JsSuccess(`06`)
-    case JsString("07") => JsSuccess(`07`)
-    case JsString("08") => JsSuccess(`08`)
-    case JsString("09") => JsSuccess(`09`)
-    case _              => JsError("Invalid StatusReasonEnum")
-  }
+  implicit val reads: Reads[StatusReason] = Enums.reads[StatusReason]
 
   case object `00` extends StatusReason {
     val downstreamValue = "Sign up - return available"

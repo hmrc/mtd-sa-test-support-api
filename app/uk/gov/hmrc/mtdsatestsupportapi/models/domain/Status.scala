@@ -16,7 +16,7 @@
 
 package uk.gov.hmrc.mtdsatestsupportapi.models.domain
 
-import play.api.libs.json.{JsError, JsString, JsSuccess, Reads, Writes}
+import play.api.libs.json.{Reads, Writes}
 import utils.enums.Enums
 
 sealed trait Status {
@@ -25,18 +25,9 @@ sealed trait Status {
 
 object Status {
 
-  implicit val writes: Writes[Status] = (obj: Status) => JsString(obj.downstreamValue)
+  implicit val writes: Writes[Status] = implicitly[Writes[String]].contramap(_.downstreamValue)
 
-  implicit val reads: Reads[Status] = {
-    case JsString("00") => JsSuccess(`00`)
-    case JsString("01") => JsSuccess(`01`)
-    case JsString("02") => JsSuccess(`02`)
-    case JsString("03") => JsSuccess(`03`)
-    case JsString("04") => JsSuccess(`04`)
-    case JsString("05") => JsSuccess(`05`)
-    case JsString("99") => JsSuccess(`99`)
-    case _              => JsError("Invalid StatusEnum")
-  }
+  implicit val reads: Reads[Status] = Enums.reads[Status]
 
   val parser: PartialFunction[String, Status] = Enums.parser[Status]
 

@@ -22,14 +22,14 @@ import uk.gov.hmrc.mtdsatestsupportapi.models.domain.{Status, StatusReason}
 
 class ITSAStatusDetailSpec extends UnitSpec {
 
-  private val itsaStatusDetails = ITSAStatusDetail(
+  private val itsaStatusDetail = ITSAStatusDetail(
     "2021-03-23T16:02:34.039Z",
     Status.`00`,
     StatusReason.`01`,
     None
   )
 
-  "ITSAStatusDetails" when {
+  "ITSAStatusDetail" when {
     "received API JSON" should {
       "work" in {
         val mtdJson = Json.parse("""
@@ -40,7 +40,7 @@ class ITSAStatusDetailSpec extends UnitSpec {
             |   }
             |""".stripMargin)
 
-        mtdJson.as[ITSAStatusDetail] shouldBe itsaStatusDetails
+        mtdJson.as[ITSAStatusDetail] shouldBe itsaStatusDetail
       }
     }
   }

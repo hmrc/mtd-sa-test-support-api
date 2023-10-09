@@ -16,37 +16,35 @@
 
 package uk.gov.hmrc.mtdsatestsupportapi.domain
 
-import play.api.libs.json.{JsString, JsSuccess, Json, Writes}
+import play.api.libs.json.{JsError, JsPath, JsResult, JsString, JsSuccess, JsValue, Json, JsonValidationError}
 import support.UnitSpec
 import uk.gov.hmrc.mtdsatestsupportapi.models.domain.Status
-import utils.enums.EnumJsonSpecSupport
+import uk.gov.hmrc.mtdsatestsupportapi.models.domain.Status._
 
-class StatusSpec extends UnitSpec with EnumJsonSpecSupport {
+class StatusSpec extends UnitSpec {
 
-  implicit val writes: Writes[Status] = (obj: Status) => JsString(obj.downstreamValue)
-
-  val allStatus: List[Status] = List(
-    Status.`00`,
-    Status.`01`,
-    Status.`02`,
-    Status.`03`,
-    Status.`04`,
-    Status.`05`,
-    Status.`99`
-  )
+  private val allStatuses: List[Status] = List(`00`, `01`, `02`, `03`, `04`, `05`, `99`)
 
   "Status" should {
-    "convert Status to downstreamValue" in {
-      allStatus.foreach { statusReason =>
-        val json = Json.toJson(statusReason)
-        json shouldBe JsString(statusReason.downstreamValue)
+    allStatuses.foreach { status =>
+      s"read $status from JSON correctly" in {
+        val json                     = JsString(status.toString)
+        val result: JsResult[Status] = Json.fromJson[Status](json)
+        result shouldBe JsSuccess(status)
+      }
+
+      s"write $status to downstream format correctly" in {
+        val downstreamJson: JsValue = JsString(status.downstreamValue)
+        Json.toJson(status) shouldBe downstreamJson
       }
     }
+    "return a JsError" when {
+      "reading an invalid Status" in {
+        val json: JsValue            = JsString("021")
+        val result: JsResult[Status] = Json.fromJson[Status](json)
 
-    "read from JSON correctly" in {
-      val json   = Json.parse("\"00\"")
-      val result = Json.fromJson[Status](json)
-      result shouldBe JsSuccess(Status.`00`)
+        result shouldBe JsError(JsPath, JsonValidationError("error.expected.Status"))
+      }
     }
   }
 

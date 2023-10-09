@@ -16,40 +16,37 @@
 
 package uk.gov.hmrc.mtdsatestsupportapi.domain
 
-import play.api.libs.json.{JsString, JsSuccess, Json, Writes}
+import play.api.libs.json._
 import support.UnitSpec
 import uk.gov.hmrc.mtdsatestsupportapi.models.domain.StatusReason
-import utils.enums.EnumJsonSpecSupport
+import uk.gov.hmrc.mtdsatestsupportapi.models.domain.StatusReason._
 
-class StatusReasonSpec extends UnitSpec with EnumJsonSpecSupport {
+class StatusReasonSpec extends UnitSpec {
 
-  implicit val writes: Writes[StatusReason] = (obj: StatusReason) => JsString(obj.downstreamValue)
-
-  val allStatusReason: List[StatusReason] = List(
-    StatusReason.`00`,
-    StatusReason.`01`,
-    StatusReason.`02`,
-    StatusReason.`03`,
-    StatusReason.`04`,
-    StatusReason.`05`,
-    StatusReason.`06`,
-    StatusReason.`07`,
-    StatusReason.`08`,
-    StatusReason.`09`
-  )
+  private val allStatusReasons: List[StatusReason] = List(`00`, `01`, `02`, `03`, `04`, `05`, `06`, `07`, `08`, `09`)
 
   "StatusReason" should {
-    "convert to downstream value correctly" in {
-      allStatusReason.foreach { statusReason =>
-        val json = Json.toJson(statusReason)
-        json shouldBe JsString(statusReason.downstreamValue)
+    allStatusReasons.foreach { statusReason =>
+      s"read $statusReason from JSON correctly" in {
+        val json: JsValue                  = JsString(statusReason.toString)
+        val result: JsResult[StatusReason] = Json.fromJson[StatusReason](json)
+
+        result shouldBe JsSuccess(statusReason)
       }
 
+      s"write $statusReason to downstream format correctly" in {
+        val downstreamJson: JsValue = JsString(statusReason.downstreamValue)
+        Json.toJson(statusReason) shouldBe downstreamJson
+      }
     }
-    "read from JSON correctly" in {
-      val json   = Json.parse("\"05\"")
-      val result = Json.fromJson[StatusReason](json)
-      result shouldBe JsSuccess(StatusReason.`05`)
+
+    "return a JsError" when {
+      "reading an invalid StatusReason" in {
+        val json: JsValue                  = JsString("011")
+        val result: JsResult[StatusReason] = Json.fromJson[StatusReason](json)
+
+        result shouldBe JsError(JsPath, JsonValidationError("error.expected.StatusReason"))
+      }
     }
   }
 

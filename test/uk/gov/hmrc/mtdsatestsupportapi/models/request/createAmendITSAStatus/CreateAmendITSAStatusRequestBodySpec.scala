@@ -21,7 +21,7 @@ import play.api.libs.json.Json
 import support.UnitSpec
 import uk.gov.hmrc.mtdsatestsupportapi.models.domain.{Status, StatusReason}
 
-class ITSAStatusRequestBodySpec extends UnitSpec {
+class CreateAmendITSAStatusRequestBodySpec extends UnitSpec {
 
   private val itsaRequestBody = CreateAmendITSAStatusRequestBody(
     taxYear = TaxYear.fromMtd("2022-23"),
