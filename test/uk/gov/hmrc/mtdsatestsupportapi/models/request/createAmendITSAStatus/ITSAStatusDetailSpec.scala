@@ -18,14 +18,14 @@ package uk.gov.hmrc.mtdsatestsupportapi.models.request.createAmendITSAStatus
 
 import play.api.libs.json.Json
 import support.UnitSpec
-import uk.gov.hmrc.mtdsatestsupportapi.models.domain.{StatusEnum, StatusReasonEnum}
+import uk.gov.hmrc.mtdsatestsupportapi.models.domain.{Status, StatusReason}
 
-class ITSAStatusDetailsSpec extends UnitSpec {
+class ITSAStatusDetailSpec extends UnitSpec {
 
-  private val itsaStatusDetails = ITSAStatusDetails(
+  private val itsaStatusDetails = ITSAStatusDetail(
     "2021-03-23T16:02:34.039Z",
-    StatusEnum.`00`,
-    StatusReasonEnum.`01`,
+    Status.`00`,
+    StatusReason.`01`,
     None
   )
 
@@ -40,7 +40,7 @@ class ITSAStatusDetailsSpec extends UnitSpec {
             |   }
             |""".stripMargin)
 
-        mtdJson.as[ITSAStatusDetails] shouldBe itsaStatusDetails
+        mtdJson.as[ITSAStatusDetail] shouldBe itsaStatusDetails
       }
     }
   }

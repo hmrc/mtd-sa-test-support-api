@@ -19,19 +19,20 @@ package uk.gov.hmrc.mtdsatestsupportapi.models.request.createAmendITSAStatus
 import api.models.domain.TaxYear
 import play.api.libs.json.Json
 import support.UnitSpec
-import uk.gov.hmrc.mtdsatestsupportapi.models.domain.{StatusEnum, StatusReasonEnum}
+import uk.gov.hmrc.mtdsatestsupportapi.models.domain.{Status, StatusReason}
 
 class ITSAStatusRequestBodySpec extends UnitSpec {
 
-  private val itsaRequestBody = ITSAStausRequestBody(
+  private val itsaRequestBody = CreateAmendITSAStatusRequestBody(
     taxYear = TaxYear.fromMtd("2022-23"),
-    List(ITSAStatusDetails("2021-03-23T16:02:34.039Z", StatusEnum.`00`, StatusReasonEnum.`01`, None))
+    List(ITSAStatusDetail("2021-03-23T16:02:34.039Z", Status.`00`, StatusReason.`01`, None))
   )
 
   "ITSAStatusRequestBody" when {
     "received API JSON" should {
       "work" in {
-        val mtdJson = Json.parse("""{
+        val mtdJson = Json.parse("""
+            |{
             | "taxYear": "2022-23",
             | "itsaStatusDetails": [
             |    {
@@ -43,7 +44,7 @@ class ITSAStatusRequestBodySpec extends UnitSpec {
             |}
             |""".stripMargin)
 
-        mtdJson.as[ITSAStausRequestBody] shouldBe itsaRequestBody
+        mtdJson.as[CreateAmendITSAStatusRequestBody] shouldBe itsaRequestBody
       }
     }
   }

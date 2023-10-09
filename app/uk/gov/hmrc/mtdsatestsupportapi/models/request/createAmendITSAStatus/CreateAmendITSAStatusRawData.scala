@@ -17,5 +17,6 @@
 package uk.gov.hmrc.mtdsatestsupportapi.models.request.createAmendITSAStatus
 
 import api.models.request.RawData
+import play.api.libs.json.JsValue
 
-case class CreateAmendITSAStatusRawData(nino: String, taxYear: String) extends RawData
+case class CreateAmendITSAStatusRawData(nino: String, taxYear: String, body: JsValue) extends RawData

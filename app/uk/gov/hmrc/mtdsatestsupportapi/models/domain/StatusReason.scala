@@ -16,54 +16,67 @@
 
 package uk.gov.hmrc.mtdsatestsupportapi.models.domain
 
-import play.api.libs.json.Format
-import utils.enums.Enums
+import play.api.libs.json.{JsError, JsString, JsSuccess, Reads, Writes}
 
-sealed trait StatusReasonEnum {
+sealed trait StatusReason {
   val downstreamValue: String
 }
 
-object StatusReasonEnum {
-  val parser: PartialFunction[String, StatusReasonEnum] = Enums.parser[StatusReasonEnum]
-  implicit val format: Format[StatusReasonEnum]         = Enums.format[StatusReasonEnum]
+object StatusReason {
 
-  case object `00` extends StatusReasonEnum {
+  implicit val writes: Writes[StatusReason] = (obj: StatusReason) => JsString(obj.downstreamValue)
+
+  implicit val reads: Reads[StatusReason] = {
+    case JsString("00") => JsSuccess(`00`)
+    case JsString("01") => JsSuccess(`01`)
+    case JsString("02") => JsSuccess(`02`)
+    case JsString("03") => JsSuccess(`03`)
+    case JsString("04") => JsSuccess(`04`)
+    case JsString("05") => JsSuccess(`05`)
+    case JsString("06") => JsSuccess(`06`)
+    case JsString("07") => JsSuccess(`07`)
+    case JsString("08") => JsSuccess(`08`)
+    case JsString("09") => JsSuccess(`09`)
+    case _              => JsError("Invalid StatusReasonEnum")
+  }
+
+  case object `00` extends StatusReason {
     val downstreamValue = "Sign up - return available"
   }
 
-  case object `01` extends StatusReasonEnum {
+  case object `01` extends StatusReason {
     val downstreamValue = "Sign up - no return available"
   }
 
-  case object `02` extends StatusReasonEnum {
+  case object `02` extends StatusReason {
     val downstreamValue = "ITSA final declaration"
   }
 
-  case object `03` extends StatusReasonEnum {
+  case object `03` extends StatusReason {
     val downstreamValue = "ITSA Q4 declaration"
   }
 
-  case object `04` extends StatusReasonEnum {
+  case object `04` extends StatusReason {
     val downstreamValue = "CESA SA return"
   }
 
-  case object `05` extends StatusReasonEnum {
+  case object `05` extends StatusReason {
     val downstreamValue = "Complex"
   }
 
-  case object `06` extends StatusReasonEnum {
+  case object `06` extends StatusReason {
     val downstreamValue = "Ceased income source"
   }
 
-  case object `07` extends StatusReasonEnum {
+  case object `07` extends StatusReason {
     val downstreamValue = "Reinstated income source"
   }
 
-  case object `08` extends StatusReasonEnum {
+  case object `08` extends StatusReason {
     val downstreamValue = "Rollover"
   }
 
-  case object `09` extends StatusReasonEnum {
+  case object `09` extends StatusReason {
     val downstreamValue = "Income Source Latency Changes"
   }
 

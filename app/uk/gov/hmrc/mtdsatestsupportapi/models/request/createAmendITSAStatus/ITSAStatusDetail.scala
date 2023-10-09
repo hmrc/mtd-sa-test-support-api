@@ -16,14 +16,13 @@
 
 package uk.gov.hmrc.mtdsatestsupportapi.models.request.createAmendITSAStatus
 
-import api.models.domain.TaxYear
-import api.models.domain.TaxYear.fromMtd
-import play.api.libs.json.{Json, Reads}
+import play.api.libs.json.{Json, OFormat}
+import uk.gov.hmrc.mtdsatestsupportapi.models.domain.{Status, StatusReason}
 
-case class ITSAStausRequestBody(taxYear: TaxYear, itsaStatusDetails: Seq[ITSAStatusDetails])
+case class ITSAStatusDetail(submittedOn: String, status: Status, statusReason: StatusReason, businessIncome2YearsPrior: Option[BigDecimal])
 
-object ITSAStausRequestBody {
-  private implicit val taxYearReads: Reads[TaxYear] = implicitly[Reads[String]].map(fromMtd)
+object ITSAStatusDetail {
 
-  implicit val reads: Reads[ITSAStausRequestBody] = Json.reads
+  implicit val format: OFormat[ITSAStatusDetail] = Json.format[ITSAStatusDetail]
+
 }

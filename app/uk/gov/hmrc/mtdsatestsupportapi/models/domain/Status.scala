@@ -16,41 +16,55 @@
 
 package uk.gov.hmrc.mtdsatestsupportapi.models.domain
 
-import play.api.libs.json.Format
+import play.api.libs.json.{JsError, JsString, JsSuccess, Reads, Writes}
 import utils.enums.Enums
 
-sealed trait StatusEnum
+sealed trait Status {
+  val downstreamValue: String
+}
 
-object StatusEnum {
-  implicit val format: Format[StatusEnum] = Enums.format[StatusEnum]
+object Status {
 
-  val parser: PartialFunction[String, StatusEnum] = Enums.parser[StatusEnum]
+  implicit val writes: Writes[Status] = (obj: Status) => JsString(obj.downstreamValue)
 
-  case object `00` extends StatusEnum {
+  implicit val reads: Reads[Status] = {
+    case JsString("00") => JsSuccess(`00`)
+    case JsString("01") => JsSuccess(`01`)
+    case JsString("02") => JsSuccess(`02`)
+    case JsString("03") => JsSuccess(`03`)
+    case JsString("04") => JsSuccess(`04`)
+    case JsString("05") => JsSuccess(`05`)
+    case JsString("99") => JsSuccess(`99`)
+    case _              => JsError("Invalid StatusEnum")
+  }
+
+  val parser: PartialFunction[String, Status] = Enums.parser[Status]
+
+  case object `00` extends Status {
     val downstreamValue = "No Status"
   }
 
-  case object `01` extends StatusEnum {
+  case object `01` extends Status {
     val downstreamValue = "MTD Mandated"
   }
 
-  case object `02` extends StatusEnum {
+  case object `02` extends Status {
     val downstreamValue = "MTD Voluntary"
   }
 
-  case object `03` extends StatusEnum {
+  case object `03` extends Status {
     val downstreamValue = "Annual"
   }
 
-  case object `04` extends StatusEnum {
+  case object `04` extends Status {
     val downstreamValue = "Non Digital"
   }
 
-  case object `05` extends StatusEnum {
+  case object `05` extends Status {
     val downstreamValue = "Dormant"
   }
 
-  case object `99` extends StatusEnum {
+  case object `99` extends Status {
     val downstreamValue = "MTD Exempt"
   }
 
