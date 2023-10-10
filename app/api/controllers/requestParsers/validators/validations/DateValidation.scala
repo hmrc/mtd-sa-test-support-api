@@ -16,9 +16,10 @@
 
 package api.controllers.requestParsers.validators.validations
 
-import api.models.errors.{DateFormatError, MtdError}
+import api.models.errors.{DateFormatError, MtdError, SubmittedOnFormat}
 
 import java.time.LocalDate
+import java.time.format.DateTimeFormatter
 import scala.util.{Failure, Success, Try}
 
 object DateValidation {
@@ -28,5 +29,15 @@ object DateValidation {
       case Success(_) => Nil
       case Failure(_) => List(error)
     }
+
+  def validateSubmittedOn(value: String, error: => MtdError = SubmittedOnFormat): Seq[MtdError] = {
+    val submittedOnFormatter: DateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSX")
+    println("what is this" + submittedOnFormatter)
+
+    Try(submittedOnFormatter.parse(value)) match {
+      case Success(_) => Nil
+      case Failure(_) => List(error)
+    }
+  }
 
 }

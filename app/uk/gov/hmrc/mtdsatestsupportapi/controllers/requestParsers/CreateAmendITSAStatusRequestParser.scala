@@ -14,13 +14,9 @@
  * limitations under the License.
  */
 
-package api.controllers.requestParsers.validators
+package uk.gov.hmrc.mtdsatestsupportapi.controllers.requestParsers
 
-import java.time.format.DateTimeFormatter
+import javax.inject.{Inject, Singleton}
 
-package object validations {
-
-  val dateFormat: DateTimeFormatter     = DateTimeFormatter.ofPattern("yyyy-MM-dd")
-  val NoValidationErrors: List[Nothing] = List()
-
-}
+@Singleton
+class CreateAmendITSAStatusRequestParser @Inject() {}

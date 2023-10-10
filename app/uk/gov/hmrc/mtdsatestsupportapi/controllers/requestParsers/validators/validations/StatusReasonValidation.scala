@@ -14,13 +14,14 @@
  * limitations under the License.
  */
 
-package api.controllers.requestParsers.validators
+package uk.gov.hmrc.mtdsatestsupportapi.controllers.requestParsers.validators.validations
 
-import java.time.format.DateTimeFormatter
+import api.controllers.requestParsers.validators.validations.EnumValidation
+import api.models.errors.{MtdError, StatusReasonFormat}
+import uk.gov.hmrc.mtdsatestsupportapi.models.domain.StatusReason
 
-package object validations {
+object StatusReasonValidation extends EnumValidation[StatusReason] {
+  override protected val parser: PartialFunction[String, StatusReason] = StatusReason.parser
 
-  val dateFormat: DateTimeFormatter     = DateTimeFormatter.ofPattern("yyyy-MM-dd")
-  val NoValidationErrors: List[Nothing] = List()
-
+  def validate(value: String, error: => MtdError = StatusReasonFormat): Seq[MtdError] = validateEnum(value, error)
 }
