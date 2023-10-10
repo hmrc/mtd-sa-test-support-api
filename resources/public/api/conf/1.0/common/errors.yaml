@@ -163,7 +163,7 @@ components:
       description: The format of the supplied businessIncomePriorTo2Years is not valid.
       value:
         code: FORMAT_BUSINESS_INCOME_PRIOR_TO_2_YEARS
-        message: The provided business Income Prior  To 2 Years is invalid
+        message: The provided business Income Prior To 2 Years is invalid
 
     formatSubmittedOn:
       description: The format of the supplied submittedOn date is not valid.
