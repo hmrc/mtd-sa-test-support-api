@@ -18,4 +18,4 @@ package uk.gov.hmrc.mtdsatestsupportapi.models.request.createAmendITSAStatus
 
 import api.models.domain.{Nino, TaxYear}
 
-case class CreateAmendITSASatusRequest(nino: Nino, taxYear: TaxYear, body: CreateAmendITSAStatusRequestBody)
+case class CreateAmendITSAStatusRequest(nino: Nino, taxYear: TaxYear, body: CreateAmendITSAStatusRequestBody)
