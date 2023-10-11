@@ -16,7 +16,6 @@
 
 package uk.gov.hmrc.mtdsatestsupportapi.models.request.createAmendITSAStatus
 
-import api.models.domain.TaxYear
 import play.api.libs.json.Json
 import support.UnitSpec
 import uk.gov.hmrc.mtdsatestsupportapi.models.domain.{Status, StatusReason}
@@ -24,28 +23,40 @@ import uk.gov.hmrc.mtdsatestsupportapi.models.domain.{Status, StatusReason}
 class CreateAmendITSAStatusRequestBodySpec extends UnitSpec {
 
   private val itsaRequestBody = CreateAmendITSAStatusRequestBody(
-    taxYear = TaxYear.fromMtd("2022-23"),
     List(ITSAStatusDetail("2021-03-23T16:02:34.039Z", Status.`00`, StatusReason.`01`, None))
   )
 
-  "ITSAStatusRequestBody" when {
-    "received API JSON" should {
-      "work" in {
-        val mtdJson = Json.parse("""
-            |{
-            | "taxYear": "2022-23",
-            | "itsaStatusDetails": [
-            |    {
-            |     "submittedOn": "2021-03-23T16:02:34.039Z",
-            |     "status": "00",
-            |     "statusReason": "01"
-            |     }
-            |   ]
-            |}
-            |""".stripMargin)
+  private val requestJson = Json.parse("""
+                                         |{
+                                         | "itsaStatusDetails": [
+                                         |    {
+                                         |     "submittedOn": "2021-03-23T16:02:34.039Z",
+                                         |     "status": "00",
+                                         |     "statusReason": "01"
+                                         |     }
+                                         |   ]
+                                         |}
+                                         |""".stripMargin)
 
-        mtdJson.as[CreateAmendITSAStatusRequestBody] shouldBe itsaRequestBody
-      }
+  private val downstreamJson = Json.parse("""
+                                            |{
+                                            | "itsaStatusDetails": [
+                                            |    {
+                                            |     "submittedOn": "2021-03-23T16:02:34.039Z",
+                                            |     "status": "No Status",
+                                            |     "statusReason": "Sign up - no return available"
+                                            |     }
+                                            |   ]
+                                            |}
+                                            |""".stripMargin)
+
+  "ITSAStatusRequestBody" should {
+    "read from vendor Json" in {
+      requestJson.as[CreateAmendITSAStatusRequestBody] shouldBe itsaRequestBody
+    }
+
+    "write to downstream Json" in {
+      Json.toJson(itsaRequestBody) shouldBe downstreamJson
     }
   }
 

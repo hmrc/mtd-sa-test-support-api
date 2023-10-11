@@ -17,16 +17,17 @@
 package uk.gov.hmrc.mtdsatestsupportapi.controllers.requestParsers.validators
 
 import api.controllers.requestParsers.validators.Validator
-import api.controllers.requestParsers.validators.validations.{NinoValidation, TaxYearValidation}
+import api.controllers.requestParsers.validators.validations.{DateValidation, NinoValidation, TaxYearValidation}
 import api.models.errors.MtdError
-import uk.gov.hmrc.mtdsatestsupportapi.models.request.createAmendITSAStatus.CreateAmendITSAStatusRawData
+import uk.gov.hmrc.mtdsatestsupportapi.controllers.requestParsers.validators.validations.{BusinessIncome2YearsPriorValidation, StatusValidation}
+import uk.gov.hmrc.mtdsatestsupportapi.models.request.createAmendITSAStatus.{CreateAmendITSAStatusRawData, CreateAmendITSAStatusRequestBody}
 
 import javax.inject.Inject
 
 class CreateAmendITSAStatusValidator @Inject() extends Validator[CreateAmendITSAStatusRawData] {
 
   private val validationSet =
-    List(parameterFormatValidation)
+    List(parameterFormatValidation, bodyValidation)
 
   override def validate(data: CreateAmendITSAStatusRawData): List[MtdError] = {
     run(validationSet, data).distinct
@@ -39,17 +40,22 @@ class CreateAmendITSAStatusValidator @Inject() extends Validator[CreateAmendITSA
     )
   }
 
-//  private def bodyFieldValidation: CreateAmendITSAStatusRawData => List[List[MtdError]] = { data =>
-//    val body = data.body.as[ITSAStatusDetail]
-//    List(
-//      Validator.flattenErrors(
-//        List(
-//          body.status.map().getOrElse(Nil),
-//          body.periodExpenses.map(e => validateExpenses(e, data.includeNegatives)).getOrElse(Nil),
-//          body.periodDisallowableExpenses.map(e => validateDisallowableExpenses(e, data.includeNegatives)).getOrElse(Nil)
-//        ).flatten
-//      )
-//    )
-//  }
+  private def bodyValidation: CreateAmendITSAStatusRawData => List[List[MtdError]] = (data: CreateAmendITSAStatusRawData) => {
+    val body = data.body.as[CreateAmendITSAStatusRequestBody]
+
+    List(bodyFieldValidation(body))
+  }
+
+  private def bodyFieldValidation(body: CreateAmendITSAStatusRequestBody): List[MtdError] = {
+
+    val submittedOnError: Seq[MtdError] = body.itsaStatusDetails.map(_.submittedOn).flatMap(DateValidation.validateSubmittedOn(_))
+    val statusError: Seq[MtdError]      = body.itsaStatusDetails.flatMap(status => StatusValidation.validate(status.status.toString))
+    val statusReasonError: Seq[MtdError] =
+      body.itsaStatusDetails.flatMap(statusReason => StatusValidation.validate(statusReason.statusReason.toString))
+    val businessError: Seq[MtdError] =
+      body.itsaStatusDetails.map(_.businessIncome2YearsPrior).flatMap(BusinessIncome2YearsPriorValidation.validateOptional(_, "/path"))
+
+    (submittedOnError ++ statusError ++ statusReasonError ++ businessError).toList
+  }
 
 }

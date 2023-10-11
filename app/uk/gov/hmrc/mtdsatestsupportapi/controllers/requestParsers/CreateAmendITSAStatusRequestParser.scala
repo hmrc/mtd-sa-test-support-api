@@ -16,7 +16,22 @@
 
 package uk.gov.hmrc.mtdsatestsupportapi.controllers.requestParsers
 
+import api.controllers.requestParsers.RequestParser
+import api.models.domain.{Nino, TaxYear}
+import uk.gov.hmrc.mtdsatestsupportapi.controllers.requestParsers.validators.CreateAmendITSAStatusValidator
+import uk.gov.hmrc.mtdsatestsupportapi.models.request.createAmendITSAStatus.{
+  CreateAmendITSAStatusRawData,
+  CreateAmendITSAStatusRequest,
+  CreateAmendITSAStatusRequestBody
+}
+
 import javax.inject.{Inject, Singleton}
 
 @Singleton
-class CreateAmendITSAStatusRequestParser @Inject() {}
+class CreateAmendITSAStatusRequestParser @Inject() (val validator: CreateAmendITSAStatusValidator)
+    extends RequestParser[CreateAmendITSAStatusRawData, CreateAmendITSAStatusRequest] {
+
+  override protected def requestFor(data: CreateAmendITSAStatusRawData): CreateAmendITSAStatusRequest =
+    CreateAmendITSAStatusRequest(Nino(data.nino), TaxYear.fromMtd(data.taxYear), data.body.as[CreateAmendITSAStatusRequestBody])
+
+}

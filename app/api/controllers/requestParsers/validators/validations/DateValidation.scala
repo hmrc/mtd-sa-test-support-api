@@ -32,8 +32,6 @@ object DateValidation {
 
   def validateSubmittedOn(value: String, error: => MtdError = SubmittedOnFormat): Seq[MtdError] = {
     val submittedOnFormatter: DateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSX")
-    println("what is this" + submittedOnFormatter)
-
     Try(submittedOnFormatter.parse(value)) match {
       case Success(_) => Nil
       case Failure(_) => List(error)
