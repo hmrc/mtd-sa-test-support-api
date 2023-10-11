@@ -51,10 +51,10 @@ object RuleUnexpectedTradingName
 
 object RuleMissingTradingName extends MtdError("RULE_MISSING_TRADING_NAME", "tradingName not provided for the self-employment business", BAD_REQUEST)
 
-object StatusFormat       extends MtdError("FORMAT_STATUS", "The provided status is invalid", BAD_REQUEST)
-object StatusReasonFormat extends MtdError("FORMAT_STATUS_REASON", "The provided status reason is invalid", BAD_REQUEST)
+object StatusFormatError       extends MtdError("FORMAT_STATUS", "The provided status is invalid", BAD_REQUEST)
+object StatusReasonFormatError extends MtdError("FORMAT_STATUS_REASON", "The provided status reason is invalid", BAD_REQUEST)
 
-object BusinessIncomePriorTo2YearsFormat
+object BusinessIncomePriorTo2YearsFormatError
     extends MtdError("FORMAT_BUSINESS_INCOME_PRIOR_TO_2_YEARS", "The provided business Income Prior To 2 Years is invalid", BAD_REQUEST)
 
-object SubmittedOnFormat extends MtdError("FORMAT_SUBMITTED_ON", "The provided submitted on date is invalid", BAD_REQUEST)
+object SubmittedOnFormatError extends MtdError("FORMAT_SUBMITTED_ON", "The provided submitted on date is invalid", BAD_REQUEST)

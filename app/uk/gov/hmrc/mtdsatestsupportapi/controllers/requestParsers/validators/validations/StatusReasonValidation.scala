@@ -17,11 +17,13 @@
 package uk.gov.hmrc.mtdsatestsupportapi.controllers.requestParsers.validators.validations
 
 import api.controllers.requestParsers.validators.validations.EnumValidation
-import api.models.errors.{MtdError, StatusReasonFormat}
+import api.models.errors.{MtdError, StatusReasonFormatError}
 import uk.gov.hmrc.mtdsatestsupportapi.models.domain.StatusReason
 
 object StatusReasonValidation extends EnumValidation[StatusReason] {
   override protected val parser: PartialFunction[String, StatusReason] = StatusReason.parser
 
-  def validate(value: String, error: => MtdError = StatusReasonFormat): Seq[MtdError] = validateEnum(value, error)
+  def validate(value: String, error: => MtdError = StatusReasonFormatError, path: Option[String] = None): Seq[MtdError] =
+    validateEnum(value, path.map(error.withExtraPath).getOrElse(error))
+
 }

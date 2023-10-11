@@ -16,12 +16,12 @@
 
 package api.controllers.requestParsers.validators.validations
 
-import api.models.errors.{DateFormatError, SubmittedOnFormat}
+import api.models.errors.{DateFormatError, SubmittedOnFormatError}
 import support.UnitSpec
 
 class DateValidationSpec extends UnitSpec {
   private val dateFormatError  = DateFormatError
-  private val submittedOnError = SubmittedOnFormat
+  private val submittedOnError = SubmittedOnFormatError
 
   "DateValidation" must {
     "return no errors" when {

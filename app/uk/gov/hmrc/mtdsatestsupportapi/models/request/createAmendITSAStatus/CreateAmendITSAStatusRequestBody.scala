@@ -16,10 +16,10 @@
 
 package uk.gov.hmrc.mtdsatestsupportapi.models.request.createAmendITSAStatus
 
-import play.api.libs.json.{Format, Json}
+import play.api.libs.json.{OFormat, Json}
 
 case class CreateAmendITSAStatusRequestBody(itsaStatusDetails: Seq[ITSAStatusDetail])
 
 object CreateAmendITSAStatusRequestBody {
-  implicit val format: Format[CreateAmendITSAStatusRequestBody] = Json.format
+  implicit val format: OFormat[CreateAmendITSAStatusRequestBody] = Json.format[CreateAmendITSAStatusRequestBody]
 }
