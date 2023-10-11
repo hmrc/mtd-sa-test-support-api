@@ -49,7 +49,7 @@ class CreateAmendITSAStatusConnectorSpec extends ConnectorSpec {
         when(POST, s"/test-support/itsa-details/$nino/${taxYear.asTys}")
           .withRequestBody(body)
           .withHeaders(requiredHeaders)
-          .thenReturnNoContent()
+          .thenReturnNoContent(headers = responseHeaders)
 
         val result: DownstreamOutcome[Unit] = await(connector.createAmend(request))
         result shouldBe Right(ResponseWrapper(responseCorrelationId, ()))
