@@ -1,11 +1,10 @@
 {
-  "taxYear": "2023-24",
   "itsaStatusDetails": [
     {
       "submittedOn": "2021-03-23T16:02:34.039Z",
       "status": "01",
       "statusReason": "02",
-      "businessIncomePriorTo2Years": 4500.23
+      "businessIncome2YearsPrior": 4500.23
     }
   ]
 }

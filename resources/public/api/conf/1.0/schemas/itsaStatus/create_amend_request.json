@@ -4,16 +4,9 @@
   "type": "object",
   "title": "Root Schema",
   "required": [
-    "taxYear",
     "itsaStatusDetails"
   ],
   "properties": {
-    "taxYear": {
-      "type": "string",
-      "description": "The tax year the data applies to. The start year and end year must not span two tax years. No gaps are allowed - for example, 2023-25 is not valid. There is no minimum tax year.",
-      "examples": "2023-24",
-      "format": "YYYY-YY"
-    },
     "itsaStatusDetails": {
       "type": "array",
       "descripton": "An array of ITSA status details for a specific National Insurance number and tax year.",
@@ -60,7 +53,7 @@
               "09"
             ]
           },
-          "businessIncomePriorTo2Years": {
+          "businessIncome2YearsPrior": {
             "type": "number",
             "description": "The business income for 2 years prior to the specified taxYear.\n\nFor example, if the tax year requested is 2026-27, then 'businessIncome2YearsPrior' is for the 2024-25 tax year.\n\nFor Q4 check, the business income 1 year prior will be used.",
             "minimum": 0.00,
