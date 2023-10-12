@@ -30,7 +30,7 @@ class BusinessIncome2YearsPriorValidationSpec extends UnitSpec {
     }
     "return an error" when {
       "invalid value is provided" in {
-        BusinessIncome2YearsPriorValidation.validateOptional(Some(-1000), path = "/businessIncome2YearsPrior") shouldBe Seq(error)
+        BusinessIncome2YearsPriorValidation.validateOptional(Some(-1000), path = "/businessIncome2YearsPrior") shouldBe List(error)
       }
     }
   }

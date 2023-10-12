@@ -29,11 +29,8 @@ object BusinessIncome2YearsPriorValidation {
   }
 
   private def validate(field: BigDecimal, path: String): List[MtdError] = {
-    if (field >= 0 && field < 99999999999.99 && field.scale <= 2) {
-      NoValidationErrors
-    } else {
-      List(BusinessIncome2YearsPriorFormatError)
-    }
+    if (field >= 0 && field < 99999999999.99 && field.scale <= 2) NoValidationErrors
+    else List(BusinessIncome2YearsPriorFormatError)
   }
 
 }

@@ -40,8 +40,8 @@ class DateValidationSpec extends UnitSpec {
       }
 
       "the supplied value is not a date" in {
-        DateValidation.validate("XXXX", dateFormatError) shouldBe Seq(dateFormatError)
-        DateValidation.validateSubmittedOn("XXXX", submittedOnError) shouldBe Seq(submittedOnError)
+        DateValidation.validate("invalid", dateFormatError) shouldBe Seq(dateFormatError)
+        DateValidation.validateSubmittedOn("invalid", submittedOnError) shouldBe Seq(submittedOnError)
       }
 
       "the supplied value has the correct format but does not represent a real date" in {

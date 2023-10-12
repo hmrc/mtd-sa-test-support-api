@@ -62,7 +62,7 @@ class CreateAmendITSAStatusValidatorSpec extends UnitSpec with JsonErrorValidato
     }
 
     "return FORMAT_NINO error" when {
-      "Format of the nino provided is not valid" in {
+      "format of the nino provided is not valid" in {
         val result = validator.validate(CreateAmendITSAStatusRawData("invalid", taxYear, body))
 
         result shouldBe List(NinoFormatError)
@@ -70,7 +70,7 @@ class CreateAmendITSAStatusValidatorSpec extends UnitSpec with JsonErrorValidato
     }
 
     "return FORMAT_TAX_YEAR error" when {
-      "Format of the tax year provided is not valid" in {
+      "format of the tax year provided is not valid" in {
         val result = validator.validate(CreateAmendITSAStatusRawData(nino, "202-23", body))
 
         result shouldBe List(TaxYearFormatError)
@@ -78,7 +78,7 @@ class CreateAmendITSAStatusValidatorSpec extends UnitSpec with JsonErrorValidato
     }
 
     "return RULE_TAX_YEAR_RANGE_INVALID error" when {
-      "Format of the tax year provided is not valid" in {
+      "format of the tax year provided is not valid" in {
         val result = validator.validate(CreateAmendITSAStatusRawData(nino, "2021-23", body))
 
         result shouldBe List(RuleTaxYearRangeInvalidError)
