@@ -40,13 +40,11 @@ trait Validator[A <: RawData] {
   protected def flattenErrors(errors: List[List[MtdError]]): List[MtdError] = {
     errors.flatten
       .groupBy(_.message)
-      .map {
-        case (_, errors) =>
-          val baseError = errors.head.copy(paths = Some(Seq.empty[String]))
+      .map { case (_, errors) =>
+        val baseError = errors.head.copy(paths = Some(Seq.empty[String]))
 
-          errors.fold(baseError)(
-            (error1, error2) => error1.copy(paths = Some(error1.paths.getOrElse(Seq.empty[String]) ++ error2.paths.getOrElse(Seq.empty[String])))
-          )
+        errors.fold(baseError)((error1, error2) =>
+          error1.copy(paths = Some(error1.paths.getOrElse(Seq.empty[String]) ++ error2.paths.getOrElse(Seq.empty[String]))))
       }
       .toList
   }
@@ -57,12 +55,11 @@ trait Validator[A <: RawData] {
   private def combine(errors: Seq[MtdError]): List[MtdError] =
     errors
       .groupBy(_.message)
-      .foldLeft(List[MtdError]()) {
-        case (acc, (_, errs)) =>
-          val paths      = errs.flatMap(_.paths.getOrElse(Nil))
-          val maybePaths = if (paths.isEmpty) None else Some(paths)
+      .foldLeft(List[MtdError]()) { case (acc, (_, errs)) =>
+        val paths      = errs.flatMap(_.paths.getOrElse(Nil))
+        val maybePaths = if (paths.isEmpty) None else Some(paths)
 
-          acc ++ errs.headOption.map(_.copy(paths = maybePaths))
+        acc ++ errs.headOption.map(_.copy(paths = maybePaths))
       }
 
 }

@@ -29,6 +29,8 @@ object StatusReason {
 
   implicit val reads: Reads[StatusReason] = Enums.reads[StatusReason]
 
+  val parser: PartialFunction[String, StatusReason] = Enums.parser[StatusReason]
+
   case object `00` extends StatusReason {
     val downstreamValue = "Sign up - return available"
   }

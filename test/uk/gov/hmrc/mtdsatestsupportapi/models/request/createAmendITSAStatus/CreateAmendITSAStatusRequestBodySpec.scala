@@ -27,28 +27,28 @@ class CreateAmendITSAStatusRequestBodySpec extends UnitSpec {
   )
 
   private val requestJson = Json.parse("""
-      |{
-      | "itsaStatusDetails": [
-      |    {
-      |     "submittedOn": "2021-03-23T16:02:34.039Z",
-      |     "status": "00",
-      |     "statusReason": "01"
-      |     }
-      |   ]
-      |}
-      |""".stripMargin)
+                                         |{
+                                         | "itsaStatusDetails": [
+                                         |    {
+                                         |     "submittedOn": "2021-03-23T16:02:34.039Z",
+                                         |     "status": "00",
+                                         |     "statusReason": "01"
+                                         |     }
+                                         |   ]
+                                         |}
+                                         |""".stripMargin)
 
   private val downstreamJson = Json.parse("""
-      |{
-      | "itsaStatusDetails": [
-      |    {
-      |     "submittedOn": "2021-03-23T16:02:34.039Z",
-      |     "status": "No Status",
-      |     "statusReason": "Sign up - no return available"
-      |     }
-      |   ]
-      |}
-      |""".stripMargin)
+                                            |{
+                                            | "itsaStatusDetails": [
+                                            |    {
+                                            |     "submittedOn": "2021-03-23T16:02:34.039Z",
+                                            |     "status": "No Status",
+                                            |     "statusReason": "Sign up - no return available"
+                                            |     }
+                                            |   ]
+                                            |}
+                                            |""".stripMargin)
 
   "ITSAStatusRequestBody" should {
     "read from vendor Json" in {

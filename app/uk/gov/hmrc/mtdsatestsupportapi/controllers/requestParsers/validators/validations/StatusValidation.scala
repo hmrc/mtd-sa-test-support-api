@@ -14,12 +14,16 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.mtdsatestsupportapi.models.request.createAmendITSAStatus
+package uk.gov.hmrc.mtdsatestsupportapi.controllers.requestParsers.validators.validations
 
-import play.api.libs.json.{OFormat, Json}
+import api.controllers.requestParsers.validators.validations.EnumValidation
+import api.models.errors.{MtdError, StatusFormatError}
+import uk.gov.hmrc.mtdsatestsupportapi.models.domain.Status
 
-case class CreateAmendITSAStatusRequestBody(itsaStatusDetails: Seq[ITSAStatusDetail])
+object StatusValidation extends EnumValidation[Status] {
+  override protected val parser: PartialFunction[String, Status] = Status.parser
 
-object CreateAmendITSAStatusRequestBody {
-  implicit val format: OFormat[CreateAmendITSAStatusRequestBody] = Json.format[CreateAmendITSAStatusRequestBody]
+  def validate(value: String, error: => MtdError = StatusFormatError, path: Option[String] = None): Seq[MtdError] =
+    validateEnum(value, path.map(error.withExtraPath).getOrElse(error))
+
 }
