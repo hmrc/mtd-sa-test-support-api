@@ -16,21 +16,21 @@
 
 package uk.gov.hmrc.mtdsatestsupportapi.controllers.requestParsers.validators.validations
 
-import api.models.errors.BusinessIncomePriorTo2YearsFormatError
+import api.models.errors.BusinessIncome2YearsPriorFormatError
 import support.UnitSpec
 
 class BusinessIncome2YearsPriorValidationSpec extends UnitSpec {
-  val error = BusinessIncomePriorTo2YearsFormatError
+  private val error = BusinessIncome2YearsPriorFormatError
 
   "BusinessIncome2YearsPriorValidation" must {
     "return no errors" when {
       "a valid value is provided" in {
-        BusinessIncome2YearsPriorValidation.validateOptional(Some(2000), path = "/path") shouldBe Nil
+        BusinessIncome2YearsPriorValidation.validateOptional(Some(2000), path = "/businessIncome2YearsPrior") shouldBe Nil
       }
     }
     "return an error" when {
       "invalid value is provided" in {
-        BusinessIncome2YearsPriorValidation.validateOptional(Some(-1000), path = "/path") shouldBe Seq(error)
+        BusinessIncome2YearsPriorValidation.validateOptional(Some(-1000), path = "/businessIncome2YearsPrior") shouldBe Seq(error)
       }
     }
   }

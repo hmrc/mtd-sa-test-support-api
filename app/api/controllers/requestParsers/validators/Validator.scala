@@ -37,7 +37,7 @@ trait Validator[A <: RawData] {
     }
   }
 
-  def flattenErrors(errors: List[List[MtdError]]): List[MtdError] = {
+  protected def flattenErrors(errors: List[List[MtdError]]): List[MtdError] = {
     errors.flatten
       .groupBy(_.message)
       .map { case (_, errors) =>
@@ -49,7 +49,7 @@ trait Validator[A <: RawData] {
       .toList
   }
 
-  def errorsResult(errors: Seq[MtdError]): Either[List[MtdError], Unit] =
+  protected def errorsResult(errors: Seq[MtdError]): Either[List[MtdError], Unit] =
     Either.cond(errors.isEmpty, Right(()), combine(errors))
 
   private def combine(errors: Seq[MtdError]): List[MtdError] =

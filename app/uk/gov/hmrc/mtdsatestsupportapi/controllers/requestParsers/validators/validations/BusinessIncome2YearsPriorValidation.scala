@@ -17,7 +17,7 @@
 package uk.gov.hmrc.mtdsatestsupportapi.controllers.requestParsers.validators.validations
 
 import api.controllers.requestParsers.validators.validations.NoValidationErrors
-import api.models.errors.{BusinessIncomePriorTo2YearsFormatError, MtdError}
+import api.models.errors.{BusinessIncome2YearsPriorFormatError, MtdError}
 
 object BusinessIncome2YearsPriorValidation {
 
@@ -32,7 +32,7 @@ object BusinessIncome2YearsPriorValidation {
     if (field >= 0 && field < 99999999999.99 && field.scale <= 2) {
       NoValidationErrors
     } else {
-      List(BusinessIncomePriorTo2YearsFormatError)
+      List(BusinessIncome2YearsPriorFormatError)
     }
   }
 

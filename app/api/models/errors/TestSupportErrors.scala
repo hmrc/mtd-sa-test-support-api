@@ -54,7 +54,7 @@ object RuleMissingTradingName extends MtdError("RULE_MISSING_TRADING_NAME", "tra
 object StatusFormatError       extends MtdError("FORMAT_STATUS", "The provided status is invalid", BAD_REQUEST)
 object StatusReasonFormatError extends MtdError("FORMAT_STATUS_REASON", "The provided status reason is invalid", BAD_REQUEST)
 
-object BusinessIncomePriorTo2YearsFormatError
-    extends MtdError("FORMAT_BUSINESS_INCOME_PRIOR_TO_2_YEARS", "The provided business Income Prior To 2 Years is invalid", BAD_REQUEST)
+object BusinessIncome2YearsPriorFormatError
+    extends MtdError("FORMAT_BUSINESS_INCOME_2_YEARS_PRIOR", "The provided business Income 2 Years Prior is invalid", BAD_REQUEST)
 
 object SubmittedOnFormatError extends MtdError("FORMAT_SUBMITTED_ON", "The provided submitted on date is invalid", BAD_REQUEST)

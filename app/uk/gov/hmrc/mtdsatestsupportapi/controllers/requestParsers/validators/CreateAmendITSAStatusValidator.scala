@@ -72,7 +72,6 @@ class CreateAmendITSAStatusValidator extends Validator[CreateAmendITSAStatusRawD
     }
   }
 
-  // NOTE: This can only be done once the bodyFieldValidation has been done
   private def bodyValidation: CreateAmendITSAStatusRawData => List[List[MtdError]] = (data: CreateAmendITSAStatusRawData) =>
     data.body
       .as[CreateAmendITSAStatusRequestBody]

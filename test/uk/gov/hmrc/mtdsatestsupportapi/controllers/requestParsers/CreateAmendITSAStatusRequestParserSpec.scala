@@ -22,12 +22,7 @@ import play.api.libs.json.{JsValue, Json}
 import support.UnitSpec
 import uk.gov.hmrc.mtdsatestsupportapi.mocks.validators.MockCreateAmendITSAStatusValidator
 import uk.gov.hmrc.mtdsatestsupportapi.models.domain.{Status, StatusReason}
-import uk.gov.hmrc.mtdsatestsupportapi.models.request.createAmendITSAStatus.{
-  CreateAmendITSAStatusRawData,
-  CreateAmendITSAStatusRequest,
-  CreateAmendITSAStatusRequestBody,
-  ITSAStatusDetail
-}
+import uk.gov.hmrc.mtdsatestsupportapi.models.request.createAmendITSAStatus._
 
 class CreateAmendITSAStatusRequestParserSpec extends UnitSpec with MockCreateAmendITSAStatusValidator {
 
