@@ -14,30 +14,29 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.mtdsatestsupportapi.services
+package uk.gov.hmrc.mtdsatestsupportapi.mocks.services
 
 import api.controllers.RequestContext
-import api.models.errors._
-import api.services.{BaseService, ServiceOutcome}
-import cats.implicits.toBifunctorOps
-import uk.gov.hmrc.mtdsatestsupportapi.connectors.CreateAmendITSAStatusConnector
+import api.models.errors.ErrorWrapper
+import api.models.outcomes.ResponseWrapper
+import org.scalamock.handlers.CallHandler
+import org.scalamock.scalatest.MockFactory
 import uk.gov.hmrc.mtdsatestsupportapi.models.request.createAmendITSAStatus.CreateAmendITSAStatusRequest
+import uk.gov.hmrc.mtdsatestsupportapi.services.CreateAmendITSAStatusService
 
-import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 
-@Singleton
-class CreateAmendITSAStatusService @Inject() (connector: CreateAmendITSAStatusConnector) extends BaseService {
+trait MockCreateAmendITSAStatusService extends MockFactory {
 
-  def createAmend(request: CreateAmendITSAStatusRequest)(implicit ec: ExecutionContext, rc: RequestContext): Future[ServiceOutcome[Unit]] = {
-    connector.createAmend(request).map(_.leftMap(mapDownstreamErrors(stubErrorMap)))
+  val mockService: CreateAmendITSAStatusService = mock[CreateAmendITSAStatusService]
+
+  object MockCreateAmendITSAStatusService {
+
+    def createAmend(request: CreateAmendITSAStatusRequest): CallHandler[Future[Either[ErrorWrapper, ResponseWrapper[Unit]]]] = {
+      (mockService
+        .createAmend(_: CreateAmendITSAStatusRequest)(_: ExecutionContext, _: RequestContext))
+        .expects(request, *, *)
+    }
+
   }
-
-  private val stubErrorMap: Map[String, MtdError] = {
-    Map(
-      "SERVER_ERROR"        -> InternalError,
-      "SERVICE_UNAVAILABLE" -> InternalError
-    )
-  }
-
 }

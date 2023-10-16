@@ -31,7 +31,9 @@ import javax.inject.{Inject, Singleton}
 class CreateAmendITSAStatusRequestParser @Inject() (val validator: CreateAmendITSAStatusValidator)
     extends RequestParser[CreateAmendITSAStatusRawData, CreateAmendITSAStatusRequest] {
 
-  override protected def requestFor(data: CreateAmendITSAStatusRawData): CreateAmendITSAStatusRequest =
+  override protected def requestFor(data: CreateAmendITSAStatusRawData): CreateAmendITSAStatusRequest = {
     CreateAmendITSAStatusRequest(Nino(data.nino), TaxYear.fromMtd(data.taxYear), data.body.as[CreateAmendITSAStatusRequestBody])
+
+  }
 
 }

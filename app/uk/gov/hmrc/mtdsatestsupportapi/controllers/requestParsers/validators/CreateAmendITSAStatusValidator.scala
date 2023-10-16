@@ -36,6 +36,7 @@ class CreateAmendITSAStatusValidator extends Validator[CreateAmendITSAStatusRawD
 
   private val validationSet = List(parameterFormatValidation, enumFieldsValidation, bodyFormatValidation, bodyValidation)
 
+
   override def validate(data: CreateAmendITSAStatusRawData): List[MtdError] = run(validationSet, data).distinct
 
   private def parameterFormatValidation: CreateAmendITSAStatusRawData => List[List[MtdError]] = (data: CreateAmendITSAStatusRawData) =>
