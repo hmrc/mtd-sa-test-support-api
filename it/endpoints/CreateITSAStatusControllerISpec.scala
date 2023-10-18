@@ -17,16 +17,32 @@
 package endpoints
 
 import api.models.domain.TaxYear
-import api.models.errors.{MtdError, NinoFormatError, NotFoundError, StatusFormatError, StatusReasonFormatError, TaxYearFormatError}
+import api.models.errors._
+import api.utils.JsonErrorValidators
 import com.github.tomakehurst.wiremock.stubbing.StubMapping
 import play.api.http.HeaderNames.ACCEPT
-import play.api.http.Status.{BAD_REQUEST, CREATED, NOT_FOUND, NO_CONTENT}
-import play.api.libs.json.{JsNull, JsObject, JsValue, Json}
+import play.api.http.Status.{BAD_REQUEST, CREATED, NO_CONTENT}
+import play.api.libs.json.{JsArray, JsNumber, JsObject, JsString, JsValue, Json}
 import play.api.libs.ws.{WSRequest, WSResponse}
 import play.api.test.Helpers.AUTHORIZATION
 import support.IntegrationBaseSpec
 
-class CreateITSAStatusControllerISpec extends IntegrationBaseSpec {
+class CreateITSAStatusControllerISpec extends IntegrationBaseSpec with JsonErrorValidators {
+
+  private def bodyWith(entries: JsValue*) = Json.parse(s"""
+                                                          |{
+                                                          | "itsaStatusDetails": ${JsArray(entries)}
+                                                          |}
+                                                          |""".stripMargin)
+
+  private val itsaStatusDetail = Json.parse("""
+                                              |{
+                                              |     "submittedOn": "2021-03-23T16:02:34.039Z",
+                                              |     "status": "00",
+                                              |     "statusReason": "01",
+                                              |     "businessIncome2YearsPrior": 34999.99
+                                              |}
+                                              |""".stripMargin)
 
   "Calling the create checkpoint endpoint" should {
     "return a 201 status code" when {
@@ -53,7 +69,7 @@ class CreateITSAStatusControllerISpec extends IntegrationBaseSpec {
           override def setupStubs(): StubMapping =
             AuthStub.authorised()
 
-          val response: WSResponse = await(request().post(JsNull))
+          val response: WSResponse = await(request().post(requestBody))
           response.status shouldBe expectedStatus
           response.json shouldBe Json.toJson(expectedBody)
         }
@@ -63,87 +79,48 @@ class CreateITSAStatusControllerISpec extends IntegrationBaseSpec {
         (
           "BAD_NINO",
           TaxYear.fromMtd("2023-24"),
-          Json
-            .parse( // without BusinessIncome2YearsPrior (there's a bug in the validator)
-              s"""{
-               |  "itsaStatusDetails": [
-               |    {
-               |      "submittedOn": "2021-03-23T16:02:34.039Z",
-               |      "status": "01",
-               |      "statusReason": "02"
-               |    }
-               |  ]
-               |}""".stripMargin)
-            .as[JsObject],
+          bodyWith(itsaStatusDetail).as[JsObject],
           BAD_REQUEST,
           NinoFormatError),
         (
           "AA123456A",
           TaxYear.fromMtd("2007-08"),
-          Json
-            .parse(
-              s"""{
-               |  "itsaStatusDetails": [
-               |    {
-               |      "submittedOn": "2021-03-23T16:02:34.039Z",
-               |      "status": "01",
-               |      "statusReason": "02"
-               |    }
-               |  ]
-               |}""".stripMargin)
-            .as[JsObject],
+          bodyWith(itsaStatusDetail).as[JsObject],
           BAD_REQUEST,
           TaxYearFormatError),
-        ("AA123456A", TaxYear.fromMtd("2022-23"),Json
-          .parse(
-            s"""{
-               |  "itsaStatusDetails": [
-               |    {
-               |      "submittedOn": "2021-03-23T16:02:34.039Z",
-               |      "status": "01",
-               |      "statusReason": "02",
-               |      "businessIncome2YearsPrior": 234
-               |    }
-               |  ]
-               |}""".stripMargin)
-          .as[JsObject], BAD_REQUEST, StatusFormatError),
-        ("AA123456A", TaxYear.fromMtd("2022-23"),Json
-          .parse(
-            s"""{
-               |  "itsaStatusDetails": [
-               |    {
-               |      "submittedOn": "2021-03-23T16:02:34.039Z",
-               |      "status": "01",
-               |      "statusReason": "invalid_reason"
-               |    }
-               |  ]
-               |}""".stripMargin)
-          .as[JsObject], BAD_REQUEST, StatusReasonFormatError)
+        (
+          "AA123456A",
+          TaxYear.fromMtd("2022-23"),
+          bodyWith(itsaStatusDetail.update("/status", JsString("invalid_status"))).as[JsObject],
+          BAD_REQUEST,
+          StatusFormatError.withExtraPath("/itsaStatusDetails/0/status")),
+        (
+          "AA123456A",
+          TaxYear.fromMtd("2022-23"),
+          bodyWith(itsaStatusDetail.update("/statusReason", JsString("invalid_status_reason"))).as[JsObject],
+          BAD_REQUEST,
+          StatusReasonFormatError.withExtraPath("/itsaStatusDetails/0/statusReason")),
+        (
+          "AA123456A",
+          TaxYear.fromMtd("2022-23"),
+          bodyWith(itsaStatusDetail.update("/businessIncome2YearsPrior", JsNumber(-1))).as[JsObject],
+          BAD_REQUEST,
+          BusinessIncome2YearsPriorFormatError.withExtraPath("/itsaStatusDetails/0/businessIncome2YearsPrior")),
+        (
+          "AA123456A",
+          TaxYear.fromMtd("2022-23"),
+          bodyWith(itsaStatusDetail.update("/submittedOn", JsString("2021-03-23T16:02:34"))).as[JsObject],
+          BAD_REQUEST,
+          SubmittedOnFormatError.withExtraPath("/itsaStatusDetails/0/submittedOn")),
+        (
+          "AA123456A",
+          TaxYear.fromMtd("2022-23"),
+          bodyWith(itsaStatusDetail.removeProperty("/statusReason")).as[JsObject],
+          BAD_REQUEST,
+          RuleIncorrectOrEmptyBodyError.withExtraPath("/itsaStatusDetails/0/statusReason"))
       )
 
-      input.foreach(args => (validationErrorTest _).tupled(args))
-    }
-
-    "return a stub error" when {
-      def serviceError(stubErrorStatus: Int, stubErrorCode: String, expectedStatus: Int, expectedError: MtdError): Unit = {
-        s"stub returns a $stubErrorCode error and status $stubErrorStatus" in new Test {
-
-          override def setupStubs(): StubMapping = {
-            AuthStub.authorised()
-            DownstreamStub.onError(POST, downstreamUri, stubErrorStatus, downstreamErrorBody(stubErrorCode))
-          }
-
-          val response: WSResponse = await(request().post(JsNull))
-          response.status shouldBe expectedStatus
-          response.json shouldBe Json.toJson(expectedError)
-        }
-      }
-
-      val stubErrors = Seq(
-        (NOT_FOUND, "NOT_FOUND", NOT_FOUND, NotFoundError)
-      )
-
-      stubErrors.foreach(elem => (serviceError _).tupled(elem))
+      input.foreach((validationErrorTest _).tupled)
     }
   }
 
@@ -155,8 +132,7 @@ class CreateITSAStatusControllerISpec extends IntegrationBaseSpec {
     val taxYear: TaxYear = TaxYear.fromMtd("2023-24")
 
     val requestBody: JsObject = Json
-      .parse( // without BusinessIncome2YearsPrior (there's a bug in the validator)
-        s"""{
+      .parse(s"""{
          |  "itsaStatusDetails": [
          |    {
          |      "submittedOn": "2021-03-23T16:02:34.039Z",

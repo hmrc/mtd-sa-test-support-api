@@ -48,7 +48,6 @@ class CreateAmendITSAStatusController @Inject() (val cc: ControllerComponents,
     request.headers.get("X-Client-Id") match {
       case Some(_) =>
         val rawData = CreateAmendITSAStatusRawData( nino, taxYear, request.body)
-        println("here 2")
         val requestHandler = RequestHandler
           .withParser(parser)
           .withService(service.createAmend)

@@ -36,8 +36,11 @@ class CreateAmendITSAStatusValidator extends Validator[CreateAmendITSAStatusRawD
 
   private val validationSet = List(parameterFormatValidation, enumFieldsValidation, bodyFormatValidation, bodyValidation)
 
+  override def validate(data: CreateAmendITSAStatusRawData): List[MtdError] = {
 
-  override def validate(data: CreateAmendITSAStatusRawData): List[MtdError] = run(validationSet, data).distinct
+    val result = run(validationSet, data).distinct
+    result
+  }
 
   private def parameterFormatValidation: CreateAmendITSAStatusRawData => List[List[MtdError]] = (data: CreateAmendITSAStatusRawData) =>
     List(
@@ -73,13 +76,16 @@ class CreateAmendITSAStatusValidator extends Validator[CreateAmendITSAStatusRawD
     }
   }
 
-  private def bodyValidation: CreateAmendITSAStatusRawData => List[List[MtdError]] = (data: CreateAmendITSAStatusRawData) =>
-    data.body
+  private def bodyValidation: CreateAmendITSAStatusRawData => List[List[MtdError]] = (data: CreateAmendITSAStatusRawData) => {
+    val result = data.body
       .as[CreateAmendITSAStatusRequestBody]
       .itsaStatusDetails
       .zipWithIndex
       .map { case (entry, index) => validateItsaStatusDetails(entry, index) }
       .toList
+
+    result
+  }
 
   private def validateItsaStatusDetails(detail: ITSAStatusDetail, index: Int): List[MtdError] = {
     import detail._
@@ -87,7 +93,8 @@ class CreateAmendITSAStatusValidator extends Validator[CreateAmendITSAStatusRawD
     val submittedOnErrors = DateValidation.validateSubmittedOn(submittedOn).map(_.withExtraPath(s"/itsaStatusDetails/$index/submittedOn"))
 
     val businessIncomeErrors =
-      BusinessIncome2YearsPriorValidation.validateOptional(businessIncome2YearsPrior, s"/itsaStatusDetails/$index/businessIncome2YearsPrior")
+      BusinessIncome2YearsPriorValidation
+        .validateOptional(businessIncome2YearsPrior, s"/itsaStatusDetails/$index/businessIncome2YearsPrior")
 
     (submittedOnErrors ++ businessIncomeErrors).toList
   }
