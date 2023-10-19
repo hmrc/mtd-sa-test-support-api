@@ -21,13 +21,13 @@ import api.models.errors._
 import api.utils.JsonErrorValidators
 import com.github.tomakehurst.wiremock.stubbing.StubMapping
 import play.api.http.HeaderNames.ACCEPT
-import play.api.http.Status.{BAD_REQUEST, CREATED, NO_CONTENT}
+import play.api.http.Status.{BAD_REQUEST, NO_CONTENT}
 import play.api.libs.json.{JsArray, JsNumber, JsObject, JsString, JsValue, Json}
 import play.api.libs.ws.{WSRequest, WSResponse}
 import play.api.test.Helpers.AUTHORIZATION
-import support.IntegrationBaseSpec
+import support.{IntegrationBaseSpec, UnitSpec}
 
-class CreateITSAStatusControllerISpec extends IntegrationBaseSpec with JsonErrorValidators {
+class CreateITSAStatusControllerISpec extends UnitSpec with IntegrationBaseSpec with JsonErrorValidators {
 
   private def bodyWith(entries: JsValue*) = Json.parse(s"""
                                                           |{
@@ -44,13 +44,12 @@ class CreateITSAStatusControllerISpec extends IntegrationBaseSpec with JsonError
                                               |}
                                               |""".stripMargin)
 
-  "Calling the create checkpoint endpoint" should {
-    "return a 201 status code" when {
+  "Calling the create Itsa Status endpoint" should {
+    "return a 200 status code" when {
       "a valid request is made" in new Test {
         val response: WSResponse = await(request().post(requestBody))
 
-        response.status shouldBe CREATED
-        response.json shouldBe expectedResponseBody
+        response.status shouldBe NO_CONTENT
         response.header("X-CorrelationId") should not be empty
       }
     }
@@ -143,25 +142,13 @@ class CreateITSAStatusControllerISpec extends IntegrationBaseSpec with JsonError
          |}""".stripMargin)
       .as[JsObject]
 
-    def downstreamRequestBody = Json.obj("taxYear" -> taxYear.asTys) ++ requestBody
-
-    def expectedResponseBody: JsValue = Json.parse(
-      s"""{
-         | "links": [
-         |   {
-         |     "href": "individuals/self-assessment-test-support/itsa-status/$nino/${taxYear.asMtd}",
-         |     "method": "GET",
-         |     "rel": "itsa-status"
-         |   }
-         | ]
-         |}""".stripMargin
-    )
+    def downstreamRequestBody: JsObject = Json.obj("taxYear" -> taxYear.asTys) ++ requestBody
 
     def downstreamUri = s"/test-support/itsa-details/$nino/${taxYear.asTys}"
 
     def setupStubs(): StubMapping = {
       AuthStub.authorised()
-      DownstreamStub.onSuccess(POST, downstreamUri, Seq.empty, NO_CONTENT, downstreamRequestBody)
+      DownstreamStub.onSuccess(POST, downstreamUri, Seq.empty, NO_CONTENT, body= downstreamRequestBody)
     }
 
     def request(): WSRequest = {

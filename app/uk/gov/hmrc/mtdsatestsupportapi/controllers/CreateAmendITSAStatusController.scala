@@ -17,14 +17,12 @@
 package uk.gov.hmrc.mtdsatestsupportapi.controllers
 
 import api.controllers.{AuthorisedController, EndpointLogContext, RequestContext, RequestHandler}
-import api.hateoas.HateoasFactory
 import api.services.AuthService
 import play.api.libs.json.JsValue
 import play.api.mvc.{Action, ControllerComponents}
 import uk.gov.hmrc.mtdsatestsupportapi.controllers.requestParsers.CreateAmendITSAStatusRequestParser
 import uk.gov.hmrc.mtdsatestsupportapi.models.request.createAmendITSAStatus.CreateAmendITSAStatusRawData
-import uk.gov.hmrc.mtdsatestsupportapi.models.response.createAmendITSAStatus.CreateAmendITSAStatusHateoasData
-import uk.gov.hmrc.mtdsatestsupportapi.models.response.createAmendITSAStatus.CreateAmendITSAStatusResponse.LinksFactory
+
 import uk.gov.hmrc.mtdsatestsupportapi.services.CreateAmendITSAStatusService
 import utils.{IdGenerator, Logging}
 
@@ -36,7 +34,6 @@ class CreateAmendITSAStatusController @Inject() (val cc: ControllerComponents,
                                                  val authService: AuthService,
                                                  parser: CreateAmendITSAStatusRequestParser,
                                                  service: CreateAmendITSAStatusService,
-                                                 hateoasFactory: HateoasFactory,
                                                  idGenerator: IdGenerator)(implicit ec: ExecutionContext)
   extends AuthorisedController(cc)
     with Logging {
@@ -51,10 +48,7 @@ class CreateAmendITSAStatusController @Inject() (val cc: ControllerComponents,
         val requestHandler = RequestHandler
           .withParser(parser)
           .withService(service.createAmend)
-          .withHateoasResultFrom(hateoasFactory)(
-            (request, _) => CreateAmendITSAStatusHateoasData(request.nino, request.taxYear),
-            NO_CONTENT
-          )
+
 
         requestHandler.handleRequest(rawData)
 

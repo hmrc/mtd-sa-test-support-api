@@ -17,7 +17,6 @@
 package uk.gov.hmrc.mtdsatestsupportapi.controllers
 
 import api.controllers.{ControllerBaseSpec, ControllerSpecHateoasSupport, ControllerTestRunner}
-import api.hateoas.{HateoasWrapper, MockHateoasFactory}
 import api.mocks.MockIdGenerator
 import api.mocks.services.MockAuthService
 import api.models.domain.{Nino, TaxYear}
@@ -35,7 +34,6 @@ import uk.gov.hmrc.mtdsatestsupportapi.models.request.createAmendITSAStatus.{
   CreateAmendITSAStatusRequestBody,
   ITSAStatusDetail
 }
-import uk.gov.hmrc.mtdsatestsupportapi.models.response.createAmendITSAStatus.CreateAmendITSAStatusHateoasData
 
 import scala.concurrent.Future
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -47,7 +45,6 @@ class CreateAmendITSAStatusControllerSpec
     with MockCreateAmendITSAStatusService
     with MockCreateAmendITSAStatusRequestParser
     with MockAuthService
-    with MockHateoasFactory
     with MockIdGenerator {
 
   trait Test extends ControllerTest {
@@ -84,7 +81,6 @@ class CreateAmendITSAStatusControllerSpec
       authService = mockEnrolmentsAuthService,
       parser = mockRequestParser,
       service = mockService,
-      hateoasFactory = mockHateoasFactory,
       idGenerator = mockIdGenerator)
 
     protected val hateoasResponse: JsObject = hateoaslinksJson
@@ -92,7 +88,7 @@ class CreateAmendITSAStatusControllerSpec
   }
 
   "handleRequest" should {
-    "return CREATED" when {
+    "return NO_CONTENT" when {
       "a valid request is processed successfully" in new Test {
         override protected def callController(): Future[Result] =
           controller.handleRequest(nino, taxYear.asMtd)(
@@ -102,9 +98,7 @@ class CreateAmendITSAStatusControllerSpec
 
         MockCreateAmendITSAStatusService.createAmend(requestData).returns(Future.successful(Right(ResponseWrapper(correlationId, ()))))
 
-        MockHateoasFactory.wrap((), CreateAmendITSAStatusHateoasData(Nino(nino), taxYear)).returns(HateoasWrapper((), hateoaslinks))
-
-        runOkTest(expectedStatus = CREATED, maybeExpectedResponseBody = Some(hateoasResponse))
+        runOkTest(expectedStatus = NO_CONTENT)
       }
     }
 
