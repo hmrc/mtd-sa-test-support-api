@@ -56,8 +56,8 @@ post:
               $ref: './common/errors.yaml#/components/examples/formatStatus'
             FORMAT_STATUS_REASON:
               $ref: './common/errors.yaml#/components/examples/formatStatusReason'
-            FORMAT_BUSINESS_INCOME_PRIOR_TO_2_YEARS:
-              $ref: './common/errors.yaml#/components/examples/formatBusinessIncomePriorTo2Years'
+            FORMAT_BUSINESS_INCOME_2_YEARS_PRIOR:
+              $ref: './common/errors.yaml#/components/examples/formatBusinessIncome2YearsPrior'
             FORMAT_SUBMITTED_ON:
               $ref: './common/errors.yaml#/components/examples/formatSubmittedOn'
 
