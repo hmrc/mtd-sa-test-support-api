@@ -53,7 +53,7 @@ class CreateAmendITSAStatusController @Inject() (val cc: ControllerComponents,
           .withService(service.createAmend)
           .withHateoasResultFrom(hateoasFactory)(
             (request, _) => CreateAmendITSAStatusHateoasData(request.nino, request.taxYear),
-            CREATED
+            NO_CONTENT
           )
 
         requestHandler.handleRequest(rawData)
