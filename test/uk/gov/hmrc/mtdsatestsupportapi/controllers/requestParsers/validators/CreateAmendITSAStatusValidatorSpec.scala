@@ -18,7 +18,7 @@ package uk.gov.hmrc.mtdsatestsupportapi.controllers.requestParsers.validators
 
 import api.models.errors._
 import api.utils.JsonErrorValidators
-import play.api.libs.json.{JsArray, JsObject, JsString, JsValue, Json}
+import play.api.libs.json.{JsArray, JsNumber, JsObject, JsString, JsValue, Json}
 import support.UnitSpec
 import uk.gov.hmrc.mtdsatestsupportapi.models.request.createAmendITSAStatus.CreateAmendITSAStatusRawData
 
@@ -108,6 +108,14 @@ class CreateAmendITSAStatusValidatorSpec extends UnitSpec with JsonErrorValidato
         val result = validator.validate(CreateAmendITSAStatusRawData(nino, taxYear, body))
 
         result shouldBe List(StatusReasonFormatError.withExtraPath("/itsaStatusDetails/0/statusReason"))
+      }
+    }
+    "return FORMAT_BUSINESS_INCOME_2_YEARS_PRIOR error" when {
+      "businessIncome2YearsPrior provided is invalid" in {
+        val body   = bodyWith(itsaStatusDetail.update("/businessIncome2YearsPrior", JsNumber(-1)))
+        val result = validator.validate(CreateAmendITSAStatusRawData(nino, taxYear, body))
+
+        result shouldBe List(BusinessIncome2YearsPriorFormatError.withExtraPath("/itsaStatusDetails/0/businessIncome2YearsPrior"))
       }
     }
 
