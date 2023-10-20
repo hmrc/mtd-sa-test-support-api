@@ -16,7 +16,7 @@
 
 package api.controllers.requestParsers.validators.validations
 
-import api.models.errors.{DateFormatError, MtdError}
+import api.models.errors.{DateFormatError, MtdError, SubmittedOnFormatError}
 
 import java.time.LocalDate
 import scala.util.{Failure, Success, Try}
@@ -28,5 +28,12 @@ object DateValidation {
       case Success(_) => Nil
       case Failure(_) => List(error)
     }
+
+  def validateSubmittedOn(value: String, error: => MtdError = SubmittedOnFormatError): Seq[MtdError] = {
+    Try(ISO8601Formatter.parse(value)) match {
+      case Success(_) => Nil
+      case Failure(_) => List(error)
+    }
+  }
 
 }

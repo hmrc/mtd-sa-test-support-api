@@ -16,30 +16,37 @@
 
 package api.controllers.requestParsers.validators.validations
 
-import api.models.errors.DateFormatError
+import api.models.errors.{DateFormatError, SubmittedOnFormatError}
 import support.UnitSpec
 
 class DateValidationSpec extends UnitSpec {
-  private val error = DateFormatError
+  private val dateFormatError  = DateFormatError
+  private val submittedOnError = SubmittedOnFormatError
 
   "DateValidation" must {
     "return no errors" when {
       "the supplied value has the correct format and represents a real date" in {
-        DateValidation.validate("2020-01-01", error) shouldBe Nil
+        DateValidation.validate("2020-01-01", dateFormatError) shouldBe Nil
+      }
+      "the supplied submitted On date has the correct format" in {
+        DateValidation.validateSubmittedOn("2021-03-23T16:02:34.039Z", submittedOnError) shouldBe Nil
       }
     }
 
     "return the requested error" when {
       "the supplied value has the wrong date format" in {
-        DateValidation.validate("2021-1-1", error) shouldBe Seq(error)
+        DateValidation.validate("2021-1-1", dateFormatError) shouldBe Seq(dateFormatError)
+        DateValidation.validateSubmittedOn("2021-1-1", submittedOnError) shouldBe Seq(submittedOnError)
       }
 
       "the supplied value is not a date" in {
-        DateValidation.validate("XXXX", error) shouldBe Seq(error)
+        DateValidation.validate("invalid", dateFormatError) shouldBe Seq(dateFormatError)
+        DateValidation.validateSubmittedOn("invalid", submittedOnError) shouldBe Seq(submittedOnError)
       }
 
       "the supplied value has the correct format but does not represent a real date" in {
-        DateValidation.validate("2021-13-13", error) shouldBe Seq(error)
+        DateValidation.validate("2021-13-13", dateFormatError) shouldBe Seq(dateFormatError)
+        DateValidation.validateSubmittedOn("2021-13-13T16:02:34.039Z", submittedOnError) shouldBe Seq(submittedOnError)
       }
     }
   }

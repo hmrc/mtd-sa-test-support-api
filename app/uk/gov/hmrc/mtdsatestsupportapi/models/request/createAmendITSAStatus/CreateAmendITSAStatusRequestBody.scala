@@ -14,14 +14,12 @@
  * limitations under the License.
  */
 
-package api.controllers.requestParsers.validators
+package uk.gov.hmrc.mtdsatestsupportapi.models.request.createAmendITSAStatus
 
-import java.time.format.DateTimeFormatter
+import play.api.libs.json.{OFormat, Json}
 
-package object validations {
+case class CreateAmendITSAStatusRequestBody(itsaStatusDetails: Seq[ITSAStatusDetail])
 
-  val dateFormat: DateTimeFormatter       = DateTimeFormatter.ofPattern("yyyy-MM-dd")
-  val ISO8601Formatter: DateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSX")
-  val NoValidationErrors: List[Nothing]   = List()
-
+object CreateAmendITSAStatusRequestBody {
+  implicit val format: OFormat[CreateAmendITSAStatusRequestBody] = Json.format[CreateAmendITSAStatusRequestBody]
 }

@@ -14,14 +14,8 @@
  * limitations under the License.
  */
 
-package api.controllers.requestParsers.validators
+package uk.gov.hmrc.mtdsatestsupportapi.models.request.createAmendITSAStatus
 
-import java.time.format.DateTimeFormatter
+import api.models.domain.{Nino, TaxYear}
 
-package object validations {
-
-  val dateFormat: DateTimeFormatter       = DateTimeFormatter.ofPattern("yyyy-MM-dd")
-  val ISO8601Formatter: DateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSX")
-  val NoValidationErrors: List[Nothing]   = List()
-
-}
+case class CreateAmendITSAStatusRequest(nino: Nino, taxYear: TaxYear, body: CreateAmendITSAStatusRequestBody)

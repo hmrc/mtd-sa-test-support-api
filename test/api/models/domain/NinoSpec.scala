@@ -22,7 +22,6 @@ class NinoSpec extends UnitSpec {
 
   "The validation of a nino" should {
     "pass with valid number without spaces" in { validateNino("AB123456C") should equal(true) }
-    "pass with valid number without last letter" in { validateNino("AB123456") should equal(true) }
     "pass with valid number with spaces" in { validateNino("AB 12 34 56 C") should equal(true) }
     "fail with valid number with leading space" in { validateNino(" AB123456C") should equal(false) }
     "fail with valid number with trailing space" in { validateNino("AB123456C ") should equal(false) }

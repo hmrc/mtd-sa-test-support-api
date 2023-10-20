@@ -16,3 +16,6 @@ POST          /vendor-state/checkpoints/:checkpointId/restore   uk.gov.hmrc.mtds
 DELETE       /business/:nino/:businessId                        uk.gov.hmrc.mtdsatestsupportapi.controllers.DeleteTestBusinessController.handleRequest(nino: String, businessId:String)
 
 POST        /business/:nino                                     uk.gov.hmrc.mtdsatestsupportapi.controllers.CreateTestBusinessController.handleRequest(nino: String)
+
+# ITSA Status Routes
+POST        /itsa-status/:nino/:taxYear                         uk.gov.hmrc.mtdsatestsupportapi.controllers.CreateAmendITSAStatusController.handleRequest(nino: String, taxYear: String)
