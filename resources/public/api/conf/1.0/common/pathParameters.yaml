@@ -31,3 +31,14 @@ components:
         pattern: ^((?!(BG|GB|KN|NK|NT|TN|ZZ)|(D|F|I|Q|U|V)[A-Z]|[A-Z](D|F|I|O|Q|U|V))[A-Z]{2})[0-9]{6}[A-D]$
         example: TC663795B
       required: true
+
+    taxYear:
+      name: taxYear
+      in: path
+      description: |
+        The tax year to submit data for. The start year and end year must not span two tax years. No gaps are allowed - for example, 2023-25 is not valid. There is no minimum tax year.
+      schema:
+        type: string
+        format: "YYYY-YY"
+        example: "2023-24"
+      required: true

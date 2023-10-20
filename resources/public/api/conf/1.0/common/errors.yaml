@@ -147,6 +147,30 @@ components:
         code: RULE_MISSING_TRADING_NAME
         message: tradingName not provided for the self-employment business
 
+    formatStatus:
+      description: The format of the supplied status is not valid.
+      value:
+        code: FORMAT_STATUS
+        message: The provided status is invalid
+
+    formatStatusReason:
+      description: The format of the supplied status reason is not valid.
+      value:
+        code: FORMAT_STATUS_REASON
+        message: The provided status reason is invalid
+
+    formatBusinessIncome2YearsPrior:
+      description: The format of the supplied businessIncome2YearsPrior is not valid.
+      value:
+        code: FORMAT_BUSINESS_INCOME_2_YEARS_PRIOR
+        message: The provided business Income 2 Years Prior is invalid
+
+    formatSubmittedOn:
+      description: The format of the supplied submittedOn date is not valid.
+      value:
+        code: FORMAT_SUBMITTED_ON
+        message: The provided submitted on date is invalid
+
     # 403
 
     clientOrAgentNotAuthorised:

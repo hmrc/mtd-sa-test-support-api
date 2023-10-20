@@ -1,0 +1,72 @@
+post:
+  summary: Create and Amend Test ITSA Status
+  description: |
+    This endpoint enables you to create and amend a test ITSA status for a specified customer for use within the sandbox environment. The ITSA status provided is used to validate periodic and annual submissions for the customer's income sources.
+    
+    A National Insurance number and tax year must be provided.
+    
+    Any test ITSA status is automatically purged from the database 7 days after its creation.
+
+  tags:
+    - ITSA Status
+
+  security:
+    - Application-Restricted:
+        - write:self-assessment
+
+  parameters:
+    - $ref: './common/pathParameters.yaml#/components/parameters/nino'
+    - $ref: './common/pathParameters.yaml#/components/parameters/taxYear'
+    - $ref: './common/headers.yaml#/components/parameters/acceptHeader'
+    - $ref: './common/headers.yaml#/components/parameters/authorizationWriteScopeHeader'
+
+  requestBody:
+    content:
+      application/json:
+        schema:
+          $ref: './schemas/itsaStatus/create_amend_request.json'
+        examples:
+          example-itsa-status-request:
+            description:
+            value:
+              $ref: './examples/itsaStatus/create_amend_request.json'
+
+  responses:
+    204:
+      description: Success (No Content)
+      headers:
+        X-CorrelationId:
+          $ref: './common/headers.yaml#/components/parameters/correlationId'
+      content: {}
+
+    400:
+      description: Bad Request
+      content:
+        application/json:
+          schema:
+            $ref: './schemas/error_response.yaml'
+          examples:
+            FORMAT_NINO:
+              $ref: './common/errors.yaml#/components/examples/formatNino'
+            FORMAT_TAX_YEAR:
+              $ref: './common/errors.yaml#/components/examples/formatTaxYear'
+            RULE_TAX_YEAR_RANGE_INVALID:
+              $ref: './common/errors.yaml#/components/examples/ruleTaxYearRangeInvalid'
+            FORMAT_STATUS:
+              $ref: './common/errors.yaml#/components/examples/formatStatus'
+            FORMAT_STATUS_REASON:
+              $ref: './common/errors.yaml#/components/examples/formatStatusReason'
+            FORMAT_BUSINESS_INCOME_2_YEARS_PRIOR:
+              $ref: './common/errors.yaml#/components/examples/formatBusinessIncome2YearsPrior'
+            FORMAT_SUBMITTED_ON:
+              $ref: './common/errors.yaml#/components/examples/formatSubmittedOn'
+
+    403:
+      description: Forbidden
+      content:
+        application/json:
+          schema:
+            $ref: './schemas/error_response.yaml'
+          examples:
+            CLIENT_OR_AGENT_NOT_AUTHORISED:
+              $ref: './common/errors.yaml#/components/examples/clientOrAgentNotAuthorised'

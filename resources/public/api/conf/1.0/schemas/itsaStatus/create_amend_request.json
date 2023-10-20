@@ -1,0 +1,67 @@
+{
+  "$schema": "https://json-schema.org/draft/2019-09/schema",
+  "$id": "http://example.com/example.json",
+  "type": "object",
+  "title": "Root Schema",
+  "required": [
+    "itsaStatusDetails"
+  ],
+  "properties": {
+    "itsaStatusDetails": {
+      "type": "array",
+      "descripton": "An array of ITSA status details for a specific National Insurance number and tax year.",
+      "items": {
+        "type": "object",
+        "required": [
+          "submittedOn",
+          "status",
+          "statusReason"
+        ],
+        "properties": {
+          "submittedOn": {
+            "type": "string",
+            "description": "The date the ITSA status was submitted, in the format YYYY-MM-DDThh:mm:ss.SSSZ",
+            "examples": "2021-03-23T16:02:34.039Z",
+            "format": "YYYY-MM-DDThh:mm:ss.SSSZ"
+          },
+          "status": {
+            "type": "string",
+            "description": "The ITSA status for the tax year.",
+            "enum": [
+              "00",
+              "01",
+              "02",
+              "03",
+              "04",
+              "05",
+              "99"
+            ]
+          },
+          "statusReason": {
+            "type": "string",
+            "description": "The reason for the ITSA status.",
+            "enum": [
+              "00",
+              "01",
+              "02",
+              "03",
+              "04",
+              "05",
+              "06",
+              "07",
+              "08",
+              "09"
+            ]
+          },
+          "businessIncome2YearsPrior": {
+            "type": "number",
+            "description": "The business income for 2 years prior to the specified taxYear.\n\nFor example, if the tax year requested is 2026-27, then 'businessIncome2YearsPrior' is for the 2024-25 tax year.\n\nFor Q4 check, the business income 1 year prior will be used.",
+            "minimum": 0.00,
+            "maximum": 99999999999.99,
+            "examples": 99999999999.99
+          }
+        }
+      }
+    }
+  }
+}
