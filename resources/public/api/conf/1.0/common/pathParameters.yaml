@@ -28,10 +28,6 @@ components:
         National Insurance number.
       schema:
         type: string
-        pattern: ^((?!(BG|GB|KN|NK|NT|TN|ZZ)|(D|F|I|Q|U|V)[A-Z]|[A-Z](D|F|I|O|Q|U|V))[A-Z]{2})[0-9]{6}[A-D]?$
-        examples:
-          example1:
-            value: TC663795B
-          example2:
-            value: TC663795
+        pattern: ^((?!(BG|GB|KN|NK|NT|TN|ZZ)|(D|F|I|Q|U|V)[A-Z]|[A-Z](D|F|I|O|Q|U|V))[A-Z]{2})[0-9]{6}[A-D]$
+        example: TC663795B
       required: true
