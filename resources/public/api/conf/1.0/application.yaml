@@ -45,6 +45,8 @@ paths:
     $ref: "./business_create.yaml"
   /individuals/self-assessment-test-support/business/{nino}/{businessId}:
     $ref: "./business_delete.yaml"
+  # {{#if (enabled "create-amend-itsa-status")}}
   /individuals/self-assessment-test-support/itsa-status/{nino}/{taxYear}:
     $ref: "./itsa_status_create_amend.yaml"
+  # {{/if}}
 
