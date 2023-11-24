@@ -28,14 +28,30 @@ import javax.inject.{Inject, Singleton}
 
   private val fs = FeatureSwitches(appConfig.featureSwitches)
 
+  /*
+    enabled - is this feature enabled in the current env (ET/sandbox)
+    - use this to determine whether to show a feature
+    - or with HB "if" to determine whether to include the feature in an example JSON response
+   */
   hb.registerHelper(
     "enabled",
     (featureName: String, _: Options) => {
       if (fs.isEnabled(featureName)) "true" else null // javascript "truthy"
     })
 
+  /*
+  releasedInProduction - is this feature enabled here AND in prod
+    - use this with HB "unless" to determine whether to show "Test only"
+   */
+  hb.registerHelper(
+    "releasedInProduction",
+    (featureName: String, _: Options) => {
+      if (fs.isEnabled(featureName) && fs.isReleasedInProduction(featureName)) "true" else null // javascript "truthy"
+    }
+  )
+
   val rewriteOasFeature: CheckAndRewrite = CheckAndRewrite(
-    check = (version, _) => appConfig.endpointsEnabled(version),
+    check = (_, _) => true,
     rewrite = (_, _, contents) => rewrite(contents, fs)
   )
 
