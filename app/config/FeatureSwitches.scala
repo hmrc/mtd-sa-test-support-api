@@ -21,11 +21,12 @@ import play.api.Configuration
 
 import javax.inject.Inject
 
-
 @ImplementedBy(classOf[FeatureSwitchesImpl])
 trait FeatureSwitches {
   def isVersionEnabled(version: String): Boolean
+  def isReleasedInProduction(feature: String): Boolean
   def isEnabled(key: String): Boolean
+
 }
 
 case class FeatureSwitchesImpl(featureSwitchConfig: Configuration) extends FeatureSwitches {
@@ -50,7 +51,11 @@ case class FeatureSwitchesImpl(featureSwitchConfig: Configuration) extends Featu
     enabled.getOrElse(false)
   }
 
-  def isEnabled(key: String): Boolean = featureSwitchConfig.getOptional[Boolean](key + ".enabled").getOrElse(true)
+  def isReleasedInProduction(feature: String): Boolean = isConfigTrue(feature + ".released-in-production")
+
+  def isEnabled(key: String): Boolean = isConfigTrue(key + ".enabled")
+
+  private def isConfigTrue(key: String): Boolean = featureSwitchConfig.getOptional[Boolean](key).getOrElse(true)
 }
 
 object FeatureSwitches {
