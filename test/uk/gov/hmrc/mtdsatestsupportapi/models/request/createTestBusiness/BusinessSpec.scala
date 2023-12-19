@@ -30,7 +30,7 @@ class BusinessSpec extends UnitSpec with CreateTestBusinessFixtures {
 
     ".hasBusinessAddressDetails" when {
       val emptySelfEmployment = businessWithMinimumFields(`self-employment`)
-      val maxSelfEmployment = businessWithMaxFields(`self-employment`)
+      val maxSelfEmployment   = businessWithMaxFields(`self-employment`)
 
       "business object is empty" in {
         emptySelfEmployment.hasAnyBusinessAddressDetails shouldBe false
@@ -86,6 +86,10 @@ class BusinessSpec extends UnitSpec with CreateTestBusinessFixtures {
                                        |    "taxYear2": "2021-22",
                                        |    "latencyIndicator2": "Q"
                                        |  },
+                                       |  "quarterlyTypeChoice":{
+                                       |    "quarterlyPeriodType": "standard",
+                                       |    "taxYearOfChoice": "2023-24"
+                                       |  },
                                        |  "accountingType": "CASH",
                                        |  "commencementDate": "2000-01-01",
                                        |  "cessationDate": "2030-01-01",
@@ -120,38 +124,48 @@ class BusinessSpec extends UnitSpec with CreateTestBusinessFixtures {
 
       "serialized to downstream JSON" when {
 
-        def testSerializeToBackend(typeOfBusiness: TypeOfBusiness, expectedIncomeSourceType: Option[String], expectedPropertyIncome: Boolean): Unit = {
+        def testSerializeToBackend(typeOfBusiness: TypeOfBusiness,
+                                   expectedIncomeSourceType: Option[String],
+                                   expectedPropertyIncome: Boolean): Unit = {
           s"typeOfBusiness is $typeOfBusiness" must {
             "work and set propertyIncome and incomeSourceType correctly" in {
-              Json.toJson(businessWithMaxFields(typeOfBusiness)) shouldBe {
-                Json
-                  .parse(s"""{
-                            |  "tradingName": "Abc Ltd",
-                            |  "propertyIncome": $expectedPropertyIncome,
-                            |  "firstAccountingPeriodStartDate": "2002-02-02",
-                            |  "firstAccountingPeriodEndDate": "2012-12-12",
-                            |  "latencyDetails": {
-                            |    "latencyEndDate": "2020-01-01",
-                            |    "taxYear1": "2021",
-                            |    "latencyIndicator1": "A",
-                            |    "taxYear2": "2022",
-                            |    "latencyIndicator2": "Q"
-                            |  },
-                            |  "cashOrAccruals": false,
-                            |  "tradingStartDate": "2000-01-01",
-                            |  "cessationDate": "2030-01-01",
-                            |  "businessAddressDetails": {
-                            |    "addressLine1": "L1",
-                            |    "addressLine2": "L2",
-                            |    "addressLine3": "L3",
-                            |    "addressLine4": "L4",
-                            |    "postalCode": "PostCode",
-                            |    "countryCode": "UK"
-                            |  }
-                            |}""".stripMargin)
-                  .as[JsObject] ++
-                  expectedIncomeSourceType.map(x => Json.obj("incomeSourceType" -> x)).getOrElse(JsObject.empty)
+              val downstreamJson = Json.toJson(businessWithMaxFields(typeOfBusiness))
+              val expected = {
+                expectedIncomeSourceType.map(x => Json.obj("incomeSourceType" -> x)).getOrElse(JsObject.empty) ++
+                  Json
+                    .parse(
+                      s"""{
+                         |  "propertyIncome": $expectedPropertyIncome,
+                         |  "tradingName": "Abc Ltd",
+                         |  "firstAccountingPeriodStartDate": "2002-02-02",
+                         |  "firstAccountingPeriodEndDate": "2012-12-12",
+                         |  "latencyDetails": {
+                         |    "latencyEndDate": "2020-01-01",
+                         |    "taxYear1": "2021",
+                         |    "latencyIndicator1": "A",
+                         |    "taxYear2": "2022",
+                         |    "latencyIndicator2": "Q"
+                         |  },
+                         |  "quarterTypeElection":{
+                         |    "quarterReportingType": "STANDARD",
+                         |    "taxYearofElection": "2024"
+                         |  },
+                         |  "cashOrAccruals": false,
+                         |  "tradingStartDate": "2000-01-01",
+                         |  "cessationDate": "2030-01-01",
+                         |  "businessAddressDetails": {
+                         |    "addressLine1": "L1",
+                         |    "addressLine2": "L2",
+                         |    "addressLine3": "L3",
+                         |    "addressLine4": "L4",
+                         |    "postalCode": "PostCode",
+                         |    "countryCode": "UK"
+                         |  }
+                         |}""".stripMargin)
+                    .as[JsObject]
               }
+
+              downstreamJson shouldBe expected
             }
           }
         }
@@ -169,7 +183,20 @@ class BusinessSpec extends UnitSpec with CreateTestBusinessFixtures {
   private def businessWithMinimumFields(typeOfBusiness: TypeOfBusiness): Business = {
     Business(
       typeOfBusiness = typeOfBusiness,
-      None, None, None, None, None, None, None, None, None, None, None, None, None
+      tradingName = None,
+      firstAccountingPeriodStartDate = None,
+      firstAccountingPeriodEndDate = None,
+      latencyDetails = None,
+      quarterlyTypeChoice = None,
+      accountingType = None,
+      commencementDate = None,
+      cessationDate = None,
+      businessAddressLineOne = None,
+      businessAddressLineTwo = None,
+      businessAddressLineThree = None,
+      businessAddressLineFour = None,
+      businessAddressPostcode = None,
+      businessAddressCountryCode = None
     )
   }
 
@@ -187,6 +214,7 @@ class BusinessSpec extends UnitSpec with CreateTestBusinessFixtures {
           taxYear2 = TaxYear.fromMtd("2021-22"),
           latencyIndicator2 = LatencyIndicator.Q
         )),
+      quarterlyTypeChoice = Some(QuarterlyTypeChoice(quarterlyPeriodType = QuarterlyPeriodType.`standard`, taxYearOfChoice = TaxYear.fromMtd("2023-24"))),
       accountingType = Some(AccountingType.CASH),
       commencementDate = Some(LocalDate.parse("2000-01-01")),
       cessationDate = Some(LocalDate.parse("2030-01-01")),

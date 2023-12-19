@@ -30,7 +30,6 @@ import java.time._
 class CreateTestBusinessValidatorSpec extends UnitSpec with JsonErrorValidators with CreateTestBusinessFixtures {
 
   private val validNino = "AA123456A"
-
   private val now                         = Instant.parse("2020-01-01T10:11:12.123Z")
   private val clock                       = Clock.fixed(now, ZoneOffset.UTC)
   private def localDate(instant: Instant) = LocalDate.ofInstant(instant, ZoneOffset.UTC)
@@ -49,6 +48,10 @@ class CreateTestBusinessValidatorSpec extends UnitSpec with JsonErrorValidators 
        |    "latencyIndicator1": "A",
        |    "taxYear2": "2021-22",
        |    "latencyIndicator2": "Q"
+       |  },
+       |  "quarterlyTypeChoice":{
+       |    "quarterlyPeriodType": "standard",
+       |    "taxYearOfChoice": "2023-24"
        |  },
        |  "accountingType": "CASH",
        |  "commencementDate": ${timeInPast.toJson},
@@ -74,6 +77,10 @@ class CreateTestBusinessValidatorSpec extends UnitSpec with JsonErrorValidators 
        |    "latencyIndicator1": "A",
        |    "taxYear2": "2021-22",
        |    "latencyIndicator2": "Q"
+       |  },
+       |  "quarterlyTypeChoice":{
+       |    "quarterlyPeriodType": "standard",
+       |    "taxYearOfChoice": "2023-24"
        |  },
        |  "accountingType": "CASH",
        |  "commencementDate": ${timeInPast.toJson},
@@ -138,6 +145,7 @@ class CreateTestBusinessValidatorSpec extends UnitSpec with JsonErrorValidators 
 
       testWith("/latencyDetails/taxYear1")
       testWith("/latencyDetails/taxYear2")
+      testWith("/quarterlyTypeChoice/taxYearOfChoice")
     }
 
     "return RULE_TAX_YEAR_RANGE_INVALID error with the appropriate path" when {
@@ -150,6 +158,7 @@ class CreateTestBusinessValidatorSpec extends UnitSpec with JsonErrorValidators 
 
       testWith("/latencyDetails/taxYear1")
       testWith("/latencyDetails/taxYear2")
+      testWith("/quarterlyTypeChoice/taxYearOfChoice")
     }
 
     "return FORMAT_DATE error with the appropriate path" when {
@@ -298,6 +307,13 @@ class CreateTestBusinessValidatorSpec extends UnitSpec with JsonErrorValidators 
       }
     }
 
+    "return FORMAT_QUARTERLY_PERIOD_TYPE" when{
+      "invalid quarterlyPeriodType value is provided" in new Test {
+        validator.validate(CreateTestBusinessRawData(validNino, bodySelfEmploymentValid.update("/quarterlyTypeChoice/quarterlyPeriodType", JsString("badValue")))) shouldBe
+          Seq(QuarterlyPeriodTypeFormatError)
+      }
+    }
+
     "return RULE_INCORRECT_OR_EMPTY_BODY_SUBMITTED" when {
       def testWith(path: String)(implicit pos: Position): Unit = {
         s"a mandatory $path field is missed" in new Test {
@@ -316,6 +332,8 @@ class CreateTestBusinessValidatorSpec extends UnitSpec with JsonErrorValidators 
       testWith("/latencyDetails/latencyIndicator1")
       testWith("/latencyDetails/taxYear2")
       testWith("/latencyDetails/latencyIndicator2")
+      testWith("/quarterlyTypeChoice/quarterlyPeriodType")
+      testWith("/quarterlyTypeChoice/taxYearOfChoice")
     }
   }
 

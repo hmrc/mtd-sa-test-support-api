@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.mtdsatestsupportapi.models.response.CreateTestBusiness
+package uk.gov.hmrc.mtdsatestsupportapi.models.response.createTestBusiness
 
 import api.hateoas.{HateoasData, HateoasLinksFactory, Link}
 import api.models.domain.Nino

@@ -24,7 +24,7 @@ import org.scalactic.source.Position
 import uk.gov.hmrc.mtdsatestsupportapi.fixtures.CreateTestBusinessFixtures
 import uk.gov.hmrc.mtdsatestsupportapi.mocks.connectors.MockCreateTestBusinessConnector
 import uk.gov.hmrc.mtdsatestsupportapi.models.request.createTestBusiness.CreateTestBusinessRequest
-import uk.gov.hmrc.mtdsatestsupportapi.models.response.CreateTestBusiness.CreateTestBusinessResponse
+import uk.gov.hmrc.mtdsatestsupportapi.models.response.createTestBusiness.CreateTestBusinessResponse
 
 import scala.concurrent.Future
 

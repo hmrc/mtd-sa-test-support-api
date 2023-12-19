@@ -28,7 +28,7 @@ import uk.gov.hmrc.mtdsatestsupportapi.fixtures.CreateTestBusinessFixtures
 import uk.gov.hmrc.mtdsatestsupportapi.mocks.requestParsers.MockCreateTestBusinessRequestParser
 import uk.gov.hmrc.mtdsatestsupportapi.mocks.services.MockCreateTestBusinessService
 import uk.gov.hmrc.mtdsatestsupportapi.models.request.createTestBusiness.{CreateTestBusinessRawData, CreateTestBusinessRequest}
-import uk.gov.hmrc.mtdsatestsupportapi.models.response.CreateTestBusiness.CreateTestBusinessHateoasData
+import uk.gov.hmrc.mtdsatestsupportapi.models.response.createTestBusiness.CreateTestBusinessHateoasData
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future

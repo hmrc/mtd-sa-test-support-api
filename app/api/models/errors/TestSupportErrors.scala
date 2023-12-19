@@ -58,3 +58,5 @@ object BusinessIncome2YearsPriorFormatError
     extends MtdError("FORMAT_BUSINESS_INCOME_2_YEARS_PRIOR", "The provided business Income 2 Years Prior is invalid", BAD_REQUEST)
 
 object SubmittedOnFormatError extends MtdError("FORMAT_SUBMITTED_ON", "The provided submitted on date is invalid", BAD_REQUEST)
+
+object QuarterlyPeriodTypeFormatError extends MtdError("FORMAT_QUARTERLY_PERIOD_TYPE", "The quarterly period type format is not valid", BAD_REQUEST)
