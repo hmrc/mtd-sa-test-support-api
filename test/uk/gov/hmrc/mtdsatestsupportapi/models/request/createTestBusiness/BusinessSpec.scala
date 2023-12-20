@@ -133,8 +133,7 @@ class BusinessSpec extends UnitSpec with CreateTestBusinessFixtures {
               val expected = {
                 expectedIncomeSourceType.map(x => Json.obj("incomeSourceType" -> x)).getOrElse(JsObject.empty) ++
                   Json
-                    .parse(
-                      s"""{
+                    .parse(s"""{
                          |  "propertyIncome": $expectedPropertyIncome,
                          |  "tradingName": "Abc Ltd",
                          |  "firstAccountingPeriodStartDate": "2002-02-02",
@@ -181,24 +180,14 @@ class BusinessSpec extends UnitSpec with CreateTestBusinessFixtures {
   }
 
   private def businessWithMinimumFields(typeOfBusiness: TypeOfBusiness): Business = {
+    // @formatter:off
     Business(
       typeOfBusiness = typeOfBusiness,
-      tradingName = None,
-      firstAccountingPeriodStartDate = None,
-      firstAccountingPeriodEndDate = None,
-      latencyDetails = None,
-      quarterlyTypeChoice = None,
-      accountingType = None,
-      commencementDate = None,
-      cessationDate = None,
-      businessAddressLineOne = None,
-      businessAddressLineTwo = None,
-      businessAddressLineThree = None,
-      businessAddressLineFour = None,
-      businessAddressPostcode = None,
-      businessAddressCountryCode = None
+      None, None, None, None, None, None, None,
+      None, None, None, None, None, None, None
     )
   }
+  // @formatter:on
 
   private def businessWithMaxFields(typeOfBusiness: TypeOfBusiness) = {
     Business(
@@ -214,7 +203,8 @@ class BusinessSpec extends UnitSpec with CreateTestBusinessFixtures {
           taxYear2 = TaxYear.fromMtd("2021-22"),
           latencyIndicator2 = LatencyIndicator.Q
         )),
-      quarterlyTypeChoice = Some(QuarterlyTypeChoice(quarterlyPeriodType = QuarterlyPeriodType.`standard`, taxYearOfChoice = TaxYear.fromMtd("2023-24"))),
+      quarterlyTypeChoice =
+        Some(QuarterlyTypeChoice(quarterlyPeriodType = QuarterlyPeriodType.`standard`, taxYearOfChoice = TaxYear.fromMtd("2023-24"))),
       accountingType = Some(AccountingType.CASH),
       commencementDate = Some(LocalDate.parse("2000-01-01")),
       cessationDate = Some(LocalDate.parse("2030-01-01")),

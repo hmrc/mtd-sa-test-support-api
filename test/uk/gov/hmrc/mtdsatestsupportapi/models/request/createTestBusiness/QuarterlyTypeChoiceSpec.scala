@@ -22,21 +22,38 @@ import support.UnitSpec
 
 class QuarterlyTypeChoiceSpec extends UnitSpec {
 
-  private val quarterlyTypeChoice =
-    QuarterlyTypeChoice(quarterlyPeriodType = QuarterlyPeriodType.standard, taxYearOfChoice = TaxYear.fromMtd("2023-24"))
+  private val quarterReportingType = QuarterlyPeriodType.standard
+  private val taxYearOfChoice      = TaxYear.fromMtd("2023-24")
 
-  "QuarterlyTypeChoice" when {
-    "received API JSON" should {
-      "work" in {
-        val mtdJson = Json.parse("""
-            |{
-            |   "quarterlyPeriodType": "standard",
-            |   "taxYearOfChoice": "2023-24"
-            |}
-            |""".stripMargin)
+  private val model = QuarterlyTypeChoice(quarterReportingType, taxYearOfChoice)
 
-        mtdJson.as[QuarterlyTypeChoice] shouldBe quarterlyTypeChoice
+  private val mtdJson = Json.parse("""
+      |{
+      |   "quarterlyPeriodType": "standard",
+      |   "taxYearOfChoice": "2023-24"
+      |}
+      |""".stripMargin)
+
+  private val downstream = Json.parse(
+    """
+      |{
+      |   "quarterReportingType":"STANDARD",
+      |   "taxYearofElection":"2024"
+      |}
+      |""".stripMargin
+  )
+
+  "read" should {
+    "work" when {
+      "received API JSON" in {
+        mtdJson.as[QuarterlyTypeChoice] shouldBe model
       }
+    }
+  }
+
+  "write" should {
+    "write to downstream JSON correctly" in {
+      Json.toJson(model) shouldBe downstream
     }
   }
 
