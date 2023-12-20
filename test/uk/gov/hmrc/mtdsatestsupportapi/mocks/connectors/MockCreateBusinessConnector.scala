@@ -22,7 +22,7 @@ import org.scalamock.scalatest.MockFactory
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.mtdsatestsupportapi.connectors.CreateTestBusinessConnector
 import uk.gov.hmrc.mtdsatestsupportapi.models.request.createTestBusiness.CreateTestBusinessRequest
-import uk.gov.hmrc.mtdsatestsupportapi.models.response.CreateTestBusiness.CreateTestBusinessResponse
+import uk.gov.hmrc.mtdsatestsupportapi.models.response.createTestBusiness.CreateTestBusinessResponse
 
 import scala.concurrent.{ExecutionContext, Future}
 

@@ -1,12 +1,11 @@
 post:
   summary: Create a Test Business
   description: |
-    This endpoint allows a developer to create a test business for use within the Sandbox environment.
+    This endpoint enables you to create a test business for use within the Sandbox environment.
     
-    Customer may have multiple Self-Employment businesses but only one of each Property business is allowed. 
-    MTD supports only one accounting period per year so this must be a full tax year period e.g. April 6th to April 5th. 
-    Any test business that has not been deleted by the developer is automatically purged from database 7 days after its
-    creation.
+    Customers may have multiple Self-Employment businesses, but only one of each Property business is allowed. 
+    MTD supports only one accounting period per year so this must be a full tax year period, for example April 6th to April 5th. 
+    Test businesses are automatically purged from the database 7 days after creation.
 
   tags:
     - Business Income Source

@@ -56,6 +56,9 @@ class CreateTestBusinessValidator @Inject() (clock: Clock, featureSwitches: Feat
     def validateLatencyIndicator(path: String) =
       validateField(path)(LatencyIndicatorValidation.validate(_, LatencyIndicatorFormatError.withExtraPath(path)))
 
+    def validateQuarterlyPeriodType(path: String) =
+      validateField(path)(QuarterlyPeriodTypeValidation.validate(_, QuarterlyPeriodTypeFormatError))
+
     def validateTaxYear(path: String) = validateField(path)(TaxYearValidation.validate(_, path))
 
     val errors = validateField("/accountingType")(AccountingTypeValidation.validate(_)) ++
@@ -64,6 +67,8 @@ class CreateTestBusinessValidator @Inject() (clock: Clock, featureSwitches: Feat
       validateLatencyIndicator("/latencyDetails/latencyIndicator2") ++
       validateTaxYear("/latencyDetails/taxYear1") ++
       validateTaxYear("/latencyDetails/taxYear2") ++
+      validateQuarterlyPeriodType("/quarterlyTypeChoice/quarterlyPeriodType")++
+      validateTaxYear("/quarterlyTypeChoice/taxYearOfChoice")++
       validateField("/businessAddressCountryCode")(CountryCodeValidation.validate(_)) ++
       validateField("/businessAddressPostcode")(PostcodeValidation.validate(_)) ++
       validateDate("/firstAccountingPeriodStartDate") ++

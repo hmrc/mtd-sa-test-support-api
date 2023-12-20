@@ -24,7 +24,7 @@ import play.api.http.Status.CREATED
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.http.client.HttpClientV2
 import uk.gov.hmrc.mtdsatestsupportapi.models.request.createTestBusiness.CreateTestBusinessRequest
-import uk.gov.hmrc.mtdsatestsupportapi.models.response.CreateTestBusiness.CreateTestBusinessResponse
+import uk.gov.hmrc.mtdsatestsupportapi.models.response.createTestBusiness.CreateTestBusinessResponse
 
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}

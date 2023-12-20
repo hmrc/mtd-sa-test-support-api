@@ -27,6 +27,7 @@ case class Business(typeOfBusiness: TypeOfBusiness,
                     firstAccountingPeriodStartDate: Option[LocalDate],
                     firstAccountingPeriodEndDate: Option[LocalDate],
                     latencyDetails: Option[LatencyDetails],
+                    quarterlyTypeChoice: Option[QuarterlyTypeChoice],
                     accountingType: Option[AccountingType],
                     commencementDate: Option[LocalDate],
                     cessationDate: Option[LocalDate],
@@ -73,6 +74,7 @@ object Business {
       (__ \ "firstAccountingPeriodStartDate").writeNullable[LocalDate] and
       (__ \ "firstAccountingPeriodEndDate").writeNullable[LocalDate] and
       (__ \ "latencyDetails").writeNullable[LatencyDetails] and
+      (__ \ "quarterTypeElection").writeNullable[QuarterlyTypeChoice] and
       (__ \ "cashOrAccruals").writeNullable[AccountingType] and
       (__ \ "tradingStartDate").writeNullable[LocalDate] and
       (__ \ "cessationDate").writeNullable[LocalDate] and

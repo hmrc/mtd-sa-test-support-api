@@ -18,7 +18,7 @@ package uk.gov.hmrc.mtdsatestsupportapi.fixtures
 
 import play.api.libs.json.{JsObject, Json}
 import uk.gov.hmrc.mtdsatestsupportapi.models.request.createTestBusiness.{Business, TypeOfBusiness}
-import uk.gov.hmrc.mtdsatestsupportapi.models.response.CreateTestBusiness.CreateTestBusinessResponse
+import uk.gov.hmrc.mtdsatestsupportapi.models.response.createTestBusiness.CreateTestBusinessResponse
 
 // Reusable JSON to support testing in various places outside of detailed JSON serialization testing
 trait CreateTestBusinessFixtures {
@@ -26,6 +26,7 @@ trait CreateTestBusinessFixtures {
   object MinimalCreateTestBusinessRequest {
 
     object SelfEmployment {
+
       val mtdBusinessJson: JsObject = Json
         .parse(
           """{
@@ -44,6 +45,7 @@ trait CreateTestBusinessFixtures {
         firstAccountingPeriodStartDate = None,
         firstAccountingPeriodEndDate = None,
         latencyDetails = None,
+        quarterlyTypeChoice = None,
         accountingType = None,
         commencementDate = None,
         cessationDate = None,
@@ -67,9 +69,11 @@ trait CreateTestBusinessFixtures {
             |}""".stripMargin
         )
         .as[JsObject]
+
     }
 
     object UkProperty {
+
       val mtdBusinessJson: JsObject = Json
         .parse(
           """{
@@ -84,6 +88,7 @@ trait CreateTestBusinessFixtures {
         tradingName = None,
         firstAccountingPeriodStartDate = None,
         firstAccountingPeriodEndDate = None,
+        quarterlyTypeChoice = None,
         latencyDetails = None,
         accountingType = None,
         commencementDate = None,
@@ -103,14 +108,15 @@ trait CreateTestBusinessFixtures {
             |}""".stripMargin
         )
         .as[JsObject]
+
     }
 
   }
 
   object ExampleCreateTestBusinessResponse {
-    val businessId                       = "someBusinessId"
+    val businessId                           = "someBusinessId"
     val response: CreateTestBusinessResponse = CreateTestBusinessResponse(businessId)
-    val downstreamResponseJson: JsObject = Json.obj("incomeSourceId" -> businessId)
+    val downstreamResponseJson: JsObject     = Json.obj("incomeSourceId" -> businessId)
   }
 
 }
