@@ -18,23 +18,15 @@ package uk.gov.hmrc.mtdsatestsupportapi.controllers.requestParsers.validators
 
 import api.controllers.requestParsers.validators.Validator
 import api.controllers.requestParsers.validators.validations.{DateValidation, JsonFormatValidation, NinoValidation, TaxYearValidation}
-import api.models.errors.{MtdError, RuleIncorrectOrEmptyBodyError}
+import api.models.errors.{MtdError, RuleIncorrectOrEmptyBodyError, SubmittedOnFormatError}
 import play.api.libs.json.JsArray
-import uk.gov.hmrc.mtdsatestsupportapi.controllers.requestParsers.validators.validations.{
-  BusinessIncome2YearsPriorValidation,
-  StatusReasonValidation,
-  StatusValidation
-}
+import uk.gov.hmrc.mtdsatestsupportapi.controllers.requestParsers.validators.validations.{BusinessIncome2YearsPriorValidation, StatusReasonValidation, StatusValidation}
 import uk.gov.hmrc.mtdsatestsupportapi.models.request.createAmendITSAStatus.CreateAmendITSAStatusRequestBody.format
-import uk.gov.hmrc.mtdsatestsupportapi.models.request.createAmendITSAStatus.{
-  CreateAmendITSAStatusRawData,
-  CreateAmendITSAStatusRequestBody,
-  ITSAStatusDetail
-}
+import uk.gov.hmrc.mtdsatestsupportapi.models.request.createAmendITSAStatus.{CreateAmendITSAStatusRawData, CreateAmendITSAStatusRequestBody, ITSAStatusDetail}
 
 class CreateAmendITSAStatusValidator extends Validator[CreateAmendITSAStatusRawData] {
 
-  private val validationSet = List(parameterFormatValidation, enumFieldsValidation, bodyFormatValidation, bodyValidation)
+  private val validationSet = List(parameterFormatValidation, enumFieldsValidation, bodyFormatValidation, bodyValidation, submissionDatesUniquenessValidation())
 
   override def validate(data: CreateAmendITSAStatusRawData): List[MtdError] = {
 
@@ -68,6 +60,22 @@ class CreateAmendITSAStatusValidator extends Validator[CreateAmendITSAStatusRawD
     }
 
   }
+
+  private def submissionDatesUniquenessValidation(error: => MtdError = SubmittedOnFormatError): CreateAmendITSAStatusRawData => List[List[MtdError]] =
+    (data: CreateAmendITSAStatusRawData) => {
+
+      (data.body \ "itsaStatusDetails").asOpt[JsArray] match {
+
+        case Some(itsaStatusDetailsJson) =>
+          val submissionDatesAreUnique = itsaStatusDetailsJson.value
+            .map(details => (details \ "submittedOn").asOpt[String])
+            .collect { case Some(timestamp) => timestamp }
+            .toSet
+            .size == itsaStatusDetailsJson.value.size
+          if (submissionDatesAreUnique) Nil else List(List(error))
+        case None => Nil
+      }
+    }
 
   private def bodyFormatValidation: CreateAmendITSAStatusRawData => List[List[MtdError]] = { data =>
     JsonFormatValidation.validate[CreateAmendITSAStatusRequestBody](data.body) match {

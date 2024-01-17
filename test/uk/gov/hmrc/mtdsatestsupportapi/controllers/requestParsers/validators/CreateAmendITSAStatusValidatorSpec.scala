@@ -59,6 +59,13 @@ class CreateAmendITSAStatusValidatorSpec extends UnitSpec with JsonErrorValidato
 
         result shouldBe Nil
       }
+
+      "a valid body with multiple unique submission dates are provided" in {
+        val body = bodyWith(itsaStatusDetail, itsaStatusDetail.update("/submittedOn", JsString("2021-03-23T17:02:34.039Z")))
+        val result = validator.validate(CreateAmendITSAStatusRawData(nino, taxYear, body))
+
+        result shouldBe Nil
+      }
     }
 
     "return FORMAT_NINO error" when {
@@ -91,6 +98,13 @@ class CreateAmendITSAStatusValidatorSpec extends UnitSpec with JsonErrorValidato
         val result = validator.validate(CreateAmendITSAStatusRawData(nino, taxYear, body))
 
         result shouldBe List(SubmittedOnFormatError.withExtraPath("/itsaStatusDetails/0/submittedOn"))
+      }
+
+      "the submission dates are not unique" in {
+        val body = bodyWith(itsaStatusDetail, itsaStatusDetail)
+        val result = validator.validate(CreateAmendITSAStatusRawData(nino, taxYear, body))
+
+        result shouldBe List(SubmittedOnFormatError)
       }
     }
 
