@@ -18,15 +18,24 @@ package uk.gov.hmrc.mtdsatestsupportapi.controllers.requestParsers.validators
 
 import api.controllers.requestParsers.validators.Validator
 import api.controllers.requestParsers.validators.validations.{DateValidation, JsonFormatValidation, NinoValidation, TaxYearValidation}
-import api.models.errors.{MtdError, RuleIncorrectOrEmptyBodyError, SubmittedOnFormatError}
+import api.models.errors.{MtdError, RuleIncorrectOrEmptyBodyError, DuplicateSubmittedError}
 import play.api.libs.json.JsArray
-import uk.gov.hmrc.mtdsatestsupportapi.controllers.requestParsers.validators.validations.{BusinessIncome2YearsPriorValidation, StatusReasonValidation, StatusValidation}
+import uk.gov.hmrc.mtdsatestsupportapi.controllers.requestParsers.validators.validations.{
+  BusinessIncome2YearsPriorValidation,
+  StatusReasonValidation,
+  StatusValidation
+}
 import uk.gov.hmrc.mtdsatestsupportapi.models.request.createAmendITSAStatus.CreateAmendITSAStatusRequestBody.format
-import uk.gov.hmrc.mtdsatestsupportapi.models.request.createAmendITSAStatus.{CreateAmendITSAStatusRawData, CreateAmendITSAStatusRequestBody, ITSAStatusDetail}
+import uk.gov.hmrc.mtdsatestsupportapi.models.request.createAmendITSAStatus.{
+  CreateAmendITSAStatusRawData,
+  CreateAmendITSAStatusRequestBody,
+  ITSAStatusDetail
+}
 
 class CreateAmendITSAStatusValidator extends Validator[CreateAmendITSAStatusRawData] {
 
-  private val validationSet = List(parameterFormatValidation, enumFieldsValidation, bodyFormatValidation, bodyValidation, submissionDatesUniquenessValidation())
+  private val validationSet =
+    List(parameterFormatValidation, enumFieldsValidation, bodyFormatValidation, bodyValidation, submissionDatesUniquenessValidation())
 
   override def validate(data: CreateAmendITSAStatusRawData): List[MtdError] = {
 
@@ -61,7 +70,8 @@ class CreateAmendITSAStatusValidator extends Validator[CreateAmendITSAStatusRawD
 
   }
 
-  private def submissionDatesUniquenessValidation(error: => MtdError = SubmittedOnFormatError): CreateAmendITSAStatusRawData => List[List[MtdError]] =
+  private def submissionDatesUniquenessValidation(
+      error: => MtdError = DuplicateSubmittedError): CreateAmendITSAStatusRawData => List[List[MtdError]] =
     (data: CreateAmendITSAStatusRawData) => {
 
       (data.body \ "itsaStatusDetails").asOpt[JsArray] match {

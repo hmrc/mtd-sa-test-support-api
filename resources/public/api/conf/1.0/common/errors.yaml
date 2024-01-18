@@ -171,6 +171,12 @@ components:
         code: FORMAT_SUBMITTED_ON
         message: The provided submitted on date is invalid
 
+    duplicateSubmittedOn:
+      description: Two or more of the supplied records have the same submittedOn value.
+      value:
+        code: DUPLICATE_SUBMITTED_ON
+        message: The provided submittedOn values are not unique
+
     # 403
 
     clientOrAgentNotAuthorised:
