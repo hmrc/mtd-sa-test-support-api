@@ -71,7 +71,7 @@ class CreateAmendITSAStatusValidator extends Validator[CreateAmendITSAStatusRawD
   }
 
   private def submissionDatesUniquenessValidation(
-      error: => MtdError = DuplicateSubmittedError): CreateAmendITSAStatusRawData => List[List[MtdError]] =
+      error: MtdError = DuplicateSubmittedError): CreateAmendITSAStatusRawData => List[List[MtdError]] =
     (data: CreateAmendITSAStatusRawData) => {
 
       (data.body \ "itsaStatusDetails").asOpt[JsArray] match {
