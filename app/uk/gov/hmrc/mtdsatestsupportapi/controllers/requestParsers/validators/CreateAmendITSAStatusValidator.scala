@@ -18,7 +18,7 @@ package uk.gov.hmrc.mtdsatestsupportapi.controllers.requestParsers.validators
 
 import api.controllers.requestParsers.validators.Validator
 import api.controllers.requestParsers.validators.validations.{DateValidation, JsonFormatValidation, NinoValidation, TaxYearValidation}
-import api.models.errors.{MtdError, RuleIncorrectOrEmptyBodyError}
+import api.models.errors.{MtdError, RuleIncorrectOrEmptyBodyError, DuplicateSubmittedError}
 import play.api.libs.json.JsArray
 import uk.gov.hmrc.mtdsatestsupportapi.controllers.requestParsers.validators.validations.{
   BusinessIncome2YearsPriorValidation,
@@ -34,7 +34,8 @@ import uk.gov.hmrc.mtdsatestsupportapi.models.request.createAmendITSAStatus.{
 
 class CreateAmendITSAStatusValidator extends Validator[CreateAmendITSAStatusRawData] {
 
-  private val validationSet = List(parameterFormatValidation, enumFieldsValidation, bodyFormatValidation, bodyValidation)
+  private val validationSet =
+    List(parameterFormatValidation, enumFieldsValidation, bodyFormatValidation, bodyValidation, submissionDatesUniquenessValidation())
 
   override def validate(data: CreateAmendITSAStatusRawData): List[MtdError] = {
 
@@ -68,6 +69,23 @@ class CreateAmendITSAStatusValidator extends Validator[CreateAmendITSAStatusRawD
     }
 
   }
+
+  private def submissionDatesUniquenessValidation(
+      error: MtdError = DuplicateSubmittedError): CreateAmendITSAStatusRawData => List[List[MtdError]] =
+    (data: CreateAmendITSAStatusRawData) => {
+
+      (data.body \ "itsaStatusDetails").asOpt[JsArray] match {
+
+        case Some(itsaStatusDetailsJson) =>
+          val submissionDatesAreUnique = itsaStatusDetailsJson.value
+            .map(details => (details \ "submittedOn").asOpt[String])
+            .collect { case Some(timestamp) => timestamp }
+            .toSet
+            .size == itsaStatusDetailsJson.value.size
+          if (submissionDatesAreUnique) Nil else List(List(error))
+        case None => Nil
+      }
+    }
 
   private def bodyFormatValidation: CreateAmendITSAStatusRawData => List[List[MtdError]] = { data =>
     JsonFormatValidation.validate[CreateAmendITSAStatusRequestBody](data.body) match {

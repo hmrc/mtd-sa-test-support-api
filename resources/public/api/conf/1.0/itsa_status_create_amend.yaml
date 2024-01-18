@@ -60,7 +60,8 @@ post:
               $ref: './common/errors.yaml#/components/examples/formatBusinessIncome2YearsPrior'
             FORMAT_SUBMITTED_ON:
               $ref: './common/errors.yaml#/components/examples/formatSubmittedOn'
-
+            DUPLICATE_SUBMITTED_ON:
+              $ref: './common/errors.yaml#/components/examples/duplicateSubmittedOn'
     403:
       description: Forbidden
       content:
