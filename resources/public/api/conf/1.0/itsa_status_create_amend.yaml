@@ -61,7 +61,7 @@ post:
             FORMAT_SUBMITTED_ON:
               $ref: './common/errors.yaml#/components/examples/formatSubmittedOn'
             DUPLICATE_SUBMITTED_ON:
-                  $ref: './common/errors.yaml#/components/examples/duplicateSubmittedOn'
+              $ref: './common/errors.yaml#/components/examples/duplicateSubmittedOn'
     403:
       description: Forbidden
       content:
