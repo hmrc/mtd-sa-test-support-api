@@ -99,12 +99,14 @@ class CreateAmendITSAStatusValidatorSpec extends UnitSpec with JsonErrorValidato
 
         result shouldBe List(SubmittedOnFormatError.withExtraPath("/itsaStatusDetails/0/submittedOn"))
       }
+    }
 
+    "return DUPLICATE_SUBMITTED_ON" when {
       "the submission dates are not unique" in {
-        val body = bodyWith(itsaStatusDetail, itsaStatusDetail)
-        val result = validator.validate(CreateAmendITSAStatusRawData(nino, taxYear, body))
+          val body = bodyWith(itsaStatusDetail, itsaStatusDetail)
+          val result = validator.validate(CreateAmendITSAStatusRawData(nino, taxYear, body))
 
-        result shouldBe List(DuplicateSubmittedError)
+          result shouldBe List(DuplicateSubmittedError)
       }
     }
 
