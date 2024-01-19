@@ -60,7 +60,7 @@ class CreateITSAStatusControllerISpec extends UnitSpec with IntegrationBaseSpec 
                               requestBodyToTest: JsObject,
                               expectedStatus: Int,
                               expectedBody: MtdError): Unit = {
-        s"validation fails with ${expectedBody.code} error" in new Test {
+        s"validation fails with ${expectedBody.code} error and $requestNino" in new Test {
           override val nino: String     = requestNino
           override val taxYear: TaxYear = requestTaxYear
           override val requestBody      = requestBodyToTest
@@ -116,7 +116,13 @@ class CreateITSAStatusControllerISpec extends UnitSpec with IntegrationBaseSpec 
           TaxYear.fromMtd("2022-23"),
           bodyWith(itsaStatusDetail.removeProperty("/statusReason")).as[JsObject],
           BAD_REQUEST,
-          RuleIncorrectOrEmptyBodyError.withExtraPath("/itsaStatusDetails/0/statusReason"))
+          RuleIncorrectOrEmptyBodyError.withExtraPath("/itsaStatusDetails/0/statusReason")),
+        (
+          "AA123456B",
+          TaxYear.fromMtd("2022-23"),
+          bodyWith().as[JsObject],
+          BAD_REQUEST,
+          RuleIncorrectOrEmptyBodyError.withExtraPath("/itsaStatusDetails"))
       )
 
       input.foreach((validationErrorTest _).tupled)

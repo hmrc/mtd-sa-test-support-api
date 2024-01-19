@@ -18,7 +18,7 @@ package uk.gov.hmrc.mtdsatestsupportapi.controllers.requestParsers.validators
 
 import api.controllers.requestParsers.validators.Validator
 import api.controllers.requestParsers.validators.validations.{DateValidation, JsonFormatValidation, NinoValidation, TaxYearValidation}
-import api.models.errors.{MtdError, RuleIncorrectOrEmptyBodyError, DuplicateSubmittedError}
+import api.models.errors.{ MtdError, RuleIncorrectOrEmptyBodyError, DuplicateSubmittedErrorOn}
 import play.api.libs.json.JsArray
 import uk.gov.hmrc.mtdsatestsupportapi.controllers.requestParsers.validators.validations.{
   BusinessIncome2YearsPriorValidation,
@@ -51,19 +51,23 @@ class CreateAmendITSAStatusValidator extends Validator[CreateAmendITSAStatusRawD
 
   private def enumFieldsValidation: CreateAmendITSAStatusRawData => List[List[MtdError]] = (data: CreateAmendITSAStatusRawData) => {
     (data.body \ "itsaStatusDetails").asOpt[JsArray] match {
+
       case Some(itsaStatusDetailsJson) =>
-        itsaStatusDetailsJson.value.zipWithIndex.map { case (itsaStatusDetailJson, index) =>
-          val maybeStatusErrors = (itsaStatusDetailJson \ "status").asOpt[String] match {
-            case Some(status) => StatusValidation.validate(status, path = Some(s"/itsaStatusDetails/$index/status"))
-            case None         => List(RuleIncorrectOrEmptyBodyError.withExtraPath(s"/itsaStatusDetails/$index/status"))
-          }
+        if (itsaStatusDetailsJson.value.isEmpty) { List(List(RuleIncorrectOrEmptyBodyError.withExtraPath("/itsaStatusDetails"))) }
+        else {
+          itsaStatusDetailsJson.value.zipWithIndex.map { case (itsaStatusDetailJson, index) =>
+            val maybeStatusErrors = (itsaStatusDetailJson \ "status").asOpt[String] match {
+              case Some(status) => StatusValidation.validate(status, path = Some(s"/itsaStatusDetails/$index/status"))
+              case None         => List(RuleIncorrectOrEmptyBodyError.withExtraPath(s"/itsaStatusDetails/$index/status"))
+            }
 
-          val maybeStatusReasonErrors = (itsaStatusDetailJson \ "statusReason").asOpt[String] match {
-            case Some(statusReason) => StatusReasonValidation.validate(statusReason, path = Some(s"/itsaStatusDetails/$index/statusReason"))
-            case None               => List(RuleIncorrectOrEmptyBodyError.withExtraPath(s"/itsaStatusDetails/$index/statusReason"))
-          }
+            val maybeStatusReasonErrors = (itsaStatusDetailJson \ "statusReason").asOpt[String] match {
+              case Some(statusReason) => StatusReasonValidation.validate(statusReason, path = Some(s"/itsaStatusDetails/$index/statusReason"))
+              case None               => List(RuleIncorrectOrEmptyBodyError.withExtraPath(s"/itsaStatusDetails/$index/statusReason"))
+            }
 
-          (maybeStatusErrors ++ maybeStatusReasonErrors).toList
+            (maybeStatusErrors ++ maybeStatusReasonErrors).toList
+          }
         }.toList
       case None => List(List(RuleIncorrectOrEmptyBodyError))
     }
@@ -71,7 +75,7 @@ class CreateAmendITSAStatusValidator extends Validator[CreateAmendITSAStatusRawD
   }
 
   private def submissionDatesUniquenessValidation(
-      error: MtdError = DuplicateSubmittedError): CreateAmendITSAStatusRawData => List[List[MtdError]] =
+      error: MtdError = DuplicateSubmittedErrorOn): CreateAmendITSAStatusRawData => List[List[MtdError]] =
     (data: CreateAmendITSAStatusRawData) => {
 
       (data.body \ "itsaStatusDetails").asOpt[JsArray] match {
