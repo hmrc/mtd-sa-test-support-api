@@ -59,6 +59,6 @@ object BusinessIncome2YearsPriorFormatError
 
 object SubmittedOnFormatError extends MtdError("FORMAT_SUBMITTED_ON", "The provided submitted on date is invalid", BAD_REQUEST)
 
-object DuplicateSubmittedError extends MtdError("DUPLICATE_SUBMITTED_ON", "The provided submittedOn values are not unique", BAD_REQUEST)
+object DuplicateSubmittedErrorOn extends MtdError("DUPLICATE_SUBMITTED_ON", "The provided submittedOn values are not unique", BAD_REQUEST)
 
 object QuarterlyPeriodTypeFormatError extends MtdError("FORMAT_QUARTERLY_PERIOD_TYPE", "The quarterly period type format is not valid", BAD_REQUEST)

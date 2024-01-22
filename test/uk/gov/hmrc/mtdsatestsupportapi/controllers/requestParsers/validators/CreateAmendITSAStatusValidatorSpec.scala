@@ -106,7 +106,7 @@ class CreateAmendITSAStatusValidatorSpec extends UnitSpec with JsonErrorValidato
           val body = bodyWith(itsaStatusDetail, itsaStatusDetail)
           val result = validator.validate(CreateAmendITSAStatusRawData(nino, taxYear, body))
 
-          result shouldBe List(DuplicateSubmittedError)
+          result shouldBe List(DuplicateSubmittedErrorOn)
       }
     }
 
@@ -142,6 +142,14 @@ class CreateAmendITSAStatusValidatorSpec extends UnitSpec with JsonErrorValidato
 
         result shouldBe List(RuleIncorrectOrEmptyBodyError)
       }
+
+      "the itsaDetails array is empty" in {
+        val body = bodyWith()
+
+        val result = validator.validate(CreateAmendITSAStatusRawData(nino, taxYear, body))
+        result shouldBe List(RuleIncorrectOrEmptyBodyError.withExtraPath("/itsaStatusDetails"))
+      }
+
       "mandatory enum fields are missing" in {
         val invalidStatusDetail = itsaStatusDetail.removeProperty("/statusReason").removeProperty("/status")
         val body                = bodyWith(invalidStatusDetail, invalidStatusDetail)
@@ -154,6 +162,7 @@ class CreateAmendITSAStatusValidatorSpec extends UnitSpec with JsonErrorValidato
           RuleIncorrectOrEmptyBodyError.withExtraPath("/itsaStatusDetails/1/statusReason")
         )
       }
+
       "mandatory non-enum field is missing" in {
         val body   = bodyWith(itsaStatusDetail.removeProperty("/submittedOn"))
         val result = validator.validate(CreateAmendITSAStatusRawData(nino, taxYear, body))
