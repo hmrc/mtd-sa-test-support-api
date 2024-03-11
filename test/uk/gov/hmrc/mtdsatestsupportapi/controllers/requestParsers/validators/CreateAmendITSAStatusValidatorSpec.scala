@@ -37,8 +37,8 @@ class CreateAmendITSAStatusValidatorSpec extends UnitSpec with JsonErrorValidato
   private val itsaStatusDetail = Json.parse("""
                                               |{
                                               |     "submittedOn": "2021-03-23T16:02:34.039Z",
-                                              |     "status": "00",
-                                              |     "statusReason": "01",
+                                              |     "status": "No Status",
+                                              |     "statusReason": "Sign up - return available",
                                               |     "businessIncome2YearsPrior": 34999.99
                                               |}
                                               |""".stripMargin)

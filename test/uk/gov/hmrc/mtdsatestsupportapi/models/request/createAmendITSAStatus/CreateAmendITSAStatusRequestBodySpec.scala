@@ -23,7 +23,7 @@ import uk.gov.hmrc.mtdsatestsupportapi.models.domain.{Status, StatusReason}
 class CreateAmendITSAStatusRequestBodySpec extends UnitSpec {
 
   private val itsaRequestBody = CreateAmendITSAStatusRequestBody(
-    List(ITSAStatusDetail("2021-03-23T16:02:34.039Z", Status.`00`, StatusReason.`01`, None))
+    List(ITSAStatusDetail("2021-03-23T16:02:34.039Z", Status.`No Status`, StatusReason.`Sign up - no return available`, None))
   )
 
   private val requestJson = Json.parse("""
@@ -31,8 +31,8 @@ class CreateAmendITSAStatusRequestBodySpec extends UnitSpec {
                                          | "itsaStatusDetails": [
                                          |    {
                                          |     "submittedOn": "2021-03-23T16:02:34.039Z",
-                                         |     "status": "00",
-                                         |     "statusReason": "01"
+                                         |     "status": "No Status",
+                                         |     "statusReason": "Sign up - no return available"
                                          |     }
                                          |   ]
                                          |}

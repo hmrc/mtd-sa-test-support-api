@@ -16,59 +16,27 @@
 
 package uk.gov.hmrc.mtdsatestsupportapi.models.domain
 
-import play.api.libs.json.{Reads, Writes}
+import play.api.libs.json.Format
 import utils.enums.Enums
 
-sealed trait StatusReason {
-  val downstreamValue: String
-}
+sealed trait StatusReason
 
 object StatusReason {
 
-  implicit val writes: Writes[StatusReason] = implicitly[Writes[String]].contramap(_.downstreamValue)
-
-  implicit val reads: Reads[StatusReason] = Enums.reads[StatusReason]
+  implicit val format: Format[StatusReason] = Enums.format[StatusReason]
 
   val parser: PartialFunction[String, StatusReason] = Enums.parser[StatusReason]
 
-  case object `00` extends StatusReason {
-    val downstreamValue = "Sign up - return available"
-  }
-
-  case object `01` extends StatusReason {
-    val downstreamValue = "Sign up - no return available"
-  }
-
-  case object `02` extends StatusReason {
-    val downstreamValue = "ITSA final declaration"
-  }
-
-  case object `03` extends StatusReason {
-    val downstreamValue = "ITSA Q4 declaration"
-  }
-
-  case object `04` extends StatusReason {
-    val downstreamValue = "CESA SA return"
-  }
-
-  case object `05` extends StatusReason {
-    val downstreamValue = "Complex"
-  }
-
-  case object `06` extends StatusReason {
-    val downstreamValue = "Ceased income source"
-  }
-
-  case object `07` extends StatusReason {
-    val downstreamValue = "Reinstated income source"
-  }
-
-  case object `08` extends StatusReason {
-    val downstreamValue = "Rollover"
-  }
-
-  case object `09` extends StatusReason {
-    val downstreamValue = "Income Source Latency Changes"
-  }
+  case object `Sign up - return available`    extends StatusReason
+  case object `Sign up - no return available` extends StatusReason
+  case object `ITSA final declaration`        extends StatusReason
+  case object `ITSA Q4 declaration`           extends StatusReason
+  case object `CESA SA return`                extends StatusReason
+  case object `Complex`                       extends StatusReason
+  case object `Ceased income source`          extends StatusReason
+  case object `Reinstated income source`      extends StatusReason
+  case object `Rollover`                      extends StatusReason
+  case object `Income Source Latency Changes` extends StatusReason
+  case object `MTD ITSA Opt-Out`              extends StatusReason
 
 }

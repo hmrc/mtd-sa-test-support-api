@@ -35,8 +35,8 @@ class CreateAmendITSAStatusRequestParserSpec extends UnitSpec with MockCreateAme
       |  "itsaStatusDetails": [
       |    {
       |      "submittedOn": "2021-03-23T16:02:34.039Z",
-      |      "status": "01",
-      |      "statusReason": "02",
+      |      "status": "No Status",
+      |      "statusReason": "Sign up - no return available",
       |      "businessIncome2YearsPrior": 234
       |    }
       |  ]
@@ -46,8 +46,8 @@ class CreateAmendITSAStatusRequestParserSpec extends UnitSpec with MockCreateAme
   val validBody = CreateAmendITSAStatusRequestBody(itsaStatusDetails = Seq(
     ITSAStatusDetail(
       submittedOn = "2021-03-23T16:02:34.039Z",
-      status = Status.`01`,
-      statusReason = StatusReason.`02`,
+      status = Status.`No Status`,
+      statusReason = StatusReason.`Sign up - no return available`,
       businessIncome2YearsPrior = Some(234))))
 
   private val inputData = CreateAmendITSAStatusRawData(nino, taxYear, body)

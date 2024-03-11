@@ -32,7 +32,7 @@ class CreateAmendITSAStatusConnectorSpec extends ConnectorSpec {
 
   private val nino             = Nino("TC663795B")
   private val taxYear          = TaxYear.fromMtd("2022-23")
-  private val itsaStatusDetail = ITSAStatusDetail("2019-01-01T00:00:00.000Z", Status.`01`, StatusReason.`01`, None)
+  private val itsaStatusDetail = ITSAStatusDetail("2019-01-01T00:00:00.000Z", Status.`No Status`, StatusReason.`Sign up - return available`, None)
   private val body             = CreateAmendITSAStatusRequestBody(List(itsaStatusDetail))
 
   private val request = CreateAmendITSAStatusRequest(nino, taxYear, body)
