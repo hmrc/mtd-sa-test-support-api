@@ -23,13 +23,13 @@ class StatusValidationSpec extends UnitSpec {
 
   "StatusValidation" should {
     "return no error" when {
-      checkValid("00")
-      checkValid("01")
-      checkValid("02")
-      checkValid("03")
-      checkValid("04")
-      checkValid("05")
-      checkValid("99")
+      checkValid("No Status")
+      checkValid("MTD Mandated")
+      checkValid("MTD Voluntary")
+      checkValid("Annual")
+      checkValid("Non Digital")
+      checkValid("Dormant")
+      checkValid("MTD Exempt")
 
       def checkValid(value: String): Unit =
         s"provided with a string of '$value'" in {
@@ -38,7 +38,7 @@ class StatusValidationSpec extends UnitSpec {
     }
     "return an error" when {
       "invalid value is provided" in {
-        StatusValidation.validate("hello") shouldBe List(StatusFormatError)
+        StatusValidation.validate("Unsupported status") shouldBe List(StatusFormatError)
       }
     }
   }

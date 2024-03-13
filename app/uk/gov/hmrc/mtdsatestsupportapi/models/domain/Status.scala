@@ -16,47 +16,22 @@
 
 package uk.gov.hmrc.mtdsatestsupportapi.models.domain
 
-import play.api.libs.json.{Reads, Writes}
+import play.api.libs.json.Format
 import utils.enums.Enums
 
-sealed trait Status {
-  val downstreamValue: String
-}
+sealed trait Status
 
 object Status {
 
-  implicit val writes: Writes[Status] = implicitly[Writes[String]].contramap(_.downstreamValue)
-
-  implicit val reads: Reads[Status] = Enums.reads[Status]
+  implicit val format: Format[Status] = Enums.format[Status]
 
   val parser: PartialFunction[String, Status] = Enums.parser[Status]
 
-  case object `00` extends Status {
-    val downstreamValue = "No Status"
-  }
-
-  case object `01` extends Status {
-    val downstreamValue = "MTD Mandated"
-  }
-
-  case object `02` extends Status {
-    val downstreamValue = "MTD Voluntary"
-  }
-
-  case object `03` extends Status {
-    val downstreamValue = "Annual"
-  }
-
-  case object `04` extends Status {
-    val downstreamValue = "Non Digital"
-  }
-
-  case object `05` extends Status {
-    val downstreamValue = "Dormant"
-  }
-
-  case object `99` extends Status {
-    val downstreamValue = "MTD Exempt"
-  }
-
+  case object `No Status`     extends Status
+  case object `MTD Mandated`  extends Status
+  case object `MTD Voluntary` extends Status
+  case object `Annual`        extends Status
+  case object `Non Digital`   extends Status
+  case object `Dormant`       extends Status
+  case object `MTD Exempt`    extends Status
 }
