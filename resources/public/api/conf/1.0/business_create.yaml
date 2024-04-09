@@ -26,15 +26,15 @@ post:
           $ref: './schemas/businesses/create_request.json'
         examples:
           uk-property-request:
-            description:
+            description:     Create a UK property request
             value:
               $ref: './examples/businesses/create_request_uk_property.json'
           foreign-property-request:
-            description:
+            description: Create a foreign property request
             value:
               $ref: './examples/businesses/create_request_foreign_property.json'
           self-employment-business-request:
-            description:
+            description: Create a self employment business request
             value:
               $ref: './examples/businesses/create_request_self_employment_business.json'
 
