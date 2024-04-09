@@ -29,17 +29,19 @@ import support.{IntegrationBaseSpec, UnitSpec}
 
 class CreateITSAStatusControllerISpec extends UnitSpec with IntegrationBaseSpec with JsonErrorValidators {
 
-  private def bodyWith(entries: JsValue*) = Json.parse(s"""
+  private def bodyWith(entries: JsValue*) = Json
+    .parse(s"""
                                                           |{
                                                           | "itsaStatusDetails": ${JsArray(entries)}
                                                           |}
                                                           |""".stripMargin)
+    .as[JsObject]
 
   private val itsaStatusDetail = Json.parse("""
                                               |{
                                               |     "submittedOn": "2021-03-23T16:02:34.039Z",
-                                              |     "status": "00",
-                                              |     "statusReason": "01",
+                                              |     "status": "No Status",
+                                              |     "statusReason": "Sign up - return available",
                                               |     "businessIncome2YearsPrior": 34999.99
                                               |}
                                               |""".stripMargin)
@@ -47,6 +49,8 @@ class CreateITSAStatusControllerISpec extends UnitSpec with IntegrationBaseSpec 
   "Calling the create Itsa Status endpoint" should {
     "return a 200 status code" when {
       "a valid request is made" in new Test {
+        override val requestBody: JsObject = bodyWith(itsaStatusDetail)
+
         val response: WSResponse = await(request().post(requestBody))
 
         response.status shouldBe NO_CONTENT
@@ -75,54 +79,39 @@ class CreateITSAStatusControllerISpec extends UnitSpec with IntegrationBaseSpec 
       }
 
       val input = Seq(
-        (
-          "BAD_NINO",
-          TaxYear.fromMtd("2023-24"),
-          bodyWith(itsaStatusDetail).as[JsObject],
-          BAD_REQUEST,
-          NinoFormatError),
-        (
-          "AA123456A",
-          TaxYear.fromMtd("2007-08"),
-          bodyWith(itsaStatusDetail).as[JsObject],
-          BAD_REQUEST,
-          TaxYearFormatError),
+        ("BAD_NINO", TaxYear.fromMtd("2023-24"), bodyWith(itsaStatusDetail), BAD_REQUEST, NinoFormatError),
+        ("AA123456A", TaxYear.fromMtd("2007-08"), bodyWith(itsaStatusDetail), BAD_REQUEST, TaxYearFormatError),
         (
           "AA123456A",
           TaxYear.fromMtd("2022-23"),
-          bodyWith(itsaStatusDetail.update("/status", JsString("invalid_status"))).as[JsObject],
+          bodyWith(itsaStatusDetail.update("/status", JsString("invalid_status"))),
           BAD_REQUEST,
           StatusFormatError.withExtraPath("/itsaStatusDetails/0/status")),
         (
           "AA123456A",
           TaxYear.fromMtd("2022-23"),
-          bodyWith(itsaStatusDetail.update("/statusReason", JsString("invalid_status_reason"))).as[JsObject],
+          bodyWith(itsaStatusDetail.update("/statusReason", JsString("invalid_status_reason"))),
           BAD_REQUEST,
           StatusReasonFormatError.withExtraPath("/itsaStatusDetails/0/statusReason")),
         (
           "AA123456A",
           TaxYear.fromMtd("2022-23"),
-          bodyWith(itsaStatusDetail.update("/businessIncome2YearsPrior", JsNumber(-1))).as[JsObject],
+          bodyWith(itsaStatusDetail.update("/businessIncome2YearsPrior", JsNumber(-1))),
           BAD_REQUEST,
           BusinessIncome2YearsPriorFormatError.withExtraPath("/itsaStatusDetails/0/businessIncome2YearsPrior")),
         (
           "AA123456A",
           TaxYear.fromMtd("2022-23"),
-          bodyWith(itsaStatusDetail.update("/submittedOn", JsString("2021-03-23T16:02:34"))).as[JsObject],
+          bodyWith(itsaStatusDetail.update("/submittedOn", JsString("2021-03-23T16:02:34"))),
           BAD_REQUEST,
           SubmittedOnFormatError.withExtraPath("/itsaStatusDetails/0/submittedOn")),
         (
           "AA123456A",
           TaxYear.fromMtd("2022-23"),
-          bodyWith(itsaStatusDetail.removeProperty("/statusReason")).as[JsObject],
+          bodyWith(itsaStatusDetail.removeProperty("/statusReason")),
           BAD_REQUEST,
           RuleIncorrectOrEmptyBodyError.withExtraPath("/itsaStatusDetails/0/statusReason")),
-        (
-          "AA123456B",
-          TaxYear.fromMtd("2022-23"),
-          bodyWith().as[JsObject],
-          BAD_REQUEST,
-          RuleIncorrectOrEmptyBodyError.withExtraPath("/itsaStatusDetails"))
+        ("AA123456B", TaxYear.fromMtd("2022-23"), bodyWith(), BAD_REQUEST, RuleIncorrectOrEmptyBodyError.withExtraPath("/itsaStatusDetails"))
       )
 
       input.foreach((validationErrorTest _).tupled)
@@ -136,31 +125,20 @@ class CreateITSAStatusControllerISpec extends UnitSpec with IntegrationBaseSpec 
 
     val taxYear: TaxYear = TaxYear.fromMtd("2023-24")
 
-    val requestBody: JsObject = Json
-      .parse(s"""{
-         |  "itsaStatusDetails": [
-         |    {
-         |      "submittedOn": "2021-03-23T16:02:34.039Z",
-         |      "status": "01",
-         |      "statusReason": "02"
-         |    }
-         |  ]
-         |}""".stripMargin)
-      .as[JsObject]
-
-    def downstreamRequestBody: JsObject = Json.obj("taxYear" -> taxYear.asTys) ++ requestBody
-
-    def downstreamUri = s"/test-support/itsa-details/$nino/${taxYear.asTys}"
+    val requestBody: JsObject
 
     def setupStubs(): StubMapping = {
+      val expectedDownstreamRequestBody = requestBody
+
       AuthStub.authorised()
-      DownstreamStub.onSuccess(POST, downstreamUri, Seq.empty, NO_CONTENT, body= downstreamRequestBody)
+      when(POST, s"/test-support/itsa-details/$nino/${taxYear.asTys}")
+        .withRequestBody(expectedDownstreamRequestBody)
+        .thenReturnNoContent()
     }
 
     def request(): WSRequest = {
       setupStubs()
       buildRequest(s"/itsa-status/$nino/${taxYear.asMtd}")
-        .withBody(requestBody)
         .withHttpHeaders(
           (ACCEPT, "application/vnd.hmrc.1.0+json"),
           (AUTHORIZATION, "Bearer 123"),

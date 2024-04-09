@@ -23,16 +23,17 @@ class StatusReasonValidationSpec extends UnitSpec {
 
   "StatusReasonValidation" should {
     "return no error" when {
-      checkValid("00")
-      checkValid("01")
-      checkValid("02")
-      checkValid("03")
-      checkValid("04")
-      checkValid("05")
-      checkValid("06")
-      checkValid("07")
-      checkValid("08")
-      checkValid("09")
+      checkValid("Sign up - return available")
+      checkValid("Sign up - no return available")
+      checkValid("ITSA final declaration")
+      checkValid("ITSA Q4 declaration")
+      checkValid("CESA SA return")
+      checkValid("Complex")
+      checkValid("Ceased income source")
+      checkValid("Reinstated income source")
+      checkValid("Rollover")
+      checkValid("Income Source Latency Changes")
+      checkValid("MTD ITSA Opt-Out")
 
       def checkValid(value: String): Unit =
         s"provided with a string of '$value'" in {
@@ -41,7 +42,7 @@ class StatusReasonValidationSpec extends UnitSpec {
     }
     "return an error" when {
       "invalid value is provided" in {
-        StatusReasonValidation.validate("99") shouldBe List(StatusReasonFormatError)
+        StatusReasonValidation.validate("Unsupported reason") shouldBe List(StatusReasonFormatError)
       }
     }
   }

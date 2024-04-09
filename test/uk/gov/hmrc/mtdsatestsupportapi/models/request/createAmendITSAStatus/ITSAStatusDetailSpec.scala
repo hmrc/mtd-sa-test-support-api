@@ -24,8 +24,7 @@ class ITSAStatusDetailSpec extends UnitSpec {
 
   private val itsaStatusDetail = ITSAStatusDetail(
     "2021-03-23T16:02:34.039Z",
-    Status.`00`,
-    StatusReason.`01`,
+    Status.`No Status`, StatusReason.`Sign up - return available`,
     None
   )
 
@@ -35,8 +34,8 @@ class ITSAStatusDetailSpec extends UnitSpec {
         val mtdJson = Json.parse("""
             | {
             |   "submittedOn": "2021-03-23T16:02:34.039Z",
-            |   "status": "00",
-            |   "statusReason": "01"
+            |   "status": "No Status",
+            |   "statusReason": "Sign up - return available"
             |   }
             |""".stripMargin)
 
