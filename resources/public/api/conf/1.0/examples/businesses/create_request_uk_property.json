@@ -1,0 +1,15 @@
+{
+  "typeOfBusiness": "uk-property",
+  "firstAccountingPeriodStartDate": "2021-04-06",
+  "firstAccountingPeriodEndDate": "2022-04-05",
+  "latencyDetails": {
+    "latencyEndDate": "2023-04-06",
+    "taxYear1": "2021-22",
+    "latencyIndicator1": "A",
+    "taxYear2": "2022-23",
+    "latencyIndicator2": "Q"
+  },
+  "accountingType": "CASH",
+  "commencementDate": "2020-04-06",
+  "cessationDate": "2025-04-06"
+}
