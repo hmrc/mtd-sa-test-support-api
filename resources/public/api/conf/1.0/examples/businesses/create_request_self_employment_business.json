@@ -1,0 +1,22 @@
+{
+  "typeOfBusiness": "self-employment",
+  "tradingName": "MyBusiness Pvt Ltd",
+  "firstAccountingPeriodStartDate": "2020-04-06",
+  "firstAccountingPeriodEndDate": "2021-04-05",
+  "latencyDetails": {
+    "latencyEndDate": "2022-04-06",
+    "taxYear1": "2020-21",
+    "latencyIndicator1": "A",
+    "taxYear2": "2021-22",
+    "latencyIndicator2": "Q"
+  },
+  "accountingType": "CASH",
+  "commencementDate": "2020-04-06",
+  "cessationDate": "2025-04-06",
+  "businessAddressLineOne": "221b Baker Street",
+  "businessAddressLineTwo": "Marylebone",
+  "businessAddressLineThree": "London",
+  "businessAddressLineFour": "England",
+  "businessAddressPostcode": "NW1 6XE",
+  "businessAddressCountryCode": "GB"
+}

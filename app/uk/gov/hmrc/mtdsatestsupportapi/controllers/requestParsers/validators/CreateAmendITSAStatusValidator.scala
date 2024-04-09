@@ -18,7 +18,7 @@ package uk.gov.hmrc.mtdsatestsupportapi.controllers.requestParsers.validators
 
 import api.controllers.requestParsers.validators.Validator
 import api.controllers.requestParsers.validators.validations.{DateValidation, JsonFormatValidation, NinoValidation, TaxYearValidation}
-import api.models.errors.{ MtdError, RuleIncorrectOrEmptyBodyError, DuplicateSubmittedErrorOn}
+import api.models.errors.{ MtdError, RuleIncorrectOrEmptyBodyError, DuplicateSubmittedOnError}
 import play.api.libs.json.JsArray
 import uk.gov.hmrc.mtdsatestsupportapi.controllers.requestParsers.validators.validations.{
   BusinessIncome2YearsPriorValidation,
@@ -75,7 +75,7 @@ class CreateAmendITSAStatusValidator extends Validator[CreateAmendITSAStatusRawD
   }
 
   private def submissionDatesUniquenessValidation(
-      error: MtdError = DuplicateSubmittedErrorOn): CreateAmendITSAStatusRawData => List[List[MtdError]] =
+      error: MtdError = DuplicateSubmittedOnError): CreateAmendITSAStatusRawData => List[List[MtdError]] =
     (data: CreateAmendITSAStatusRawData) => {
 
       (data.body \ "itsaStatusDetails").asOpt[JsArray] match {

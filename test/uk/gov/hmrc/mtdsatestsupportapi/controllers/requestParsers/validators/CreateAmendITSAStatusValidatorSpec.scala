@@ -106,7 +106,7 @@ class CreateAmendITSAStatusValidatorSpec extends UnitSpec with JsonErrorValidato
           val body = bodyWith(itsaStatusDetail, itsaStatusDetail)
           val result = validator.validate(CreateAmendITSAStatusRawData(nino, taxYear, body))
 
-          result shouldBe List(DuplicateSubmittedErrorOn)
+          result shouldBe List(DuplicateSubmittedOnError)
       }
     }
 
