@@ -17,6 +17,7 @@
 package controllers
 
 import com.google.inject.ImplementedBy
+import play.api.Environment
 import play.api.http.{AcceptEncoding, HttpErrorHandler}
 import play.api.mvc.{Action, AnyContent, RequestHeader, Result}
 import play.utils.{InvalidUriEncodingException, Resources}
@@ -44,8 +45,8 @@ trait RewriteableAssets {
 }
 
 @Singleton
-class RewriteableAssetsImpl @Inject() (errorHandler: HttpErrorHandler, meta: AssetsMetadata)(implicit ec: ExecutionContext)
-    extends Assets(errorHandler, meta)
+class RewriteableAssetsImpl @Inject() (errorHandler: HttpErrorHandler, meta: AssetsMetadata, env: Environment)(implicit ec: ExecutionContext)
+    extends Assets(errorHandler, meta, env)
     with RewriteableAssets {
   import meta._
 
@@ -76,7 +77,7 @@ class RewriteableAssetsImpl @Inject() (errorHandler: HttpErrorHandler, meta: Ass
       case Some((assetInfo, acceptEncoding)) =>
         val connection = assetInfo.url(acceptEncoding).openConnection()
         // Make sure it's not a directory
-        if (Resources.isUrlConnectionADirectory(connection)) {
+        if (Resources.isUrlConnectionADirectory(getClass.getClassLoader, connection)) {
           Resources.closeUrlConnection(connection)
           notFound
         } else

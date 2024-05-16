@@ -54,7 +54,7 @@ trait ConnectorSpec extends UnitSpec with WireMockSupport with DownstreamStub wi
   val stubEnv   = "ET"
   val stubToken = "ABCD1234"
 
-  val downstreamConfig: DownstreamConfig = DownstreamConfig(baseUrl, stubEnv, stubToken, Some(allowedHeaderNames))
+  val downstreamConfig: DownstreamConfig = DownstreamConfig(this.baseUrl, stubEnv, stubToken, Some(allowedHeaderNames))
 
   protected trait ConnectorTest extends MockAppConfig
 

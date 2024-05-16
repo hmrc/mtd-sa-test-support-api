@@ -37,7 +37,7 @@ class VersionRoutingRequestHandler @Inject() (versionRoutingMap: VersionRoutingM
     extends DefaultHttpRequestHandler(
       webCommands = new DefaultWebCommands,
       optDevContext = None,
-      router = versionRoutingMap.defaultRouter,
+      router = ()=> versionRoutingMap.defaultRouter,
       errorHandler = errorHandler,
       configuration = httpConfiguration,
       filters = filters.filters
