@@ -63,8 +63,8 @@ trait CreateTestBusinessFixtures {
             |  "propertyIncome": false,
             |  "tradingName": "Self Employed Name",
             |  "businessAddressDetails": {
-            |    "countryCode": "FR",
-            |    "addressLine1": "Line 1 of address"
+            |    "addressLine1": "Line 1 of address",
+            |    "countryCode": "FR"
             |  }
             |}""".stripMargin
         )

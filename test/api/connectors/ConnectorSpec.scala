@@ -62,7 +62,6 @@ trait ConnectorSpec extends UnitSpec with WireMockSupport with DownstreamStub wi
     MockAppConfig.stubDownstreamConfig returns downstreamConfig
     MockAppConfig.stubEnv returns stubEnv
     MockAppConfig.stubToken returns stubToken
-
   }
 
 }
