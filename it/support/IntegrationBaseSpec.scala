@@ -59,11 +59,11 @@ trait IntegrationBaseSpec extends UnitSpec with WireMockSupport with DownstreamS
     when(POST, "/write/audit").thenReturnNoContent()
   }
 
-  def downstreamErrorBody(code: String): JsValue = Json.parse(
-    s"""
+  def downstreamErrorBody(code: String): JsValue = Json.parse(s"""
        |{
        |   "code": "$code",
        |   "reason": "Downstream message"
        |}
     """.stripMargin)
+
 }
