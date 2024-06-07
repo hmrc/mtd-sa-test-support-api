@@ -83,6 +83,24 @@
         "latencyIndicator2"
       ]
     },
+    "quarterlyTypeChoice": {
+      "type": "object",
+      "description": "Quarterly reporting period type",
+      "properties": {
+      "quarterlyPeriodType": {
+        "description": "The quarterly period type that is being chosen for the business ID.",
+        "type": "string",
+        "enum": [
+          "standard",
+          "calendar"
+        ]
+      },
+      "taxYearOfChoice": {
+        "description": "The tax year for which the quarterly period type was chosen.",
+        "type": "string",
+        "format": "^2[0-9]{3}-[0-9]{2}$"
+      }
+    },
     "accountingType": {
       "description": "CASH if you used the cash basis, money actually received and paid out, to calculate your income and expenses. Otherwise ACCRUALS.",
       "type": "string",
