@@ -9,6 +9,10 @@
     "taxYear2": "2022-23",
     "latencyIndicator2": "Q"
   },
+  "quarterlyTypeChoice": {
+    "quarterlyPeriodType": "standard",
+    "taxYearOfChoice": "2022-23"
+  },
   "accountingType": "CASH",
   "commencementDate": "2020-04-06",
   "cessationDate": "2025-04-06"
