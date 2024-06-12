@@ -1,5 +1,5 @@
 post:
-  summary: Restore to checkpoint
+  summary: Restore to Checkpoint
   description: |
     This endpoint enables you to reset the stateful data back to the checkpoint created in the sandbox environment.
     

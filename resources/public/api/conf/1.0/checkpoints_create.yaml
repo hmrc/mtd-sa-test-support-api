@@ -1,4 +1,4 @@
-summary: Create a checkpoint
+summary: Create a Checkpoint
 description: |
   This endpoint enables you to set up a checkpoint for the stateful data in the sandbox environment for a given National Insurance number.
   
