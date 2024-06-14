@@ -1,5 +1,5 @@
 delete:
-  summary: Delete a checkpoint
+  summary: Delete a Checkpoint
   description: |
     This endpoint enables you to delete a checkpoint created in the sandbox, specified with a ‘checkpointId’.
     
