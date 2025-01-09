@@ -63,8 +63,8 @@ class ApiDefinitionFactorySpec extends UnitSpec {
               )
             ),
             api = APIDefinition(
-              name = "Self-Assessment Test Support (MTD)",
-              description = "An API providing test support for MTD Self-Assessment APIs",
+              name = "Self Assessment Test Support (MTD)",
+              description = "An API providing test support for MTD Self Assessment APIs",
               context = "individuals/business/property",
               categories = Seq("INCOME_TAX_MTD"),
               versions = Seq(
