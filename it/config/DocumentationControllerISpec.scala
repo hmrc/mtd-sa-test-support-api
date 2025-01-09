@@ -48,7 +48,7 @@ class DocumentationControllerISpec extends IntegrationBaseSpec {
        |      }
        |   ],
        |   "api":{
-       |      "name":"Self-Assessment Test Support (MTD)",
+       |      "name":"Self Assessment Test Support (MTD)",
        |      "description":"An API providing test support for MTD Self-Assessment APIs",
        |      "context":"individuals/self-assessment-test-support",
        |      "categories":[
