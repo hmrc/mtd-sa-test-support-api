@@ -1,7 +1,7 @@
 {
   "scopes":[],
   "api": {
-    "name": "Self-Assessment Test Support (MTD)",
+    "name": "Self Assessment Test Support (MTD)",
     "description": "This API supports the testing of MTD APIs.",
     "context": "individuals/self-assessment-test-support",
     "isTestSupport": true,

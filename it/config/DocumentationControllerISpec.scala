@@ -48,8 +48,8 @@ class DocumentationControllerISpec extends IntegrationBaseSpec {
        |      }
        |   ],
        |   "api":{
-       |      "name":"Self-Assessment Test Support (MTD)",
-       |      "description":"An API providing test support for MTD Self-Assessment APIs",
+       |      "name":"Self Assessment Test Support (MTD)",
+       |      "description":"An API providing test support for MTD Self Assessment APIs",
        |      "context":"individuals/self-assessment-test-support",
        |      "categories":[
        |         "INCOME_TAX_MTD"
@@ -87,7 +87,7 @@ class DocumentationControllerISpec extends IntegrationBaseSpec {
       val openAPI = Option(parserResult.get.getOpenAPI)
       openAPI.isEmpty shouldBe false
       openAPI.get.getOpenapi shouldBe "3.0.3"
-      openAPI.get.getInfo.getTitle shouldBe "Self-Assessment Test Support (MTD)"
+      openAPI.get.getInfo.getTitle shouldBe "Self Assessment Test Support (MTD)"
       openAPI.get.getInfo.getVersion shouldBe "1.0"
     }
   }

@@ -52,8 +52,8 @@ class ApiDefinitionFactory @Inject() (appConfig: AppConfig) extends Logging {
         )
       ),
       api = APIDefinition(
-        name = "Self-Assessment Test Support (MTD)",
-        description = "An API providing test support for MTD Self-Assessment APIs",
+        name = "Self Assessment Test Support (MTD)",
+        description = "An API providing test support for MTD Self Assessment APIs",
         context = appConfig.apiGatewayContext,
         categories = Seq("INCOME_TAX_MTD"),
         versions = Seq(

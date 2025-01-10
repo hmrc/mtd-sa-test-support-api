@@ -2,7 +2,7 @@ openapi: "3.0.3"
 
 info:
   version: "1.0"
-  title: Self-Assessment Test Support (MTD)
+  title: Self Assessment Test Support (MTD)
   description: |
     # Changelog
     The changelog is [available here](https://github.com/hmrc/income-tax-mtd-changelog/#readme).
