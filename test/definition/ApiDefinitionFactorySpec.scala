@@ -43,25 +43,8 @@ class ApiDefinitionFactorySpec extends UnitSpec {
           .returns(ConfidenceLevelConfig(confidenceLevel = confidenceLevel, definitionEnabled = true, authValidationEnabled = true))
           .anyNumberOfTimes()
 
-        private val readScope  = "read:self-assessment"
-        private val writeScope = "write:self-assessment"
-
         apiDefinitionFactory.definition shouldBe
           Definition(
-            scopes = Seq(
-              Scope(
-                key = readScope,
-                name = "View your Self Assessment information",
-                description = "Allow read access to self assessment data",
-                confidenceLevel
-              ),
-              Scope(
-                key = writeScope,
-                name = "Change your Self Assessment information",
-                description = "Allow write access to self assessment data",
-                confidenceLevel
-              )
-            ),
             api = APIDefinition(
               name = "Self Assessment Test Support (MTD)",
               description = "An API providing test support for MTD Self Assessment APIs",
