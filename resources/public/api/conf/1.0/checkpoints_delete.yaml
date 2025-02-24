@@ -29,6 +29,9 @@ delete:
 
     400:
       description: Bad Request
+      headers:
+        X-CorrelationId:
+          $ref: './common/headers.yaml#/components/parameters/correlationId'
       content:
         application/json:
           schema:
@@ -39,6 +42,9 @@ delete:
 
     403:
       description: Forbidden
+      headers:
+        X-CorrelationId:
+          $ref: './common/headers.yaml#/components/parameters/correlationId'
       content:
         application/json:
           schema:
@@ -50,6 +56,9 @@ delete:
 
     404:
       description: Not Found
+      headers:
+        X-CorrelationId:
+          $ref: './common/headers.yaml#/components/parameters/correlationId'
       content:
         application/json:
           schema:
