@@ -15,7 +15,7 @@ This API allows a developer to:
 
 Run the microservice from the console using the command: `sbt run` (starts on port 12221 by default)
 
-Start the service manager profile: `sm2 --start MTDFB_ALL`
+Start the service manager profile: `sm2 --start MTDFB_TEST_SUPPORT`
 
 ### Run Tests
 
@@ -26,6 +26,15 @@ Run integration tests: `sbt it:test`
 ### Changelog
 
 You can see our changelog [here](https://github.com/hmrc/income-tax-mtd-changelog)
+
+### To view the OAS documentation
+To view documentation locally, ensure the Self Assessment Assist API is running.
+
+Then go to http://localhost:9680/api-documentation/docs/openapi/preview and enter the full URL path to the YAML file with the appropriate port and version:
+
+```
+    http://localhost:12221/api/conf/1.0/application.yaml
+```
 
 ### Support and Reporting Issues
 
