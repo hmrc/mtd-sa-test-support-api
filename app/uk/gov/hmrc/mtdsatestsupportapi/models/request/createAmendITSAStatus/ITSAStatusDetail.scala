@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2025 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,13 +16,21 @@
 
 package uk.gov.hmrc.mtdsatestsupportapi.models.request.createAmendITSAStatus
 
-import play.api.libs.json.{Json, OFormat}
+import play.api.libs.functional.syntax.{toFunctionalBuilderOps, unlift}
+import play.api.libs.json.{JsPath, Json, OWrites, Reads}
 import uk.gov.hmrc.mtdsatestsupportapi.models.domain.{Status, StatusReason}
 
 case class ITSAStatusDetail(submittedOn: String, status: Status, statusReason: StatusReason, businessIncome2YearsPrior: Option[BigDecimal])
 
 object ITSAStatusDetail {
 
-  implicit val format: OFormat[ITSAStatusDetail] = Json.format[ITSAStatusDetail]
+  implicit val reads: Reads[ITSAStatusDetail] = Json.reads[ITSAStatusDetail]
+
+  implicit val writes: OWrites[ITSAStatusDetail] = (
+    (JsPath \ "submittedOn").write[String] and
+      (JsPath \ "status").write[Status] and
+      (JsPath \ "statusReason").write[StatusReason] and
+      (JsPath \ "businessIncomePriorTo2Years").writeNullable[BigDecimal]
+    )(unlift(ITSAStatusDetail.unapply))
 
 }

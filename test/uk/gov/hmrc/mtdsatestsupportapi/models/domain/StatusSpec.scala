@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2025 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,19 +23,29 @@ import utils.enums.EnumJsonSpecSupport
 
 class StatusSpec extends UnitSpec with EnumJsonSpecSupport {
 
-  testRoundTrip[Status](
-    ("No Status", `No Status`),
-    ("MTD Mandated", `MTD Mandated`),
-    ("MTD Voluntary", `MTD Voluntary`),
-    ("Annual", Annual),
-    ("Non Digital", `Non Digital`),
-    ("Dormant", Dormant),
-    ("MTD Exempt", `MTD Exempt`)
-  )
+  "Status" when {
+    testDeserialization[Status](
+      ("No Status", `No Status`),
+      ("MTD Mandated", `MTD Mandated`),
+      ("MTD Voluntary", `MTD Voluntary`),
+      ("Annual", Annual),
+      ("Non Digital", `Non Digital`),
+      ("Dormant", Dormant),
+      ("MTD Exempt", `MTD Exempt`)
+    )
 
-  "Status" should {
-    "return a JsError" when {
-      "reading an invalid Status" in {
+    testSerialization[Status](
+      (`No Status`, "00"),
+      (`MTD Mandated`, "01"),
+      (`MTD Voluntary`, "02"),
+      (Annual, "03"),
+      (`Non Digital`, "04"),
+      (Dormant, "05"),
+      (`MTD Exempt`, "99")
+    )
+
+    "reading an invalid Status" should {
+      "return a JsError" in {
         Json.fromJson[Status](JsString("021")) shouldBe JsError(JsPath, JsonValidationError("error.expected.Status"))
       }
     }

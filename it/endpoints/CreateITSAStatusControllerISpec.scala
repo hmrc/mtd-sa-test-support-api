@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2025 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,30 +21,31 @@ import api.models.errors._
 import api.utils.JsonErrorValidators
 import com.github.tomakehurst.wiremock.stubbing.StubMapping
 import play.api.http.HeaderNames.ACCEPT
-import play.api.http.Status.{BAD_REQUEST, NO_CONTENT}
 import play.api.libs.json.{JsArray, JsNumber, JsObject, JsString, JsValue, Json}
 import play.api.libs.ws.{WSRequest, WSResponse}
-import play.api.test.Helpers.AUTHORIZATION
+import play.api.test.Helpers.{AUTHORIZATION, BAD_REQUEST, NO_CONTENT}
 import support.{IntegrationBaseSpec, UnitSpec}
 
 class CreateITSAStatusControllerISpec extends UnitSpec with IntegrationBaseSpec with JsonErrorValidators {
 
-  private def bodyWith(entries: JsValue*) = Json
-    .parse(s"""
-                                                          |{
-                                                          | "itsaStatusDetails": ${JsArray(entries)}
-                                                          |}
-                                                          |""".stripMargin)
-    .as[JsObject]
+  private def bodyWith(entries: JsValue*): JsObject = Json.parse(
+    s"""
+      |{
+      |  "itsaStatusDetails": ${JsArray(entries)}
+      |}
+    """.stripMargin
+  ).as[JsObject]
 
-  private val itsaStatusDetail = Json.parse("""
-                                              |{
-                                              |     "submittedOn": "2021-03-23T16:02:34.039Z",
-                                              |     "status": "No Status",
-                                              |     "statusReason": "Sign up - return available",
-                                              |     "businessIncome2YearsPrior": 34999.99
-                                              |}
-                                              |""".stripMargin)
+  private val itsaStatusDetail: JsValue = Json.parse(
+    """
+      |{
+      |  "submittedOn": "2021-03-23T16:02:34.039Z",
+      |  "status": "No Status",
+      |  "statusReason": "Sign up - return available",
+      |  "businessIncome2YearsPrior": 34999.99
+      |}
+    """.stripMargin
+  )
 
   "Calling the create Itsa Status endpoint" should {
     "return a 200 status code" when {
@@ -67,7 +68,7 @@ class CreateITSAStatusControllerISpec extends UnitSpec with IntegrationBaseSpec 
         s"validation fails with ${expectedBody.code} error and $requestNino" in new Test {
           override val nino: String     = requestNino
           override val taxYear: TaxYear = requestTaxYear
-          override val requestBody      = requestBodyToTest
+          override val requestBody: JsObject = requestBodyToTest
 
           override def setupStubs(): StubMapping =
             AuthStub.authorised()
@@ -128,7 +129,20 @@ class CreateITSAStatusControllerISpec extends UnitSpec with IntegrationBaseSpec 
     val requestBody: JsObject
 
     def setupStubs(): StubMapping = {
-      val expectedDownstreamRequestBody = requestBody
+      val expectedDownstreamRequestBody: JsValue = Json.parse(
+        """
+          |{
+          |  "itsaStatusDetails": [
+          |    {
+          |      "submittedOn": "2021-03-23T16:02:34.039Z",
+          |      "status": "00",
+          |      "statusReason": "00",
+          |      "businessIncomePriorTo2Years": 34999.99
+          |    }
+          |  ]
+          |}
+        """.stripMargin
+      )
 
       AuthStub.authorised()
       when(POST, s"/test-support/itsa-details/$nino/${taxYear.asTys}")
