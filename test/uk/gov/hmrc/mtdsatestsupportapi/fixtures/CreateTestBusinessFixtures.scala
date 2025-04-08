@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2025 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,17 +27,16 @@ trait CreateTestBusinessFixtures {
 
     object SelfEmployment {
 
-      val mtdBusinessJson: JsObject = Json
-        .parse(
-          """{
-            |  "typeOfBusiness": "self-employment",
-            |  "tradingName": "Self Employed Name",
-            |  "businessAddressLineOne": "Line 1 of address",
-            |  "businessAddressCountryCode": "FR"
-            |}
-            |""".stripMargin
-        )
-        .as[JsObject]
+      val mtdBusinessJson: JsObject = Json.parse(
+        """
+          |{
+          |  "typeOfBusiness": "self-employment",
+          |  "tradingName": "Self Employed Name",
+          |  "businessAddressLineOne": "Line 1 of address",
+          |  "businessAddressCountryCode": "FR"
+          |}
+        """.stripMargin
+      ).as[JsObject]
 
       val business: Business = Business(
         typeOfBusiness = TypeOfBusiness.`self-employment`,
@@ -57,31 +56,30 @@ trait CreateTestBusinessFixtures {
         businessAddressCountryCode = Some("FR")
       )
 
-      val downstreamBusinessJson: JsObject = Json
-        .parse(
-          """{
-            |  "propertyIncome": false,
-            |  "tradingName": "Self Employed Name",
-            |  "businessAddressDetails": {
-            |    "addressLine1": "Line 1 of address",
-            |    "countryCode": "FR"
-            |  }
-            |}""".stripMargin
-        )
-        .as[JsObject]
+      val downstreamBusinessJson: JsObject = Json.parse(
+        """
+          |{
+          |  "propertyIncomeFlag": false,
+          |  "tradingName": "Self Employed Name",
+          |  "businessAddressDetails": {
+          |    "addressLine1": "Line 1 of address",
+          |    "countryCode": "FR"
+          |  }
+          |}
+        """.stripMargin
+      ).as[JsObject]
 
     }
 
     object UkProperty {
 
-      val mtdBusinessJson: JsObject = Json
-        .parse(
-          """{
-            |  "typeOfBusiness": "uk-property"
-            |}
-            |""".stripMargin
-        )
-        .as[JsObject]
+      val mtdBusinessJson: JsObject = Json.parse(
+        """
+          |{
+          |  "typeOfBusiness": "uk-property"
+          |}
+        """.stripMargin
+      ).as[JsObject]
 
       val business: Business = Business(
         typeOfBusiness = TypeOfBusiness.`uk-property`,
@@ -101,13 +99,13 @@ trait CreateTestBusinessFixtures {
         businessAddressCountryCode = None
       )
 
-      val downstreamBusinessJson: JsObject = Json
-        .parse(
-          """{
-            |  "propertyIncome": true
-            |}""".stripMargin
-        )
-        .as[JsObject]
+      val downstreamBusinessJson: JsObject = Json.parse(
+        """
+          |{
+          |  "propertyIncomeFlag": true
+          |}
+        """.stripMargin
+      ).as[JsObject]
 
     }
 

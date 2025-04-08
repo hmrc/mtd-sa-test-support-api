@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2025 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,7 +18,6 @@ package uk.gov.hmrc.mtdsatestsupportapi.models.request.createTestBusiness
 
 import play.api.libs.json._
 import play.api.libs.functional.syntax._
-import utils.enums.Enums
 
 import java.time.LocalDate
 
@@ -56,14 +55,13 @@ object Business {
   private implicit val typeOfBusinessWrites: Writes[TypeOfBusiness] = {
     import TypeOfBusiness._
 
-    val defaultWrites: Writes[TypeOfBusiness] = Enums.writes[TypeOfBusiness]
-
     (typeOfBusiness: TypeOfBusiness) => {
-      val propertyIncomeJson = Json.obj("propertyIncome" -> typeOfBusiness.isProperty)
+      val propertyIncomeJson = Json.obj("propertyIncomeFlag" -> typeOfBusiness.isProperty)
 
       typeOfBusiness match {
-        case `uk-property` | `foreign-property` => propertyIncomeJson + ("incomeSourceType" -> Json.toJson(typeOfBusiness)(defaultWrites))
-        case _                                  => propertyIncomeJson
+        case `uk-property`      => propertyIncomeJson + ("incomeSourceType" -> JsString("02"))
+        case `foreign-property` => propertyIncomeJson + ("incomeSourceType" -> JsString("03"))
+        case _                  => propertyIncomeJson
       }
     }
   }
@@ -75,8 +73,8 @@ object Business {
       (__ \ "firstAccountingPeriodEndDate").writeNullable[LocalDate] and
       (__ \ "latencyDetails").writeNullable[LatencyDetails] and
       (__ \ "quarterTypeElection").writeNullable[QuarterlyTypeChoice] and
-      (__ \ "cashOrAccruals").writeNullable[AccountingType] and
-      (__ \ "tradingStartDate").writeNullable[LocalDate] and
+      (__ \ "cashOrAccrualsFlag").writeNullable[AccountingType] and
+      (__ \ "tradingSDate").writeNullable[LocalDate] and
       (__ \ "cessationDate").writeNullable[LocalDate] and
       (__ \ "businessAddressDetails" \ "addressLine1").writeNullable[String] and
       (__ \ "businessAddressDetails" \ "addressLine2").writeNullable[String] and
