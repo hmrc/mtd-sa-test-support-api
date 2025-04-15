@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2025 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -74,33 +74,36 @@ class BusinessSpec extends UnitSpec with CreateTestBusinessFixtures {
       "deserialized from the API JSON" when {
         "all fields present" must {
           "work" in {
-            val mtdJson = Json.parse("""{
-                                       |  "typeOfBusiness": "self-employment",
-                                       |  "tradingName": "Abc Ltd",
-                                       |  "firstAccountingPeriodStartDate": "2002-02-02",
-                                       |  "firstAccountingPeriodEndDate": "2012-12-12",
-                                       |  "latencyDetails": {
-                                       |    "latencyEndDate": "2020-01-01",
-                                       |    "taxYear1": "2020-21",
-                                       |    "latencyIndicator1": "A",
-                                       |    "taxYear2": "2021-22",
-                                       |    "latencyIndicator2": "Q"
-                                       |  },
-                                       |  "quarterlyTypeChoice":{
-                                       |    "quarterlyPeriodType": "standard",
-                                       |    "taxYearOfChoice": "2023-24"
-                                       |  },
-                                       |  "accountingType": "CASH",
-                                       |  "commencementDate": "2000-01-01",
-                                       |  "cessationDate": "2030-01-01",
-                                       |  "businessAddressLineOne": "L1",
-                                       |  "businessAddressLineTwo": "L2",
-                                       |  "businessAddressLineThree": "L3",
-                                       |  "businessAddressLineFour": "L4",
-                                       |  "businessAddressPostcode": "PostCode",
-                                       |  "businessAddressCountryCode": "UK"
-                                       |}
-                                       |""".stripMargin)
+            val mtdJson = Json.parse(
+              """
+                |{
+                |  "typeOfBusiness": "self-employment",
+                |  "tradingName": "Abc Ltd",
+                |  "firstAccountingPeriodStartDate": "2002-02-02",
+                |  "firstAccountingPeriodEndDate": "2012-12-12",
+                |  "latencyDetails": {
+                |    "latencyEndDate": "2020-01-01",
+                |    "taxYear1": "2020-21",
+                |    "latencyIndicator1": "A",
+                |    "taxYear2": "2021-22",
+                |    "latencyIndicator2": "Q"
+                |  },
+                |  "quarterlyTypeChoice": {
+                |    "quarterlyPeriodType": "standard",
+                |    "taxYearOfChoice": "2023-24"
+                |  },
+                |  "accountingType": "CASH",
+                |  "commencementDate": "2000-01-01",
+                |  "cessationDate": "2030-01-01",
+                |  "businessAddressLineOne": "L1",
+                |  "businessAddressLineTwo": "L2",
+                |  "businessAddressLineThree": "L3",
+                |  "businessAddressLineFour": "L4",
+                |  "businessAddressPostcode": "PostCode",
+                |  "businessAddressCountryCode": "UK"
+                |}
+              """.stripMargin
+            )
 
             mtdJson.as[Business] shouldBe businessWithMaxFields(`self-employment`)
           }
@@ -126,42 +129,45 @@ class BusinessSpec extends UnitSpec with CreateTestBusinessFixtures {
 
         def testSerializeToBackend(typeOfBusiness: TypeOfBusiness,
                                    expectedIncomeSourceType: Option[String],
-                                   expectedPropertyIncome: Boolean): Unit = {
+                                   expectedPropertyIncomeFlag: Boolean): Unit = {
           s"typeOfBusiness is $typeOfBusiness" must {
-            "work and set propertyIncome and incomeSourceType correctly" in {
+            "work and set propertyIncomeFlag and incomeSourceType correctly" in {
               val downstreamJson = Json.toJson(businessWithMaxFields(typeOfBusiness))
               val expected = {
                 expectedIncomeSourceType.map(x => Json.obj("incomeSourceType" -> x)).getOrElse(JsObject.empty) ++
                   Json
-                    .parse(s"""{
-                         |  "propertyIncome": $expectedPropertyIncome,
-                         |  "tradingName": "Abc Ltd",
-                         |  "firstAccountingPeriodStartDate": "2002-02-02",
-                         |  "firstAccountingPeriodEndDate": "2012-12-12",
-                         |  "latencyDetails": {
-                         |    "latencyEndDate": "2020-01-01",
-                         |    "taxYear1": "2021",
-                         |    "latencyIndicator1": "A",
-                         |    "taxYear2": "2022",
-                         |    "latencyIndicator2": "Q"
-                         |  },
-                         |  "quarterTypeElection":{
-                         |    "quarterReportingType": "STANDARD",
-                         |    "taxYearofElection": "2024"
-                         |  },
-                         |  "cashOrAccruals": false,
-                         |  "tradingStartDate": "2000-01-01",
-                         |  "cessationDate": "2030-01-01",
-                         |  "businessAddressDetails": {
-                         |    "addressLine1": "L1",
-                         |    "addressLine2": "L2",
-                         |    "addressLine3": "L3",
-                         |    "addressLine4": "L4",
-                         |    "postalCode": "PostCode",
-                         |    "countryCode": "UK"
-                         |  }
-                         |}""".stripMargin)
-                    .as[JsObject]
+                    .parse(
+                      s"""
+                        |{
+                        |  "propertyIncomeFlag": $expectedPropertyIncomeFlag,
+                        |  "tradingName": "Abc Ltd",
+                        |  "firstAccountingPeriodStartDate": "2002-02-02",
+                        |  "firstAccountingPeriodEndDate": "2012-12-12",
+                        |  "latencyDetails": {
+                        |    "latencyEndDate": "2020-01-01",
+                        |    "taxYear1": "2021",
+                        |    "latencyIndicator1": "A",
+                        |    "taxYear2": "2022",
+                        |    "latencyIndicator2": "Q"
+                        |  },
+                        |  "quarterTypeElection": {
+                        |    "quarterReportingType": "STANDARD",
+                        |    "taxYearofElection": "2024"
+                        |  },
+                        |  "cashOrAccrualsFlag": false,
+                        |  "tradingSDate": "2000-01-01",
+                        |  "cessationDate": "2030-01-01",
+                        |  "businessAddressDetails": {
+                        |    "addressLine1": "L1",
+                        |    "addressLine2": "L2",
+                        |    "addressLine3": "L3",
+                        |    "addressLine4": "L4",
+                        |    "postalCode": "PostCode",
+                        |    "countryCode": "UK"
+                        |  }
+                        |}
+                      """.stripMargin
+                    ).as[JsObject]
               }
 
               downstreamJson shouldBe expected
@@ -169,10 +175,10 @@ class BusinessSpec extends UnitSpec with CreateTestBusinessFixtures {
           }
         }
 
-        testSerializeToBackend(`foreign-property`, expectedIncomeSourceType = Some("foreign-property"), expectedPropertyIncome = true)
-        testSerializeToBackend(`uk-property`, expectedIncomeSourceType = Some("uk-property"), expectedPropertyIncome = true)
-        testSerializeToBackend(`property-unspecified`, expectedIncomeSourceType = None, expectedPropertyIncome = true)
-        testSerializeToBackend(`self-employment`, expectedIncomeSourceType = None, expectedPropertyIncome = false)
+        testSerializeToBackend(`foreign-property`, expectedIncomeSourceType = Some("03"), expectedPropertyIncomeFlag = true)
+        testSerializeToBackend(`uk-property`, expectedIncomeSourceType = Some("02"), expectedPropertyIncomeFlag = true)
+        testSerializeToBackend(`property-unspecified`, expectedIncomeSourceType = None, expectedPropertyIncomeFlag = true)
+        testSerializeToBackend(`self-employment`, expectedIncomeSourceType = None, expectedPropertyIncomeFlag = false)
 
       }
     }
