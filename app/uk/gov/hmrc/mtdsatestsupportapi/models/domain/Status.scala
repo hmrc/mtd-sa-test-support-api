@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2025 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,22 +16,46 @@
 
 package uk.gov.hmrc.mtdsatestsupportapi.models.domain
 
-import play.api.libs.json.Format
+import play.api.libs.json.{Reads, Writes}
 import utils.enums.Enums
 
-sealed trait Status
+sealed trait Status {
+  def toDownstream: String
+}
 
 object Status {
 
-  implicit val format: Format[Status] = Enums.format[Status]
+  implicit val reads: Reads[Status] = Enums.reads[Status]
+
+  implicit val writes: Writes[Status] = Writes.StringWrites.contramap(_.toDownstream)
 
   val parser: PartialFunction[String, Status] = Enums.parser[Status]
 
-  case object `No Status`     extends Status
-  case object `MTD Mandated`  extends Status
-  case object `MTD Voluntary` extends Status
-  case object `Annual`        extends Status
-  case object `Non Digital`   extends Status
-  case object `Dormant`       extends Status
-  case object `MTD Exempt`    extends Status
+  case object `No Status` extends Status {
+    override def toDownstream = "00"
+  }
+
+  case object `MTD Mandated` extends Status {
+    override def toDownstream = "01"
+  }
+
+  case object `MTD Voluntary` extends Status {
+    override def toDownstream = "02"
+  }
+
+  case object Annual extends Status {
+    override def toDownstream = "03"
+  }
+
+  case object `Non Digital` extends Status {
+    override def toDownstream = "04"
+  }
+
+  case object Dormant extends Status {
+    override def toDownstream = "05"
+  }
+
+  case object `MTD Exempt` extends Status {
+    override def toDownstream = "99"
+  }
 }

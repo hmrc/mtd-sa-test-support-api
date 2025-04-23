@@ -51,7 +51,9 @@
               "Reinstated income source",
               "Rollover",
               "Income Source Latency Changes",
-              "MTD ITSA Opt-Out"
+              "MTD ITSA Opt-Out",
+              "MTD ITSA Opt-In",
+              "Digitally Exempt"
             ]
           },
           "businessIncome2YearsPrior": {

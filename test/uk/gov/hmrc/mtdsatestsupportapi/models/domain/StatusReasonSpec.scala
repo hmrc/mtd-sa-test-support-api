@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2025 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,23 +23,41 @@ import utils.enums.EnumJsonSpecSupport
 
 class StatusReasonSpec extends UnitSpec with EnumJsonSpecSupport {
 
-  testRoundTrip[StatusReason](
-    ("Sign up - return available", `Sign up - return available`),
-    ("Sign up - no return available", `Sign up - no return available`),
-    ("ITSA final declaration", `ITSA final declaration`),
-    ("ITSA Q4 declaration", `ITSA Q4 declaration`),
-    ("CESA SA return", `CESA SA return`),
-    ("Complex", Complex),
-    ("Ceased income source", `Ceased income source`),
-    ("Reinstated income source", `Reinstated income source`),
-    ("Rollover", Rollover),
-    ("Income Source Latency Changes", `Income Source Latency Changes`),
-    ("MTD ITSA Opt-Out", `MTD ITSA Opt-Out`)
-  )
+  "StatusReason" when {
+    testDeserialization[StatusReason](
+      ("Sign up - return available", `Sign up - return available`),
+      ("Sign up - no return available", `Sign up - no return available`),
+      ("ITSA final declaration", `ITSA final declaration`),
+      ("ITSA Q4 declaration", `ITSA Q4 declaration`),
+      ("CESA SA return", `CESA SA return`),
+      ("Complex", Complex),
+      ("Ceased income source", `Ceased income source`),
+      ("Reinstated income source", `Reinstated income source`),
+      ("Rollover", Rollover),
+      ("Income Source Latency Changes", `Income Source Latency Changes`),
+      ("MTD ITSA Opt-Out", `MTD ITSA Opt-Out`),
+      ("MTD ITSA Opt-In", `MTD ITSA Opt-In`),
+      ("Digitally Exempt", `Digitally Exempt`)
+    )
 
-  "StatusReason" should {
-    "return a JsError" when {
-      "reading an invalid StatusReason" in {
+    testSerialization[StatusReason](
+      (`Sign up - return available`, "00"),
+      (`Sign up - no return available`, "01"),
+      (`ITSA final declaration`, "02"),
+      (`ITSA Q4 declaration`, "03"),
+      (`CESA SA return`, "04"),
+      (Complex, "05"),
+      (`Ceased income source`, "06"),
+      (`Reinstated income source`, "07"),
+      (Rollover, "08"),
+      (`Income Source Latency Changes`, "09"),
+      (`MTD ITSA Opt-Out`, "10"),
+      (`MTD ITSA Opt-In`, "11"),
+      (`Digitally Exempt`, "12")
+    )
+
+    "reading an invalid StatusReason" should {
+      "return a JsError" in {
         Json.fromJson[StatusReason](JsString("011")) shouldBe
           JsError(JsPath, JsonValidationError("error.expected.StatusReason"))
       }

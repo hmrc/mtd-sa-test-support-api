@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2025 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,27 +16,70 @@
 
 package uk.gov.hmrc.mtdsatestsupportapi.models.domain
 
-import play.api.libs.json.Format
+import play.api.libs.json.{Reads, Writes}
 import utils.enums.Enums
 
-sealed trait StatusReason
+sealed trait StatusReason {
+  def toDownstream: String
+}
 
 object StatusReason {
 
-  implicit val format: Format[StatusReason] = Enums.format[StatusReason]
+  implicit val reads: Reads[StatusReason] = Enums.reads[StatusReason]
+
+  implicit val writes: Writes[StatusReason] = Writes.StringWrites.contramap(_.toDownstream)
 
   val parser: PartialFunction[String, StatusReason] = Enums.parser[StatusReason]
 
-  case object `Sign up - return available`    extends StatusReason
-  case object `Sign up - no return available` extends StatusReason
-  case object `ITSA final declaration`        extends StatusReason
-  case object `ITSA Q4 declaration`           extends StatusReason
-  case object `CESA SA return`                extends StatusReason
-  case object `Complex`                       extends StatusReason
-  case object `Ceased income source`          extends StatusReason
-  case object `Reinstated income source`      extends StatusReason
-  case object `Rollover`                      extends StatusReason
-  case object `Income Source Latency Changes` extends StatusReason
-  case object `MTD ITSA Opt-Out`              extends StatusReason
+  case object `Sign up - return available` extends StatusReason {
+    override def toDownstream = "00"
+  }
 
+  case object `Sign up - no return available` extends StatusReason {
+    override def toDownstream = "01"
+  }
+
+  case object `ITSA final declaration` extends StatusReason {
+    override def toDownstream = "02"
+  }
+
+  case object `ITSA Q4 declaration` extends StatusReason {
+    override def toDownstream = "03"
+  }
+
+  case object `CESA SA return` extends StatusReason {
+    override def toDownstream = "04"
+  }
+
+  case object Complex extends StatusReason {
+    override def toDownstream = "05"
+  }
+
+  case object `Ceased income source` extends StatusReason {
+    override def toDownstream = "06"
+  }
+
+  case object `Reinstated income source` extends StatusReason {
+    override def toDownstream = "07"
+  }
+
+  case object Rollover extends StatusReason {
+    override def toDownstream = "08"
+  }
+
+  case object `Income Source Latency Changes` extends StatusReason {
+    override def toDownstream = "09"
+  }
+
+  case object `MTD ITSA Opt-Out` extends StatusReason {
+    override def toDownstream = "10"
+  }
+
+  case object `MTD ITSA Opt-In` extends StatusReason {
+    override def toDownstream = "11"
+  }
+
+  case object `Digitally Exempt` extends StatusReason {
+    override def toDownstream = "12"
+  }
 }

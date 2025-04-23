@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2025 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,41 +16,54 @@
 
 package uk.gov.hmrc.mtdsatestsupportapi.models.request.createAmendITSAStatus
 
-import play.api.libs.json.Json
+import play.api.libs.json.{JsValue, Json}
 import support.UnitSpec
 import uk.gov.hmrc.mtdsatestsupportapi.models.domain.{Status, StatusReason}
 
 class CreateAmendITSAStatusRequestBodySpec extends UnitSpec {
 
-  private val itsaRequestBody = CreateAmendITSAStatusRequestBody(
-    List(ITSAStatusDetail("2021-03-23T16:02:34.039Z", Status.`No Status`, StatusReason.`Sign up - no return available`, None))
+  private val itsaRequestBody: CreateAmendITSAStatusRequestBody = CreateAmendITSAStatusRequestBody(
+    itsaStatusDetails = List(
+      ITSAStatusDetail(
+        submittedOn = "2021-03-23T16:02:34.039Z",
+        status = Status.`No Status`,
+        statusReason = StatusReason.`Sign up - no return available`,
+        businessIncome2YearsPrior = Some(99999999999.99)
+      )
+    )
   )
 
-  private val requestJson = Json.parse("""
-                                         |{
-                                         | "itsaStatusDetails": [
-                                         |    {
-                                         |     "submittedOn": "2021-03-23T16:02:34.039Z",
-                                         |     "status": "No Status",
-                                         |     "statusReason": "Sign up - no return available"
-                                         |     }
-                                         |   ]
-                                         |}
-                                         |""".stripMargin)
+  private val requestJson: JsValue = Json.parse(
+    """
+      |{
+      |  "itsaStatusDetails": [
+      |    {
+      |      "submittedOn": "2021-03-23T16:02:34.039Z",
+      |      "status": "No Status",
+      |      "statusReason": "Sign up - no return available",
+      |      "businessIncome2YearsPrior": 99999999999.99
+      |    }
+      |  ]
+      |}
+    """.stripMargin
+  )
 
-  private val downstreamJson = Json.parse("""
-                                            |{
-                                            | "itsaStatusDetails": [
-                                            |    {
-                                            |     "submittedOn": "2021-03-23T16:02:34.039Z",
-                                            |     "status": "No Status",
-                                            |     "statusReason": "Sign up - no return available"
-                                            |     }
-                                            |   ]
-                                            |}
-                                            |""".stripMargin)
+  private val downstreamJson: JsValue = Json.parse(
+    """
+      |{
+      |  "itsaStatusDetails": [
+      |    {
+      |      "submittedOn": "2021-03-23T16:02:34.039Z",
+      |      "status": "00",
+      |      "statusReason": "01",
+      |      "businessIncomePriorTo2Years": 99999999999.99
+      |    }
+      |  ]
+      |}
+    """.stripMargin
+  )
 
-  "ITSAStatusRequestBody" should {
+  "CreateAmendITSAStatusRequestBody" should {
     "read from vendor Json" in {
       requestJson.as[CreateAmendITSAStatusRequestBody] shouldBe itsaRequestBody
     }
