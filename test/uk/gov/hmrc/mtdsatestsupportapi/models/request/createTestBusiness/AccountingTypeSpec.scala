@@ -16,7 +16,7 @@
 
 package uk.gov.hmrc.mtdsatestsupportapi.models.request.createTestBusiness
 
-import play.api.libs.json.{JsBoolean, JsString, Json}
+import play.api.libs.json.{JsString, Json}
 import support.UnitSpec
 
 class AccountingTypeSpec extends UnitSpec {
@@ -31,8 +31,8 @@ class AccountingTypeSpec extends UnitSpec {
 
     "serialized to downstream JSON" must {
       "work" in {
-        Json.toJson[AccountingType](AccountingType.CASH) shouldBe JsBoolean(false)
-        Json.toJson[AccountingType](AccountingType.ACCRUALS) shouldBe JsBoolean(true)
+        Json.toJson[AccountingType](AccountingType.CASH) shouldBe JsString("CASH")
+        Json.toJson[AccountingType](AccountingType.ACCRUALS) shouldBe JsString("ACCRUAL")
       }
     }
   }

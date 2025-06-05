@@ -64,7 +64,12 @@ trait CreateTestBusinessFixtures {
           |  "businessAddressDetails": {
           |    "addressLine1": "Line 1 of address",
           |    "countryCode": "FR"
-          |  }
+          |  },
+          |  "selfEmployments": [
+          |     {
+          |      "accountingType": "CASH"
+          |     }
+          |  ]
           |}
         """.stripMargin
       ).as[JsObject]
@@ -98,14 +103,6 @@ trait CreateTestBusinessFixtures {
         businessAddressPostcode = None,
         businessAddressCountryCode = None
       )
-
-      val downstreamBusinessJson: JsObject = Json.parse(
-        """
-          |{
-          |  "propertyIncomeFlag": true
-          |}
-        """.stripMargin
-      ).as[JsObject]
 
     }
 
