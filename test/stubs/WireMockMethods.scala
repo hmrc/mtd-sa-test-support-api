@@ -61,7 +61,7 @@ trait WireMockMethods {
 
     def withRequestBody[T](body: T)(implicit writes: Writes[T]): MappingBuilder = {
       val stringBody = writes.writes(body).toString()
-      mappingBuilder.withRequestBody(equalTo(stringBody))
+      mappingBuilder.withRequestBody(equalToJson(stringBody))
       this
     }
 

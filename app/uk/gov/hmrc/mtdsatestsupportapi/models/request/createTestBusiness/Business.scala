@@ -17,7 +17,6 @@
 package uk.gov.hmrc.mtdsatestsupportapi.models.request.createTestBusiness
 
 import play.api.libs.json._
-import play.api.libs.functional.syntax._
 
 import java.time.LocalDate
 
@@ -40,11 +39,11 @@ case class Business(typeOfBusiness: TypeOfBusiness,
 
   def hasAnyBusinessAddressDetails: Boolean = {
     businessAddressLineOne.isDefined ||
-    businessAddressLineTwo.isDefined ||
-    businessAddressLineThree.isDefined ||
-    businessAddressLineFour.isDefined ||
-    businessAddressPostcode.isDefined ||
-    businessAddressCountryCode.isDefined
+      businessAddressLineTwo.isDefined ||
+      businessAddressLineThree.isDefined ||
+      businessAddressLineFour.isDefined ||
+      businessAddressPostcode.isDefined ||
+      businessAddressCountryCode.isDefined
   }
 
 }
@@ -52,36 +51,64 @@ case class Business(typeOfBusiness: TypeOfBusiness,
 object Business {
   implicit val reads: Reads[Business] = Json.reads
 
-  private implicit val typeOfBusinessWrites: Writes[TypeOfBusiness] = {
+  private implicit val typeOfBusinessWrites: OWrites[TypeOfBusiness] = {
     import TypeOfBusiness._
 
     (typeOfBusiness: TypeOfBusiness) => {
       val propertyIncomeJson = Json.obj("propertyIncomeFlag" -> typeOfBusiness.isProperty)
 
       typeOfBusiness match {
-        case `uk-property`      => propertyIncomeJson + ("incomeSourceType" -> JsString("02"))
+        case `uk-property` => propertyIncomeJson + ("incomeSourceType" -> JsString("02"))
         case `foreign-property` => propertyIncomeJson + ("incomeSourceType" -> JsString("03"))
-        case _                  => propertyIncomeJson
+        case _ => propertyIncomeJson
       }
     }
   }
 
-  implicit val writes: OWrites[Business] = (
-    __.write[TypeOfBusiness] and
-      (__ \ "tradingName").writeNullable[String] and
-      (__ \ "firstAccountingPeriodStartDate").writeNullable[LocalDate] and
-      (__ \ "firstAccountingPeriodEndDate").writeNullable[LocalDate] and
-      (__ \ "latencyDetails").writeNullable[LatencyDetails] and
-      (__ \ "quarterTypeElection").writeNullable[QuarterlyTypeChoice] and
-      (__ \ "cashOrAccrualsFlag").writeNullable[AccountingType] and
-      (__ \ "tradingSDate").writeNullable[LocalDate] and
-      (__ \ "cessationDate").writeNullable[LocalDate] and
-      (__ \ "businessAddressDetails" \ "addressLine1").writeNullable[String] and
-      (__ \ "businessAddressDetails" \ "addressLine2").writeNullable[String] and
-      (__ \ "businessAddressDetails" \ "addressLine3").writeNullable[String] and
-      (__ \ "businessAddressDetails" \ "addressLine4").writeNullable[String] and
-      (__ \ "businessAddressDetails" \ "postalCode").writeNullable[String] and
-      (__ \ "businessAddressDetails" \ "countryCode").writeNullable[String]
-  )(unlift(Business.unapply))
+  implicit val writes: OWrites[Business] = { business =>
+    def trimEmpty(jsonObj: JsObject): JsObject = JsObject(
+      jsonObj.fields.filter {
+        case (_, JsNull) => false
+        case (_, value: JsObject) => value.fields.nonEmpty
+        case _ => true
+      }
+    )
+
+    val accountingTypeJson: JsObject = {
+      val accountingType: AccountingType = business.accountingType.getOrElse(AccountingType.CASH)
+
+      val typeOfBusiness: String = business.typeOfBusiness match {
+        case TypeOfBusiness.`self-employment` => "selfEmployments"
+        case TypeOfBusiness.`foreign-property` => "foreignProperty"
+        case _ => "ukProperty"
+      }
+
+      Json.obj(typeOfBusiness -> Json.arr(Json.obj("accountingType" -> Json.toJson(accountingType))))
+    }
+
+    val businessJson: JsObject = trimEmpty(
+      Json.obj(
+        "tradingName" -> business.tradingName,
+        "firstAccountingPeriodStartDate" -> business.firstAccountingPeriodStartDate,
+        "firstAccountingPeriodEndDate" -> business.firstAccountingPeriodEndDate,
+        "latencyDetails" -> business.latencyDetails,
+        "quarterTypeElection" -> business.quarterlyTypeChoice,
+        "tradingSDate" -> business.commencementDate,
+        "cessationDate" -> business.cessationDate,
+        "businessAddressDetails" -> trimEmpty(
+          Json.obj(
+            "addressLine1" -> business.businessAddressLineOne,
+            "addressLine2" -> business.businessAddressLineTwo,
+            "addressLine3" -> business.businessAddressLineThree,
+            "addressLine4" -> business.businessAddressLineFour,
+            "postalCode" -> business.businessAddressPostcode,
+            "countryCode" -> business.businessAddressCountryCode
+          )
+        )
+      )
+    ) ++ Json.toJsObject(business.typeOfBusiness) ++ accountingTypeJson
+
+    businessJson
+  }
 
 }

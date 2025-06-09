@@ -16,7 +16,7 @@
 
 package uk.gov.hmrc.mtdsatestsupportapi.models.request.createTestBusiness
 
-import play.api.libs.json.{JsBoolean, Reads, Writes}
+import play.api.libs.json.{JsString, Reads, Writes}
 import utils.enums.Enums
 
 sealed trait AccountingType
@@ -28,8 +28,8 @@ object AccountingType {
   implicit val reads: Reads[AccountingType] = Enums.reads[AccountingType]
 
   implicit val writes: Writes[AccountingType] = {
-    case AccountingType.CASH     => JsBoolean(false)
-    case AccountingType.ACCRUALS => JsBoolean(true)
+    case AccountingType.CASH     => JsString("CASH")
+    case AccountingType.ACCRUALS => JsString("ACCRUAL")
   }
 
   implicit val parser: PartialFunction[String, AccountingType] = Enums.parser[AccountingType]

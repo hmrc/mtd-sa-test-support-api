@@ -92,7 +92,7 @@ class BusinessSpec extends UnitSpec with CreateTestBusinessFixtures {
                 |    "quarterlyPeriodType": "standard",
                 |    "taxYearOfChoice": "2023-24"
                 |  },
-                |  "accountingType": "CASH",
+                |  "accountingType": "ACCRUALS",
                 |  "commencementDate": "2000-01-01",
                 |  "cessationDate": "2030-01-01",
                 |  "businessAddressLineOne": "L1",
@@ -128,6 +128,7 @@ class BusinessSpec extends UnitSpec with CreateTestBusinessFixtures {
       "serialized to downstream JSON" when {
 
         def testSerializeToBackend(typeOfBusiness: TypeOfBusiness,
+                                   expectedTypeOfBusiness: String,
                                    expectedIncomeSourceType: Option[String],
                                    expectedPropertyIncomeFlag: Boolean): Unit = {
           s"typeOfBusiness is $typeOfBusiness" must {
@@ -154,7 +155,11 @@ class BusinessSpec extends UnitSpec with CreateTestBusinessFixtures {
                         |    "quarterReportingType": "STANDARD",
                         |    "taxYearofElection": "2024"
                         |  },
-                        |  "cashOrAccrualsFlag": false,
+                        |  "$expectedTypeOfBusiness":[
+                        |    {
+                        |      "accountingType":"ACCRUAL"
+                        |    }
+                        |  ],
                         |  "tradingSDate": "2000-01-01",
                         |  "cessationDate": "2030-01-01",
                         |  "businessAddressDetails": {
@@ -175,10 +180,10 @@ class BusinessSpec extends UnitSpec with CreateTestBusinessFixtures {
           }
         }
 
-        testSerializeToBackend(`foreign-property`, expectedIncomeSourceType = Some("03"), expectedPropertyIncomeFlag = true)
-        testSerializeToBackend(`uk-property`, expectedIncomeSourceType = Some("02"), expectedPropertyIncomeFlag = true)
-        testSerializeToBackend(`property-unspecified`, expectedIncomeSourceType = None, expectedPropertyIncomeFlag = true)
-        testSerializeToBackend(`self-employment`, expectedIncomeSourceType = None, expectedPropertyIncomeFlag = false)
+        testSerializeToBackend(`foreign-property`, "foreignProperty", expectedIncomeSourceType = Some("03"), expectedPropertyIncomeFlag = true)
+        testSerializeToBackend(`uk-property`, "ukProperty", expectedIncomeSourceType = Some("02"), expectedPropertyIncomeFlag = true)
+        testSerializeToBackend(`property-unspecified`, "ukProperty", expectedIncomeSourceType = None, expectedPropertyIncomeFlag = true)
+        testSerializeToBackend(`self-employment`, "selfEmployments", expectedIncomeSourceType = None, expectedPropertyIncomeFlag = false)
 
       }
     }
@@ -211,7 +216,7 @@ class BusinessSpec extends UnitSpec with CreateTestBusinessFixtures {
         )),
       quarterlyTypeChoice =
         Some(QuarterlyTypeChoice(quarterlyPeriodType = QuarterlyPeriodType.`standard`, taxYearOfChoice = TaxYear.fromMtd("2023-24"))),
-      accountingType = Some(AccountingType.CASH),
+      accountingType = Some(AccountingType.ACCRUALS),
       commencementDate = Some(LocalDate.parse("2000-01-01")),
       cessationDate = Some(LocalDate.parse("2030-01-01")),
       businessAddressLineOne = Some("L1"),
