@@ -21,7 +21,7 @@ import api.models.errors._
 import api.utils.JsonErrorValidators
 import com.github.tomakehurst.wiremock.stubbing.StubMapping
 import play.api.http.HeaderNames.ACCEPT
-import play.api.libs.json.{JsArray, JsNumber, JsObject, JsString, JsValue, Json}
+import play.api.libs.json._
 import play.api.libs.ws.{WSRequest, WSResponse}
 import play.api.test.Helpers.{AUTHORIZATION, BAD_REQUEST, NO_CONTENT}
 import support.{IntegrationBaseSpec, UnitSpec}

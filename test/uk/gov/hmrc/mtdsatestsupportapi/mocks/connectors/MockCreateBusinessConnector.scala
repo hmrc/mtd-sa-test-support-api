@@ -19,6 +19,7 @@ package uk.gov.hmrc.mtdsatestsupportapi.mocks.connectors
 import api.connectors.DownstreamOutcome
 import org.scalamock.handlers.CallHandler
 import org.scalamock.scalatest.MockFactory
+import org.scalatest.TestSuite
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.mtdsatestsupportapi.connectors.CreateTestBusinessConnector
 import uk.gov.hmrc.mtdsatestsupportapi.models.request.createTestBusiness.CreateTestBusinessRequest
@@ -26,7 +27,7 @@ import uk.gov.hmrc.mtdsatestsupportapi.models.response.createTestBusiness.Create
 
 import scala.concurrent.{ExecutionContext, Future}
 
-trait MockCreateTestBusinessConnector extends MockFactory {
+trait MockCreateTestBusinessConnector extends TestSuite with MockFactory {
 
   val mockCreateTestBusinessConnector: CreateTestBusinessConnector = mock[CreateTestBusinessConnector]
 

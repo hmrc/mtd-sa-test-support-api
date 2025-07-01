@@ -19,10 +19,11 @@ package uk.gov.hmrc.mtdsatestsupportapi.mocks.requestParsers
 import api.models.errors.ErrorWrapper
 import org.scalamock.handlers.CallHandler
 import org.scalamock.scalatest.MockFactory
+import org.scalatest.TestSuite
 import uk.gov.hmrc.mtdsatestsupportapi.controllers.requestParsers.ListCheckpointsRequestParser
 import uk.gov.hmrc.mtdsatestsupportapi.models.request.listCheckpoints.{ListCheckpointsRawData, ListCheckpointsRequest}
 
-trait MockListCheckpointsRequestParser extends MockFactory {
+trait MockListCheckpointsRequestParser extends TestSuite with MockFactory {
 
   val mockListCheckpointsRequestParser: ListCheckpointsRequestParser = mock[ListCheckpointsRequestParser]
 

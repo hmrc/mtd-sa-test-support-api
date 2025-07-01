@@ -21,12 +21,13 @@ import api.models.errors.ErrorWrapper
 import api.models.outcomes.ResponseWrapper
 import org.scalamock.handlers.CallHandler
 import org.scalamock.scalatest.MockFactory
+import org.scalatest.TestSuite
 import uk.gov.hmrc.mtdsatestsupportapi.models.request.deleteCheckpoint.DeleteCheckpointRequest
 import uk.gov.hmrc.mtdsatestsupportapi.services.DeleteCheckpointService
 
 import scala.concurrent.{ExecutionContext, Future}
 
-trait MockDeleteCheckpointService extends MockFactory {
+trait MockDeleteCheckpointService extends TestSuite with MockFactory {
   val mockDeleteCheckpointService: DeleteCheckpointService = mock[DeleteCheckpointService]
 
   object MockDeleteCheckpointService {

@@ -21,12 +21,13 @@ import api.models.errors.ErrorWrapper
 import api.models.outcomes.ResponseWrapper
 import org.scalamock.handlers.CallHandler
 import org.scalamock.scalatest.MockFactory
+import org.scalatest.TestSuite
 import uk.gov.hmrc.mtdsatestsupportapi.models.request.deleteStatefulTestData.DeleteStatefulTestDataRequest
 import uk.gov.hmrc.mtdsatestsupportapi.services.DeleteVendorStateService
 
 import scala.concurrent.{ExecutionContext, Future}
 
-trait MockDeleteVendorStateService extends MockFactory {
+trait MockDeleteVendorStateService extends TestSuite with MockFactory {
 
   val mockService: DeleteVendorStateService = mock[DeleteVendorStateService]
 

@@ -19,13 +19,14 @@ package uk.gov.hmrc.mtdsatestsupportapi.mocks.connectors
 import api.connectors.DownstreamOutcome
 import org.scalamock.handlers.CallHandler
 import org.scalamock.scalatest.MockFactory
+import org.scalatest.TestSuite
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.mtdsatestsupportapi.connectors.RestoreCheckpointConnector
 import uk.gov.hmrc.mtdsatestsupportapi.models.request.restoreCheckpoint.RestoreCheckpointRequest
 
 import scala.concurrent._
 
-trait MockRestoreCheckpointConnector extends MockFactory {
+trait MockRestoreCheckpointConnector extends TestSuite with MockFactory {
 
   val mockRestoreCheckpointConnector: RestoreCheckpointConnector = mock[RestoreCheckpointConnector]
 

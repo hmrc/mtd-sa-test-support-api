@@ -19,6 +19,7 @@ package uk.gov.hmrc.mtdsatestsupportapi.mocks.connectors
 import api.connectors.DownstreamOutcome
 import org.scalamock.handlers.CallHandler
 import org.scalamock.scalatest.MockFactory
+import org.scalatest.TestSuite
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.mtdsatestsupportapi.connectors.ListCheckpointsConnector
 import uk.gov.hmrc.mtdsatestsupportapi.models.request.listCheckpoints.ListCheckpointsRequest
@@ -26,7 +27,7 @@ import uk.gov.hmrc.mtdsatestsupportapi.models.response.listCheckpoints.{Checkpoi
 
 import scala.concurrent.{ExecutionContext, Future}
 
-trait MockListCheckpointsConnector extends MockFactory {
+trait MockListCheckpointsConnector extends TestSuite with MockFactory {
 
   val mockListCheckpointsConnector: ListCheckpointsConnector = mock[ListCheckpointsConnector]
 

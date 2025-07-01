@@ -19,13 +19,14 @@ package uk.gov.hmrc.mtdsatestsupportapi.mocks.connectors
 import api.connectors.DownstreamOutcome
 import org.scalamock.handlers.CallHandler
 import org.scalamock.scalatest.MockFactory
+import org.scalatest.TestSuite
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.mtdsatestsupportapi.connectors.CreateAmendITSAStatusConnector
 import uk.gov.hmrc.mtdsatestsupportapi.models.request.createAmendITSAStatus.CreateAmendITSAStatusRequest
 
 import scala.concurrent.{ExecutionContext, Future}
 
-trait MockCreateAmendITSAStatusConnector extends MockFactory {
+trait MockCreateAmendITSAStatusConnector extends TestSuite with MockFactory {
 
   val mockCreateAmendITSAStatusConnector: CreateAmendITSAStatusConnector =
     mock[CreateAmendITSAStatusConnector]

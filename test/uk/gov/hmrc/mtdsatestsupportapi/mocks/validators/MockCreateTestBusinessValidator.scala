@@ -19,10 +19,11 @@ package uk.gov.hmrc.mtdsatestsupportapi.mocks.validators
 import api.models.errors.MtdError
 import org.scalamock.handlers.CallHandler
 import org.scalamock.scalatest.MockFactory
+import org.scalatest.TestSuite
 import uk.gov.hmrc.mtdsatestsupportapi.controllers.requestParsers.validators.CreateTestBusinessValidator
 import uk.gov.hmrc.mtdsatestsupportapi.models.request.createTestBusiness.CreateTestBusinessRawData
 
-trait MockCreateTestBusinessValidator extends MockFactory {
+trait MockCreateTestBusinessValidator extends TestSuite with MockFactory {
 
   val mockCreateTestBusinessValidator: CreateTestBusinessValidator = mock[CreateTestBusinessValidator]
 

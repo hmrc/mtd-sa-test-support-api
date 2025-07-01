@@ -19,10 +19,11 @@ package uk.gov.hmrc.mtdsatestsupportapi.mocks.requestParsers
 import api.models.errors.ErrorWrapper
 import org.scalamock.handlers.CallHandler
 import org.scalamock.scalatest.MockFactory
+import org.scalatest.TestSuite
 import uk.gov.hmrc.mtdsatestsupportapi.controllers.requestParsers.DeleteTestBusinessRequestParser
 import uk.gov.hmrc.mtdsatestsupportapi.models.request.deleteTestBusiness.{DeleteTestBusinessRawData, DeleteTestBusinessRequest}
 
-trait MockDeleteTestBusinessRequestParser extends MockFactory {
+trait MockDeleteTestBusinessRequestParser extends TestSuite with MockFactory {
 
   val mockParser: DeleteTestBusinessRequestParser = mock[DeleteTestBusinessRequestParser]
 

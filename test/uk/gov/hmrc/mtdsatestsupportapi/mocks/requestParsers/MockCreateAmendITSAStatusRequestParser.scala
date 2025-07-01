@@ -19,10 +19,11 @@ package uk.gov.hmrc.mtdsatestsupportapi.mocks.requestParsers
 import api.models.errors.ErrorWrapper
 import org.scalamock.handlers.CallHandler
 import org.scalamock.scalatest.MockFactory
+import org.scalatest.TestSuite
 import uk.gov.hmrc.mtdsatestsupportapi.controllers.requestParsers.CreateAmendITSAStatusRequestParser
 import uk.gov.hmrc.mtdsatestsupportapi.models.request.createAmendITSAStatus.{CreateAmendITSAStatusRawData, CreateAmendITSAStatusRequest}
 
-trait MockCreateAmendITSAStatusRequestParser extends MockFactory {
+trait MockCreateAmendITSAStatusRequestParser extends TestSuite with MockFactory {
 
   val mockRequestParser: CreateAmendITSAStatusRequestParser = mock[CreateAmendITSAStatusRequestParser]
 
