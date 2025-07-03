@@ -19,10 +19,11 @@ package uk.gov.hmrc.mtdsatestsupportapi.mocks.validators
 import api.models.errors.MtdError
 import org.scalamock.handlers.CallHandler
 import org.scalamock.scalatest.MockFactory
+import org.scalatest.TestSuite
 import uk.gov.hmrc.mtdsatestsupportapi.controllers.requestParsers.validators.RestoreCheckpointValidator
 import uk.gov.hmrc.mtdsatestsupportapi.models.request.restoreCheckpoint.RestoreCheckpointRawData
 
-trait MockRestoreCheckpointValidator extends MockFactory {
+trait MockRestoreCheckpointValidator extends TestSuite with MockFactory {
 
   val mockRestoreCheckpointValidator: RestoreCheckpointValidator = mock[RestoreCheckpointValidator]
 

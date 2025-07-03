@@ -21,7 +21,7 @@ Start the service manager profile: `sm2 --start MTDFB_TEST_SUPPORT`
 
 Run unit tests: `sbt test`
 
-Run integration tests: `sbt it:test`
+Run integration tests: `sbt it/test`
 
 ### Changelog
 

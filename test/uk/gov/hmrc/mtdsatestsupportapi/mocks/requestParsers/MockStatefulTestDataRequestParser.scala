@@ -19,10 +19,11 @@ package uk.gov.hmrc.mtdsatestsupportapi.mocks.requestParsers
 import api.models.errors.ErrorWrapper
 import org.scalamock.handlers.CallHandler
 import org.scalamock.scalatest.MockFactory
+import org.scalatest.TestSuite
 import uk.gov.hmrc.mtdsatestsupportapi.controllers.requestParsers.DeleteStatefulTestDataRequestParser
 import uk.gov.hmrc.mtdsatestsupportapi.models.request.deleteStatefulTestData.{DeleteStatefulTestDataRawData, DeleteStatefulTestDataRequest}
 
-trait MockStatefulTestDataRequestParser extends MockFactory {
+trait MockStatefulTestDataRequestParser extends TestSuite with MockFactory {
 
   val mockRequestParser: DeleteStatefulTestDataRequestParser = mock[DeleteStatefulTestDataRequestParser]
 

@@ -19,13 +19,14 @@ package uk.gov.hmrc.mtdsatestsupportapi.mocks.connectors
 import api.connectors.DownstreamOutcome
 import org.scalamock.handlers.CallHandler
 import org.scalamock.scalatest.MockFactory
+import org.scalatest.TestSuite
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.mtdsatestsupportapi.connectors.DeleteTestBusinessConnector
 import uk.gov.hmrc.mtdsatestsupportapi.models.request.deleteTestBusiness.DeleteTestBusinessRequest
 
 import scala.concurrent.{ExecutionContext, Future}
 
-trait MockDeleteTestBusinessConnector extends MockFactory {
+trait MockDeleteTestBusinessConnector extends TestSuite with MockFactory {
 
   val mockDeleteTestBusinessConnector: DeleteTestBusinessConnector = mock[DeleteTestBusinessConnector]
 

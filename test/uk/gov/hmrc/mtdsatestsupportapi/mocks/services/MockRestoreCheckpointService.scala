@@ -21,12 +21,13 @@ import api.models.errors.ErrorWrapper
 import api.models.outcomes.ResponseWrapper
 import org.scalamock.handlers.CallHandler
 import org.scalamock.scalatest.MockFactory
+import org.scalatest.TestSuite
 import uk.gov.hmrc.mtdsatestsupportapi.models.request.restoreCheckpoint.RestoreCheckpointRequest
 import uk.gov.hmrc.mtdsatestsupportapi.services.RestoreCheckpointService
 
 import scala.concurrent.{ExecutionContext, Future}
 
-trait MockRestoreCheckpointService extends MockFactory {
+trait MockRestoreCheckpointService extends TestSuite with MockFactory {
   val mockRestoreCheckpointService: RestoreCheckpointService = mock[RestoreCheckpointService]
 
   object MockRestoreCheckpointService {

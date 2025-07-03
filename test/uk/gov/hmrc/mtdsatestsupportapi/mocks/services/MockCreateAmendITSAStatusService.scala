@@ -21,12 +21,13 @@ import api.models.errors.ErrorWrapper
 import api.models.outcomes.ResponseWrapper
 import org.scalamock.handlers.CallHandler
 import org.scalamock.scalatest.MockFactory
+import org.scalatest.TestSuite
 import uk.gov.hmrc.mtdsatestsupportapi.models.request.createAmendITSAStatus.CreateAmendITSAStatusRequest
 import uk.gov.hmrc.mtdsatestsupportapi.services.CreateAmendITSAStatusService
 
 import scala.concurrent.{ExecutionContext, Future}
 
-trait MockCreateAmendITSAStatusService extends MockFactory {
+trait MockCreateAmendITSAStatusService extends TestSuite with MockFactory {
 
   val mockService: CreateAmendITSAStatusService = mock[CreateAmendITSAStatusService]
 
