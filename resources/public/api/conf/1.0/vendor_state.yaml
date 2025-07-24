@@ -2,7 +2,7 @@ delete:
   $ref: "./vendor_state_delete.yaml"
   summary: Delete Stateful Test Data
   security:
-    - Application-Restricted:
+    - User-Restricted:
         - write:self-assessment
   parameters:
     - $ref: './common/queryParameters.yaml#/components/parameters/ninoDeleteData'

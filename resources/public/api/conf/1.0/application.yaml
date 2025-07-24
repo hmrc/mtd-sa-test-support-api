@@ -9,9 +9,9 @@ info:
     
     # Support
     
-    * Raise non-technical or platform-related issues with the [Software Development Support Team (SDST)](https://developer.service.hmrc.gov.uk/developer/support).
-    * Raise technical issues on the [income-tax-mtd-changelog](https://github.com/hmrc/income-tax-mtd-changelog/issues) GitHub page.
-    * [Is this page not working properly?](https://developer.service.hmrc.gov.uk/contact/report-technical-problem?newTab=true&service=api-documentation-frontend)
+    * Direct reports of bugs or errors in Production or Sandbox code, or queries about HMRC business functionality (such as how a specific field is used by HMRC or why it is needed) to the [Software Development Support Team (SDST)](https://developer.service.hmrc.gov.uk/developer/support).
+    * Send queries or feedback related to the design of the APIs (including recommended changes) using the [income-tax-mtd-changelog](https://github.com/hmrc/income-tax-mtd-changelog/issues) GitHub page.
+    * <a href="/contact/report-technical-problem?newTab=true&service=api-documentation-frontend" target="_blank">Is this page not working properly? (opens in new tab)</a>
 
 servers:
   - url: https://test-api.service.hmrc.gov.uk
@@ -19,13 +19,14 @@ servers:
 
 components:
   securitySchemes:
-    Application-Restricted:
+    User-Restricted:
       type: oauth2
-      description: |
-        HMRC supports OAuth 2.0 for authenticating [Application-Restricted](https://developer.service.hmrc.gov.uk/api-documentation/docs/authorisation/application-restricted-endpoints) API requests using an OAuth 2.0 Bearer Token.
+      description: HMRC supports OAuth 2.0 for authenticating [User-restricted](https://developer.service.hmrc.gov.uk/api-documentation/docs/authorisation/user-restricted-endpoints) API requests
       flows:
-        clientCredentials:
+        authorizationCode:
+          authorizationUrl: https://api.service.hmrc.gov.uk/oauth/authorize
           tokenUrl: https://api.service.hmrc.gov.uk/oauth/token
+          refreshUrl: https://api.service.hmrc.gov.uk/oauth/refresh
           scopes:
             write:self-assessment: Grant write access
             read:self-assessment: Grant read access
@@ -49,4 +50,3 @@ paths:
   /individuals/self-assessment-test-support/itsa-status/{nino}/{taxYear}:
     $ref: "./itsa_status_create_amend.yaml"
   # {{/if}}
-

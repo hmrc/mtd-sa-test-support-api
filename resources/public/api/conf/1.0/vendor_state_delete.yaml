@@ -6,7 +6,7 @@ description: |
   its creation.
 
 security:
-  - Application-Restricted:
+  - User-Restricted:
       - write:self-assessment
 
 responses:
@@ -41,5 +41,3 @@ responses:
         examples:
           MATCHING_RESOURCE_NOT_FOUND:
             $ref: './common/errors.yaml#/components/examples/notFound'
-
-
