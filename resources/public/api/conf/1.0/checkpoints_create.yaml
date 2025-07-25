@@ -12,7 +12,7 @@ tags:
   - Checkpoint for Vendor Data
 
 security:
-  - Application-Restricted:
+  - User-Restricted:
       - write:self-assessment
 
 parameters:
@@ -74,5 +74,3 @@ responses:
         examples:
           MATCHING_RESOURCE_NOT_FOUND:
             $ref: './common/errors.yaml#/components/examples/notFoundCreateCheckpoint'
-
-

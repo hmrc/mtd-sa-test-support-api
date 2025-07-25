@@ -16,7 +16,7 @@ post:
     - $ref: './common/headers.yaml#/components/parameters/authorizationWriteScopeHeader'
 
   security:
-    - Application-Restricted:
+    - User-Restricted:
         - write:self-assessment
 
   requestBody:

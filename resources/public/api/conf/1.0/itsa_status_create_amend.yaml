@@ -11,7 +11,7 @@ post:
     - ITSA Status
 
   security:
-    - Application-Restricted:
+    - User-Restricted:
         - write:self-assessment
 
   parameters:
