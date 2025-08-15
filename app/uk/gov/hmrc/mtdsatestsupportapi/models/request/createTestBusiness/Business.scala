@@ -74,19 +74,7 @@ object Business {
       }
     )
 
-    val accountingTypeJson: JsObject = {
-      val accountingType: AccountingType = business.accountingType.getOrElse(AccountingType.CASH)
-
-      val typeOfBusiness: String = business.typeOfBusiness match {
-        case TypeOfBusiness.`self-employment` => "selfEmployments"
-        case TypeOfBusiness.`foreign-property` => "foreignProperty"
-        case _ => "ukProperty"
-      }
-
-      Json.obj(typeOfBusiness -> Json.arr(Json.obj("accountingType" -> Json.toJson(accountingType))))
-    }
-
-    val businessJson: JsObject = trimEmpty(
+    val baseJson: JsObject = trimEmpty(
       Json.obj(
         "tradingName" -> business.tradingName,
         "firstAccountingPeriodStartDate" -> business.firstAccountingPeriodStartDate,
@@ -106,9 +94,28 @@ object Business {
           )
         )
       )
-    ) ++ Json.toJsObject(business.typeOfBusiness) ++ accountingTypeJson
+    ) ++ Json.toJsObject(business.typeOfBusiness)
 
-    businessJson
+    val accountingTypeJson: JsObject = Json.obj(
+      "accountingType" -> Json.toJson(business.accountingType.getOrElse(AccountingType.CASH))
+    )
+
+    val typeOfBusinessJson: JsObject = if (business.typeOfBusiness.isSelfEmployment) {
+      val lateAccountingDateRuleJson: JsObject = Json.obj(
+        "lateAccountingDate" -> Json.obj("eligible" -> false, "disapply" -> false)
+      )
+
+      Json.obj("selfEmployments" -> Json.arr(accountingTypeJson ++ lateAccountingDateRuleJson))
+    } else {
+      val typeOfBusiness: String = business.typeOfBusiness match {
+        case TypeOfBusiness.`foreign-property` => "foreignProperty"
+        case _ => "ukProperty"
+      }
+
+      Json.obj(typeOfBusiness -> Json.arr(accountingTypeJson))
+    }
+
+    baseJson ++ typeOfBusinessJson
   }
 
 }
