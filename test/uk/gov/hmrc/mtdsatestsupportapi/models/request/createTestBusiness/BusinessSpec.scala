@@ -134,8 +134,23 @@ class BusinessSpec extends UnitSpec with CreateTestBusinessFixtures {
           s"typeOfBusiness is $typeOfBusiness" must {
             "work and set propertyIncomeFlag and incomeSourceType correctly" in {
               val downstreamJson = Json.toJson(businessWithMaxFields(typeOfBusiness))
+              val typeOfBusinessJson = if (typeOfBusiness.isSelfEmployment) {
+                Json.obj(
+                  "selfEmployments" -> Json.arr(
+                    Json.obj(
+                      "accountingType" -> "ACCRUAL",
+                      "lateAccountingDate" -> Json.obj("eligible" -> false, "disapply" -> false)
+                    )
+                  )
+                )
+              } else {
+                Json.obj(s"$expectedTypeOfBusiness" -> Json.arr(Json.obj("accountingType" -> "ACCRUAL")))
+              }
+
               val expected = {
-                expectedIncomeSourceType.map(x => Json.obj("incomeSourceType" -> x)).getOrElse(JsObject.empty) ++
+                expectedIncomeSourceType.map(
+                  x => Json.obj("incomeSourceType" -> x)
+                ).getOrElse(JsObject.empty) ++ typeOfBusinessJson ++
                   Json
                     .parse(
                       s"""
@@ -155,11 +170,6 @@ class BusinessSpec extends UnitSpec with CreateTestBusinessFixtures {
                         |    "quarterReportingType": "STANDARD",
                         |    "taxYearofElection": "2024"
                         |  },
-                        |  "$expectedTypeOfBusiness":[
-                        |    {
-                        |      "accountingType":"ACCRUAL"
-                        |    }
-                        |  ],
                         |  "tradingSDate": "2000-01-01",
                         |  "cessationDate": "2030-01-01",
                         |  "businessAddressDetails": {

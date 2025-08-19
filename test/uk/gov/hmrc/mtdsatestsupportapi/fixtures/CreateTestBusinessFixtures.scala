@@ -66,9 +66,13 @@ trait CreateTestBusinessFixtures {
           |    "countryCode": "FR"
           |  },
           |  "selfEmployments": [
-          |     {
-          |      "accountingType": "CASH"
-          |     }
+          |    {
+          |      "accountingType": "CASH",
+          |      "lateAccountingDate": {
+          |        "eligible": false,
+          |        "disapply": false
+          |      }
+          |    }
           |  ]
           |}
         """.stripMargin
