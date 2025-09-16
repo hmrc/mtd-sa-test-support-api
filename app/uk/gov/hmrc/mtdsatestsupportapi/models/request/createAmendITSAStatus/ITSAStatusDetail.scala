@@ -31,6 +31,6 @@ object ITSAStatusDetail {
       (JsPath \ "status").write[Status] and
       (JsPath \ "statusReason").write[StatusReason] and
       (JsPath \ "businessIncomePriorTo2Years").writeNullable[BigDecimal]
-    )(unlift(ITSAStatusDetail.unapply))
+    )(w => Tuple.fromProductTyped(w))
 
 }

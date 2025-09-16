@@ -91,7 +91,7 @@ class DocumentationControllerSpec extends ControllerBaseSpec with MockAppConfig 
     protected def willRewriteUsing(rewriters: Seq[Rewriter]): CallHandler[Action[AnyContent]] =
       (rewriteableAssets.rewriteableAt(_: String, _: String, _: Seq[Rewriter])).expects(s"/public/api/conf/$version", filename, rewriters)
 
-    protected def rewrittenOkAction: Action[AnyContent] = actionBuilder { _: Request[AnyContent] => Ok(rewrittenContent) }
+    protected def rewrittenOkAction: Action[AnyContent] = actionBuilder { (_: Request[AnyContent]) => Ok(rewrittenContent) }
 
     protected val rewriteableAssets: RewriteableAssets = mock[RewriteableAssets]
     protected val controller                           = new DocumentationController(apiFactory, docRewriters, rewriteableAssets, cc)

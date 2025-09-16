@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2025 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,8 +18,8 @@ package api.models.audit
 
 import api.controllers.{AuditHandler, RequestContext}
 import api.models.auth.UserDetails
-import play.api.libs.functional.syntax._
-import play.api.libs.json._
+import play.api.libs.functional.syntax.*
+import play.api.libs.json.*
 
 case class GenericAuditDetail(versionNumber: String,
                               userType: String,
@@ -37,7 +37,7 @@ object GenericAuditDetail {
       JsPath.write[Map[String, JsValue]].contramap((p: JsObject) => p.value.toMap) and
       (JsPath \ "X-CorrelationId").write[String] and
       (JsPath \ "response").write[AuditResponse]
-  )(unlift(GenericAuditDetail.unapply))
+  )(w => Tuple.fromProductTyped(w))
 
   def apply[A: OWrites](userDetails: UserDetails,
                         params: A,

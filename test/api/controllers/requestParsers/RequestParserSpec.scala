@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2025 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -44,7 +44,7 @@ class RequestParserSpec extends UnitSpec {
   "parse" should {
     "return a Request" when {
       "the validator returns no errors" in new Test {
-        lazy val validator: Validator[Raw] = (_: Raw) => Nil
+        val validator: Validator[Raw] = (_: Raw) => Nil
 
         parser.parseRequest(Raw(nino)) shouldBe Right(Request(Nino(nino)))
       }
@@ -52,7 +52,7 @@ class RequestParserSpec extends UnitSpec {
 
     "return a single error" when {
       "the validator returns a single error" in new Test {
-        lazy val validator: Validator[Raw] = (_: Raw) => List(NinoFormatError)
+        val validator: Validator[Raw] = (_: Raw) => List(NinoFormatError)
 
         parser.parseRequest(Raw(nino)) shouldBe Left(ErrorWrapper(correlationId, NinoFormatError, None))
       }
@@ -60,7 +60,7 @@ class RequestParserSpec extends UnitSpec {
 
     "return multiple errors" when {
       "the validator returns multiple errors" in new Test {
-        lazy val validator: Validator[Raw] = (_: Raw) => List(NinoFormatError, RuleIncorrectOrEmptyBodyError)
+        val validator: Validator[Raw] = (_: Raw) => List(NinoFormatError, RuleIncorrectOrEmptyBodyError)
 
         parser.parseRequest(Raw(nino)) shouldBe Left(
           ErrorWrapper(correlationId, BadRequestError, Some(Seq(NinoFormatError, RuleIncorrectOrEmptyBodyError))))

@@ -32,7 +32,7 @@ object QuarterlyTypeChoice {
   implicit val writes: Writes[QuarterlyTypeChoice] = (
     (JsPath \ "quarterReportingType").write[QuarterlyPeriodType] and
       (JsPath \ "taxYearofElection").write[TaxYear]
-    )(unlift(QuarterlyTypeChoice.unapply))
+    )(w => Tuple.fromProductTyped(w))
 
 
 }

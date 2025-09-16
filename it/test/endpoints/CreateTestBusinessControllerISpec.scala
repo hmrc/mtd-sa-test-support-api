@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2025 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,12 +16,13 @@
 
 package endpoints
 
-import api.models.errors._
+import api.models.errors.*
 import com.github.tomakehurst.wiremock.stubbing.StubMapping
 import org.scalactic.source.Position
 import play.api.http.HeaderNames.ACCEPT
 import play.api.http.Status.{BAD_REQUEST, CREATED}
 import play.api.libs.json.{JsObject, Json}
+import play.api.libs.ws.WSBodyWritables.writeableOf_JsValue
 import play.api.libs.ws.{WSRequest, WSResponse}
 import play.api.test.Helpers.AUTHORIZATION
 import support.{IntegrationBaseSpec, UnitSpec}
@@ -90,8 +91,8 @@ class CreateTestBusinessControllerISpec extends UnitSpec with IntegrationBaseSpe
     }
 
     "return validation error according to spec" when {
-      def validationErrorTest(requestNino: String, requestBody: JsObject, expectedStatus: Int, expectedBody: MtdError)
-                             (implicit pos: Position): Unit = {
+      def validationErrorTest(requestNino: String, requestBody: JsObject, expectedStatus: Int, expectedBody: MtdError)(implicit
+          pos: Position): Unit = {
         s"validation fails with ${expectedBody.code} error" in new Test {
           override val nino: String = requestNino
 
@@ -261,8 +262,8 @@ class CreateTestBusinessControllerISpec extends UnitSpec with IntegrationBaseSpe
     }
 
     "return downstream errors" when {
-      def serviceErrorTest(stubErrorStatus: Int, stubErrorCode: String, expectedStatus: Int, expectedError: MtdError)
-                          (implicit pos: Position): Unit = {
+      def serviceErrorTest(stubErrorStatus: Int, stubErrorCode: String, expectedStatus: Int, expectedError: MtdError)(implicit
+          pos: Position): Unit = {
         s"stub returns a $stubErrorCode error and status $stubErrorStatus" in new Test {
 
           override def setupStubs(): StubMapping = {

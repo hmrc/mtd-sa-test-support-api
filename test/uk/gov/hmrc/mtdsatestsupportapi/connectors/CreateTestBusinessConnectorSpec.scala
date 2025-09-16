@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2025 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,14 +27,14 @@ import uk.gov.hmrc.mtdsatestsupportapi.models.request.createTestBusiness.CreateT
 
 class CreateTestBusinessConnectorSpec extends ConnectorSpec with CreateTestBusinessFixtures {
 
-  import ExampleCreateTestBusinessResponse._
-  import MinimalCreateTestBusinessRequest.SelfEmployment._
+  import ExampleCreateTestBusinessResponse.*
+  import MinimalCreateTestBusinessRequest.SelfEmployment.*
 
   private val nino    = "AA123456A"
   private val request = CreateTestBusinessRequest(Nino(nino), business)
 
   trait Test {
-    _: ConnectorTest =>
+    self: ConnectorTest =>
 
     protected val connector = new CreateTestBusinessConnector(httpClientV2, mockAppConfig)
   }

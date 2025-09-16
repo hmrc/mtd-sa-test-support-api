@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2025 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -39,20 +39,20 @@ class DeleteTestBusinessConnectorSpec extends ConnectorSpec {
           .withHeaders(requiredHeaders)
           .thenReturn(BAD_REQUEST, Json.obj("code" -> "SOME_ERROR", "reason" -> "Some explanation"), responseHeaders)
 
-      await(connector.deleteTestBusiness(requestData)) shouldBe Left(
-        ResponseWrapper(responseCorrelationId, DownstreamErrors.single(DownstreamErrorCode("SOME_ERROR")))
-      )
+        await(connector.deleteTestBusiness(requestData)) shouldBe Left(
+          ResponseWrapper(responseCorrelationId, DownstreamErrors.single(DownstreamErrorCode("SOME_ERROR")))
+        )
       }
     }
   }
 
   trait Test {
-    _: ConnectorTest =>
-    protected val nino           = "AA999999A"
-    protected val businessId     = "XAIS12345678910"
-    protected val downstreamUri  = s"/test-support/business-details/$nino/$businessId"
+    self: ConnectorTest =>
+    protected val nino          = "AA999999A"
+    protected val businessId    = "XAIS12345678910"
+    protected val downstreamUri = s"/test-support/business-details/$nino/$businessId"
 
-    protected val requestData = DeleteTestBusinessRequest( Nino(nino), businessId)
+    protected val requestData = DeleteTestBusinessRequest(Nino(nino), businessId)
 
     protected val connector = new DeleteTestBusinessConnector(mockAppConfig, httpClientV2)
 

@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2025 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -61,12 +61,12 @@ class BaseDownstreamConnectorSpec extends ConnectorSpec {
     MockAppConfig.stubEnv returns stubEnv
     MockAppConfig.stubToken returns stubToken
 
-    def excludedRequestHeadersNames(excludedHeaderNames: String*): ValueMatcher[Request] = { request: Request =>
+    def excludedRequestHeadersNames(excludedHeaderNames: String*): ValueMatcher[Request] = { (request: Request) =>
       val containsHeader = excludedHeaderNames.exists(headerName => request.containsHeader(headerName))
       MatchResult.of(!containsHeader)
     }
 
-    def singleValuedHeader(name: String, value: String): ValueMatcher[Request] = { request: Request =>
+    def singleValuedHeader(name: String, value: String): ValueMatcher[Request] = { (request: Request) =>
       val header = request.getHeaders.getHeader(name)
 
       MatchResult.of(header.values().size() == 1 && header.values().get(0) == value)

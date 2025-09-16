@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2025 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,7 +21,7 @@ import play.api.libs.json.JsValue
 import uk.gov.hmrc.http.test.WireMockSupport
 
 trait DownstreamStub extends WireMockMethods {
-  _: WireMockSupport =>
+  self: WireMockSupport =>
 
   object DownstreamStub {
     def onSuccess(method: HTTPMethod, uri: String, status: Int, body: JsValue): StubMapping = {

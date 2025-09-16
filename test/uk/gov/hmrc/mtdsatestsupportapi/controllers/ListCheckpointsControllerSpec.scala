@@ -58,10 +58,6 @@ class ListCheckpointsControllerSpec
             .listCheckpoints(requestDataWithNino)
             .returns(Future.successful(Right(ResponseWrapper(correlationId, responseDataWithNino))))
 
-          MockHateoasFactory
-            .wrapList(responseDataWithNino, ListCheckpointsHateoasData)
-            .returns(HateoasWrapper(hateoasResponse, hateoaslinks))
-
           val expectedResponseBody: JsValue = Json.parse(s"""
                |{
                |  "checkpoints": [

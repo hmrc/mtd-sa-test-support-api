@@ -43,7 +43,7 @@ class VersionRoutingMapSpec extends UnitSpec with MockAppConfig with GuiceOneApp
   "map" when {
     "routing a v1 request" should {
       "route to v1.routes" in
-        forAll { v2r7cEnabled: Boolean =>
+        forAll { (v2r7cEnabled: Boolean) =>
           val versionRoutingMap = newVersionRoutingMap(v2r7cEnabled)
           versionRoutingMap.map(Versions.VERSION_1) shouldBe v1Routes
         }
