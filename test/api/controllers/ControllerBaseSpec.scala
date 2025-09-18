@@ -20,6 +20,7 @@ import api.controllers.ControllerTestRunner.validNino
 import api.mocks.MockIdGenerator
 import api.mocks.services.{MockAuditService, MockAuthService}
 import api.models.errors.MtdError
+import mocks.MockAppConfig
 import play.api.http.{HeaderNames, MimeTypes, Status}
 import play.api.libs.json.JsValue
 import play.api.mvc.{AnyContentAsEmpty, ControllerComponents, Result}
@@ -30,7 +31,7 @@ import uk.gov.hmrc.http.HeaderCarrier
 
 import scala.concurrent.Future
 
-class ControllerBaseSpec extends UnitSpec with Status with MimeTypes with HeaderNames with ResultExtractors with MockAuditService {
+class ControllerBaseSpec extends UnitSpec with Status with MimeTypes with HeaderNames with ResultExtractors with MockAuditService with MockAppConfig {
 
   implicit lazy val fakeRequest: FakeRequest[AnyContentAsEmpty.type] = FakeRequest()
 
@@ -65,6 +66,7 @@ trait ControllerTestRunner extends MockAuthService with MockIdGenerator { self: 
 
     MockedEnrolmentsAuthService.authoriseUser()
     MockIdGenerator.getCorrelationId.returns(correlationId)
+    MockAppConfig.apiGatewayContext.returns("individuals/vendor-state/checkpoints").anyNumberOfTimes()
 
     def runOkTest(expectedStatus: Int, maybeExpectedResponseBody: Option[JsValue] = None): Unit = {
       val result: Future[Result] = callController()

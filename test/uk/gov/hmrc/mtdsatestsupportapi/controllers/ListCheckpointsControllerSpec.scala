@@ -18,6 +18,7 @@ package uk.gov.hmrc.mtdsatestsupportapi.controllers
 
 import api.controllers.*
 import api.hateoas.*
+import api.hateoas.Method.GET
 import api.models.domain.Nino
 import api.models.errors.*
 import api.models.outcomes.ResponseWrapper
@@ -27,6 +28,7 @@ import play.api.mvc.Result
 import uk.gov.hmrc.mtdsatestsupportapi.mocks.requestParsers.MockListCheckpointsRequestParser
 import uk.gov.hmrc.mtdsatestsupportapi.mocks.services.MockListCheckpointsService
 import uk.gov.hmrc.mtdsatestsupportapi.mocks.validators.MockListCheckpointsValidator
+import uk.gov.hmrc.mtdsatestsupportapi.models.request.createTestBusiness.{Business, TypeOfBusiness}
 import uk.gov.hmrc.mtdsatestsupportapi.models.request.listCheckpoints.{ListCheckpointsRawData, ListCheckpointsRequest}
 import uk.gov.hmrc.mtdsatestsupportapi.models.response.listCheckpoints.{Checkpoint, ListCheckpointsHateoasData, ListCheckpointsResponse}
 
@@ -39,7 +41,6 @@ class ListCheckpointsControllerSpec
     with MockListCheckpointsRequestParser
     with MockListCheckpointsService
     with MockListCheckpointsValidator
-    with MockHateoasFactory
     with ControllerSpecHateoasSupport {
 
   "ListCheckpointsController" when {
@@ -49,6 +50,11 @@ class ListCheckpointsControllerSpec
           override def callController(): Future[Result] =
             controller.handleRequest(Some(nino))(
               fakeRequestWithHeaders(HeaderNames.AUTHORIZATION -> "Bearer Token", "X-Client-Id" -> "some_vendor_id"))
+
+          private val business = Business(TypeOfBusiness.`self-employment`, Some("RCDTS"), None, None, None,
+            None, None, None, None, None, None, None, None, None, None)
+          private val responseData = ListCheckpointsResponse(Seq(business))
+          private val testHateoasLink = Link(href = "/foo/bar", method = GET, rel = "test-relationship")
 
           MockListCheckpointsRequestParser
             .parseRequest(rawDataWithNino)
@@ -67,20 +73,23 @@ class ListCheckpointsControllerSpec
                |      "checkpointCreationTimestamp": "$checkpointCreationTimestamp",
                |      "links": [
                |        {
-               |          "href": "/foo/bar",
-               |          "method": "GET",
-               |          "rel": "test-relationship"
+               |          "href": "/individuals/vendor-state/checkpoints/vendor-state/checkpoints/?nino=$nino",
+               |          "method": "POST",
+               |          "rel": "create-checkpoint"
+               |        },
+               |        {
+               |          "href": "/individuals/vendor-state/checkpoints/vendor-state/checkpoints/some_checkpoint_id",
+               |          "method": "DELETE",
+               |          "rel": "delete-checkpoint"
+               |        },
+               |        {
+               |          "href": "/individuals/vendor-state/checkpoints/vendor-state/checkpoints/some_checkpoint_id/restore",
+               |          "method": "POST",
+               |          "rel": "restore-checkpoint"
                |        }
                |      ]
                |    }
-               |  ],
-               |  "links": [
-               |        {
-               |          "href": "/foo/bar",
-               |          "method": "GET",
-               |          "rel": "test-relationship"
-               |        }
-               |    ]
+               |  ]
                |}
                |""".stripMargin)
 
@@ -152,7 +161,7 @@ class ListCheckpointsControllerSpec
       mockListCheckpointsRequestParser,
       mockListCheckpointsService,
       mockIdGenerator,
-      mockHateoasFactory)
+      new HateoasFactory(mockAppConfig))
 
   }
 

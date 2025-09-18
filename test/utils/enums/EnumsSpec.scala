@@ -42,7 +42,7 @@ class EnumsSpec extends UnitSpec with Inspectors {
 
   implicit val arbitraryEnumValue: Arbitrary[Enum] = Arbitrary[Enum](Gen.oneOf(`enum-one`, `enum-two`, `enum-three`))
 
-  "SealedTraitEnumJson" must {
+  "EnumJson" must {
 
     "check toString assumption" in {
       `enum-two`.toString shouldBe "enum-two"
@@ -87,7 +87,7 @@ class EnumsSpec extends UnitSpec with Inspectors {
       }
 
       object Enum2 {
-        implicit val show: Show[Enum2]     = Show.show(values)(_.altName)
+        implicit val show: Show[Enum2]     = Show.show[Enum2](_.altName)
         given Format[Enum2] = Enums.format(values)
       }
 
@@ -120,14 +120,14 @@ class EnumsSpec extends UnitSpec with Inspectors {
       badJson.validate[Foo[Enum]] shouldBe JsError(__ \ "someField", JsonValidationError("error.expected.jsstring"))
     }
 
-    "only work for sealed trait singletons (objects)" in {
+    "only work for enum singletons (objects)" in {
       assertTypeError("""
-        |      sealed trait NotEnum
+        |      enum NotEnum {
+        |         case ObjectOne
+        |         case CaseClassTwo(value: String)
+        |      }
         |
-        |      case object ObjectOne                  extends NotEnum
-        |      case class CaseClassTwo(value: String) extends NotEnum
-        |
-        |      Enums.format[NotEnum]
+        |     Enums.format(NotEnums.values)
         """.stripMargin)
     }
   }
