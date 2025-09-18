@@ -16,13 +16,13 @@
 
 package uk.gov.hmrc.mtdsatestsupportapi.controllers
 
-import api.controllers._
-import api.hateoas._
+import api.controllers.*
+import api.hateoas.*
 import api.models.domain.Nino
-import api.models.errors._
+import api.models.errors.*
 import api.models.outcomes.ResponseWrapper
 import play.api.http.HeaderNames
-import play.api.libs.json._
+import play.api.libs.json.*
 import play.api.mvc.Result
 import uk.gov.hmrc.mtdsatestsupportapi.mocks.requestParsers.MockListCheckpointsRequestParser
 import uk.gov.hmrc.mtdsatestsupportapi.mocks.services.MockListCheckpointsService

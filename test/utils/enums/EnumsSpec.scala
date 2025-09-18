@@ -87,7 +87,7 @@ class EnumsSpec extends UnitSpec with Inspectors {
       }
 
       object Enum2 {
-        implicit val show: Show[Enum2]     = Show.show[Enum2](_.altName)
+        implicit val show: Show[Enum2]     = Show.show(values)(_.altName)
         given Format[Enum2] = Enums.format(values)
       }
 

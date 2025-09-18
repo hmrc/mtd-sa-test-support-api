@@ -89,7 +89,7 @@ class JsonFormatValidationSpec extends UnitSpec {
         val json = Json.parse("""{"field": "value"}""")
 
         val validationResult = JsonFormatValidation.validateOrRead[TestDataObject](json)
-        validationResult shouldBe Left(List(RuleIncorrectOrEmptyBodyError.copy(paths = Some(Seq("/field1", "/field2")))))
+        validationResult shouldBe Left(List(RuleIncorrectOrEmptyBodyError.copy(paths = Some(Seq("/field2", "/field1")))))
       }
 
       "a field is supplied with the wrong data type" in {

@@ -46,7 +46,7 @@ class RequestParserSpec extends UnitSpec {
       "the validator returns no errors" in new Test {
         val validator: Validator[Raw] = (_: Raw) => Nil
 
-        parser.parseRequest(Raw(nino)) shouldBe Right(Request(Nino(nino)))
+        parser.parseRequest(Raw(nino)).shouldBe(Right(Request(Nino(nino))))
       }
     }
 
@@ -54,7 +54,9 @@ class RequestParserSpec extends UnitSpec {
       "the validator returns a single error" in new Test {
         val validator: Validator[Raw] = (_: Raw) => List(NinoFormatError)
 
-        parser.parseRequest(Raw(nino)) shouldBe Left(ErrorWrapper(correlationId, NinoFormatError, None))
+        private val raw: Raw = Raw(nino)
+        println(raw)
+        parser.parseRequest(raw).shouldBe(Left(ErrorWrapper(correlationId, NinoFormatError, None)))
       }
     }
 
