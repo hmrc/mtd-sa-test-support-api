@@ -16,7 +16,7 @@
 
 package uk.gov.hmrc.mtdsatestsupportapi.controllers
 
-import api.controllers._
+import api.controllers.*
 import api.hateoas.HateoasFactory
 import api.services.AuthService
 import play.api.mvc.{Action, AnyContent, ControllerComponents}

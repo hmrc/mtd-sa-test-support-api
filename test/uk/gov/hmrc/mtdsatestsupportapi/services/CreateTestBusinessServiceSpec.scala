@@ -17,7 +17,7 @@
 package uk.gov.hmrc.mtdsatestsupportapi.services
 
 import api.models.domain.Nino
-import api.models.errors._
+import api.models.errors.*
 import api.models.outcomes.ResponseWrapper
 import api.services.ServiceSpec
 import org.scalactic.source.Position
@@ -29,7 +29,7 @@ import uk.gov.hmrc.mtdsatestsupportapi.models.response.createTestBusiness.Create
 import scala.concurrent.Future
 
 class CreateTestBusinessServiceSpec extends ServiceSpec with MockCreateTestBusinessConnector with CreateTestBusinessFixtures {
-  import MinimalCreateTestBusinessRequest.SelfEmployment._
+  import MinimalCreateTestBusinessRequest.SelfEmployment.*
 
   private val service = new CreateTestBusinessService(mockCreateTestBusinessConnector)
 

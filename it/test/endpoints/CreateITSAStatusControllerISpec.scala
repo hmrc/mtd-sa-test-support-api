@@ -118,7 +118,7 @@ class CreateITSAStatusControllerISpec extends UnitSpec with IntegrationBaseSpec 
         ("AA123456B", TaxYear.fromMtd("2022-23"), bodyWith(), BAD_REQUEST, RuleIncorrectOrEmptyBodyError.withExtraPath("/itsaStatusDetails"))
       )
 
-      input.foreach((validationErrorTest _).tupled)
+      input.foreach(validationErrorTest.tupled)
     }
   }
 

@@ -19,9 +19,9 @@ import uk.gov.hmrc.DefaultBuildSettings
 
 val appName = "mtd-sa-test-support-api"
 
-ThisBuild / scalaVersion := "3.3.5"
+ThisBuild / scalaVersion := "3.5.2"
 ThisBuild / majorVersion := 0
-ThisBuild / scalacOptions += "-nowarn"
+ThisBuild / scalacOptions ++= Seq("-Werror", "-Wconf:msg=Flag.*repeatedly:s")
 
 lazy val microservice = Project(appName, file("."))
   .enablePlugins(play.sbt.PlayScala, SbtDistributablesPlugin)
@@ -31,7 +31,6 @@ lazy val microservice = Project(appName, file("."))
     retrieveManaged := true,
     update / evictionWarningOptions := EvictionWarningOptions.default.withWarnScalaVersionEviction(warnScalaVersionEviction = false),
     scalacOptions ++= Seq(
-      "-Xfatal-warnings",
       "-Wconf:src=routes/.*:s"
     )
   )
@@ -50,8 +49,3 @@ lazy val it = project
     Test / fork := true,
     Test / javaOptions += "-Dlogger.resource=logback-test.xml")
   .settings(libraryDependencies ++= AppDependencies.itDependencies)
-  .settings(
-    scalacOptions ++= Seq("-Xfatal-warnings")
-  )
-
-

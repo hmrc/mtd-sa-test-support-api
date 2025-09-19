@@ -17,7 +17,7 @@
 package uk.gov.hmrc.mtdsatestsupportapi.connectors
 
 import api.connectors.httpparsers.StandardDownstreamHttpParser
-import api.connectors._
+import api.connectors.*
 import config.AppConfig
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.http.client.HttpClientV2
@@ -34,7 +34,7 @@ class DeleteCheckpointConnector @Inject() (val appConfig: AppConfig, val http: H
   def deleteCheckpoint(
       request: DeleteCheckpointRequest)(implicit ec: ExecutionContext, hc: HeaderCarrier, correlationId: String): Future[DownstreamOutcome[Unit]] = {
 
-    import request._
+    import request.*
 
     implicit val context: ConnectorContext = ConnectorContext(appConfig.stubDownstreamConfig)
 

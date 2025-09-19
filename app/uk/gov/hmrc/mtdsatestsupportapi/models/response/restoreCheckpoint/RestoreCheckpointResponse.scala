@@ -26,7 +26,7 @@ object RestoreCheckpointResponse extends CheckpointHateoasLinks {
   implicit object RestoreCheckpointLinksFactory extends HateoasLinksFactory[Unit, RestoreCheckpointHateoasData] {
 
     override def links(appConfig: AppConfig, data: RestoreCheckpointHateoasData): Seq[Link] = {
-      import data._
+      import data.*
       Seq(
         deleteCheckpoint(appConfig, CheckpointId(checkpointId))
       )

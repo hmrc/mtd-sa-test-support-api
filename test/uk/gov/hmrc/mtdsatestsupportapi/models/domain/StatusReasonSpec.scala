@@ -16,9 +16,9 @@
 
 package uk.gov.hmrc.mtdsatestsupportapi.models.domain
 
-import play.api.libs.json._
+import play.api.libs.json.*
 import support.UnitSpec
-import uk.gov.hmrc.mtdsatestsupportapi.models.domain.StatusReason._
+import uk.gov.hmrc.mtdsatestsupportapi.models.domain.StatusReason.*
 import utils.enums.EnumJsonSpecSupport
 
 class StatusReasonSpec extends UnitSpec with EnumJsonSpecSupport {

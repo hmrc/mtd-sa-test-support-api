@@ -118,7 +118,7 @@ trait BaseDownstreamConnector extends Logging {
     )
   }
 
-  private def url(downstreamUri: DownstreamUri[_])(implicit connectorContext: ConnectorContext): URL = {
+  private def url(downstreamUri: DownstreamUri[?])(implicit connectorContext: ConnectorContext): URL = {
     val context = new URL(connectorContext.baseUrl)
     new URL(context, downstreamUri.path)
   }

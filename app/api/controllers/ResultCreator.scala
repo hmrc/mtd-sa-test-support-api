@@ -16,7 +16,7 @@
 
 package api.controllers
 
-import api.hateoas._
+import api.hateoas.*
 import api.models.request.RawData
 import cats.Functor
 import play.api.http.{HttpEntity, Status}

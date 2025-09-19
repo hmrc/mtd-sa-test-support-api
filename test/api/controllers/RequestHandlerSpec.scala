@@ -17,7 +17,7 @@
 package api.controllers
 
 import api.controllers.requestParsers.RequestParser
-import api.hateoas._
+import api.hateoas.*
 import api.mocks.MockIdGenerator
 import api.mocks.services.MockAuditService
 import api.models.audit.{AuditError, AuditEvent, AuditResponse, GenericAuditDetail}

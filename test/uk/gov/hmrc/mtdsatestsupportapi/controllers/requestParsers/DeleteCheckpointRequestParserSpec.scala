@@ -17,7 +17,7 @@
 package uk.gov.hmrc.mtdsatestsupportapi.controllers.requestParsers
 
 import api.models.domain.CheckpointId
-import api.models.errors._
+import api.models.errors.*
 import support.UnitSpec
 import uk.gov.hmrc.mtdsatestsupportapi.mocks.validators.MockDeleteCheckpointValidator
 import uk.gov.hmrc.mtdsatestsupportapi.models.request.deleteCheckpoint.{DeleteCheckpointRawData, DeleteCheckpointRequest}

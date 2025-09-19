@@ -18,7 +18,7 @@ package uk.gov.hmrc.mtdsatestsupportapi.models.request.createTestBusiness
 
 import play.api.libs.json.{JsObject, Json}
 import support.UnitSpec
-import TypeOfBusiness._
+import TypeOfBusiness.*
 import api.models.domain.TaxYear
 import uk.gov.hmrc.mtdsatestsupportapi.fixtures.CreateTestBusinessFixtures
 

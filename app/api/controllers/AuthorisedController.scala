@@ -17,10 +17,10 @@
 package api.controllers
 
 import api.models.auth.UserDetails
-import api.models.errors._
+import api.models.errors.*
 import api.services.AuthService
 import play.api.libs.json.Json
-import play.api.mvc._
+import play.api.mvc.*
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.bootstrap.backend.controller.BackendController
 

@@ -17,7 +17,7 @@
 package definition
 
 import config.AppConfig
-import definition.Versions._
+import definition.Versions.*
 import uk.gov.hmrc.auth.core.ConfidenceLevel
 import utils.Logging
 

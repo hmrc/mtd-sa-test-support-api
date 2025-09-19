@@ -110,7 +110,7 @@ class CreateAmendITSAStatusValidator extends Validator[CreateAmendITSAStatusRawD
   }
 
   private def validateItsaStatusDetails(detail: ITSAStatusDetail, index: Int): List[MtdError] = {
-    import detail._
+    import detail.*
 
     val submittedOnErrors = DateValidation.validateSubmittedOn(submittedOn).map(_.withExtraPath(s"/itsaStatusDetails/$index/submittedOn"))
 

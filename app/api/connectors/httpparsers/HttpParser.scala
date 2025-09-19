@@ -16,10 +16,10 @@
 
 package api.connectors.httpparsers
 
-import play.api.libs.json._
+import play.api.libs.json.*
 import uk.gov.hmrc.http.HttpResponse
 import utils.Logging
-import api.models.errors._
+import api.models.errors.*
 import play.api.http.Status.BAD_REQUEST
 
 import scala.util.{Success, Try}

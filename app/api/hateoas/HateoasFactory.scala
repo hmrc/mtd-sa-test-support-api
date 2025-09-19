@@ -17,7 +17,7 @@
 package api.hateoas
 
 import cats.Functor
-import cats.implicits._
+import cats.implicits.*
 import config.AppConfig
 
 import javax.inject.Inject

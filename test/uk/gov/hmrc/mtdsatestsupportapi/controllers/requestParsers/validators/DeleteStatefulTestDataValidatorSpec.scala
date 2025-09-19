@@ -17,7 +17,7 @@
 package uk.gov.hmrc.mtdsatestsupportapi.controllers.requestParsers.validators
 
 import api.models.errors.NinoFormatError
-import play.api.libs.json._
+import play.api.libs.json.*
 import support.UnitSpec
 import uk.gov.hmrc.mtdsatestsupportapi.mocks.validators.MockDeleteStatefulTestDataValidator
 import uk.gov.hmrc.mtdsatestsupportapi.models.request.deleteStatefulTestData.DeleteStatefulTestDataRawData

@@ -16,7 +16,7 @@
 
 package uk.gov.hmrc.mtdsatestsupportapi.controllers
 
-import api.controllers._
+import api.controllers.*
 import api.hateoas.{HateoasWrapper, MockHateoasFactory}
 import api.mocks.MockIdGenerator
 import api.mocks.services.MockAuthService

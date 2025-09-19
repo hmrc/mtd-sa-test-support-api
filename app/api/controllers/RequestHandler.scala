@@ -22,7 +22,7 @@ import api.models.errors.{ErrorWrapper, InternalError}
 import api.models.outcomes.ResponseWrapper
 import api.models.request.RawData
 import cats.data.EitherT
-import cats.implicits._
+import cats.implicits.*
 import play.api.http.Status
 import play.api.libs.json.{JsValue, Writes}
 import play.api.mvc.Result
@@ -33,7 +33,7 @@ import scala.concurrent.{ExecutionContext, Future}
 
 trait RequestHandler[InputRaw <: RawData] {
 
-  def handleRequest(rawData: InputRaw)(implicit ctx: RequestContext, request: UserRequest[_], ec: ExecutionContext): Future[Result]
+  def handleRequest(rawData: InputRaw)(implicit ctx: RequestContext, request: UserRequest[?], ec: ExecutionContext): Future[Result]
 
 }
 
@@ -59,7 +59,7 @@ object RequestHandler {
       auditHandler: Option[AuditHandler] = None
   ) extends RequestHandler[InputRaw] {
 
-    def handleRequest(rawData: InputRaw)(implicit ctx: RequestContext, request: UserRequest[_], ec: ExecutionContext): Future[Result] =
+    def handleRequest(rawData: InputRaw)(implicit ctx: RequestContext, request: UserRequest[?], ec: ExecutionContext): Future[Result] =
       Delegate.handleRequest(rawData)
 
     def withResultCreator(resultCreator: ResultCreator[InputRaw, Input, Output]): RequestHandlerBuilder[InputRaw, Input, Output] =
@@ -125,7 +125,7 @@ object RequestHandler {
 
       }
 
-      def handleRequest(rawData: InputRaw)(implicit ctx: RequestContext, request: UserRequest[_], ec: ExecutionContext): Future[Result] = {
+      def handleRequest(rawData: InputRaw)(implicit ctx: RequestContext, request: UserRequest[?], ec: ExecutionContext): Future[Result] = {
 
         logger.info(
           message = s"[${ctx.endpointLogContext.controllerName}][${ctx.endpointLogContext.endpointName}] " +
@@ -150,7 +150,7 @@ object RequestHandler {
 
       private def handleSuccess(rawData: InputRaw, parsedRequest: Input, serviceResponse: ResponseWrapper[Output])(implicit
           ctx: RequestContext,
-          request: UserRequest[_],
+          request: UserRequest[?],
           ec: ExecutionContext): Result = {
         logger.info(
           s"[${ctx.endpointLogContext.controllerName}][${ctx.endpointLogContext.endpointName}] - " +
@@ -166,7 +166,7 @@ object RequestHandler {
         result
       }
 
-      private def handleFailure(errorWrapper: ErrorWrapper)(implicit ctx: RequestContext, request: UserRequest[_], ec: ExecutionContext) = {
+      private def handleFailure(errorWrapper: ErrorWrapper)(implicit ctx: RequestContext, request: UserRequest[?], ec: ExecutionContext) = {
         logger.warn(
           s"[${ctx.endpointLogContext.controllerName}][${ctx.endpointLogContext.endpointName}] - " +
             s"Error response received with CorrelationId: ${ctx.correlationId}")
@@ -189,7 +189,7 @@ object RequestHandler {
 
       def auditIfRequired(httpStatus: Int, response: Either[ErrorWrapper, Option[JsValue]], versionNumber: String = "2.0")(implicit
           ctx: RequestContext,
-          request: UserRequest[_],
+          request: UserRequest[?],
           ec: ExecutionContext): Unit =
         auditHandler.foreach { creator =>
           creator.performAudit(request.userDetails, httpStatus, response, versionNumber)

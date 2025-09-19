@@ -16,7 +16,7 @@
 
 package uk.gov.hmrc.mtdsatestsupportapi.models.request.createAmendITSAStatus
 
-import play.api.libs.functional.syntax.{toFunctionalBuilderOps, unlift}
+import play.api.libs.functional.syntax.toFunctionalBuilderOps
 import play.api.libs.json.{JsPath, Json, OWrites, Reads}
 import uk.gov.hmrc.mtdsatestsupportapi.models.domain.{Status, StatusReason}
 
@@ -31,6 +31,6 @@ object ITSAStatusDetail {
       (JsPath \ "status").write[Status] and
       (JsPath \ "statusReason").write[StatusReason] and
       (JsPath \ "businessIncomePriorTo2Years").writeNullable[BigDecimal]
-    )(w => Tuple.fromProductTyped(w))
+  )(w => Tuple.fromProductTyped(w))
 
 }

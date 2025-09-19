@@ -28,7 +28,7 @@ import uk.gov.hmrc.mtdsatestsupportapi.services.RestoreCheckpointService
 import utils.{IdGenerator, Logging}
 
 import javax.inject.{Inject, Singleton}
-import scala.concurrent._
+import scala.concurrent.*
 
 @Singleton
 class RestoreCheckpointController @Inject() (cc: ControllerComponents,

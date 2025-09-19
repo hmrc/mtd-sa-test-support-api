@@ -16,7 +16,7 @@
 
 package uk.gov.hmrc.mtdsatestsupportapi.models.request.createTestBusiness
 
-import play.api.libs.json._
+import play.api.libs.json.*
 
 import java.time.LocalDate
 
@@ -52,7 +52,7 @@ object Business {
   implicit val reads: Reads[Business] = Json.reads
 
   private implicit val typeOfBusinessWrites: OWrites[TypeOfBusiness] = {
-    import TypeOfBusiness._
+    import TypeOfBusiness.*
 
     (typeOfBusiness: TypeOfBusiness) => {
       val propertyIncomeJson = Json.obj("propertyIncomeFlag" -> typeOfBusiness.isProperty)

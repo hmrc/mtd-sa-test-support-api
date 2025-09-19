@@ -87,7 +87,7 @@ class DeleteTestBusinessControllerISpec extends IntegrationBaseSpec {
         (NOT_FOUND, "NOT_FOUND", NOT_FOUND, NotFoundError)
       )
 
-      stubErrors.foreach(elem => (serviceError _).tupled(elem))
+      stubErrors.foreach(serviceError.tupled)
     }
   }
 

@@ -18,7 +18,7 @@ package api.models.domain
 
 import utils.DateTimeSupport
 
-import scala.math.Ordering.Implicits._
+import scala.math.Ordering.Implicits.*
 import java.time.LocalDate
 
 /** Opaque representation of a tax year A single-year representation, e.g. "2024" represents the tax year 2023-24

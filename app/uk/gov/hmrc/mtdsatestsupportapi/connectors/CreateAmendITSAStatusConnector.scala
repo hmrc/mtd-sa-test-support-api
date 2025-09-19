@@ -35,7 +35,7 @@ class CreateAmendITSAStatusConnector @Inject() (val http: HttpClientV2, val appC
       hc: HeaderCarrier,
       ec: ExecutionContext,
       correlationId: String): Future[DownstreamOutcome[Unit]] = {
-    import request._
+    import request.*
 
     implicit val context: ConnectorContext = ConnectorContext(appConfig.stubDownstreamConfig)
 

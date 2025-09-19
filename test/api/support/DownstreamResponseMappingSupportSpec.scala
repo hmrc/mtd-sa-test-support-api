@@ -17,7 +17,7 @@
 package api.support
 
 import api.controllers.EndpointLogContext
-import api.models.errors._
+import api.models.errors.*
 import api.models.outcomes.ResponseWrapper
 import play.api.http.Status.BAD_REQUEST
 import support.UnitSpec
@@ -26,7 +26,7 @@ import utils.Logging
 class DownstreamResponseMappingSupportSpec extends UnitSpec {
 
   implicit val logContext: EndpointLogContext                = EndpointLogContext("ctrl", "ep")
-  val mapping: DownstreamResponseMappingSupport with Logging = new DownstreamResponseMappingSupport with Logging {}
+  val mapping: DownstreamResponseMappingSupport & Logging = new DownstreamResponseMappingSupport with Logging {}
 
   val correlationId = "someCorrelationId"
 

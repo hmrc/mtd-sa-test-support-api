@@ -37,7 +37,7 @@ class ListCheckpointsConnector @Inject() (val appConfig: AppConfig, val http: Ht
       hc: HeaderCarrier,
       ec: ExecutionContext,
       correlationId: String): Future[DownstreamOutcome[ListCheckpointsResponse[Checkpoint]]] = {
-    import request._
+    import request.*
 
     implicit val context: ConnectorContext = ConnectorContext(appConfig.stubDownstreamConfig)
 

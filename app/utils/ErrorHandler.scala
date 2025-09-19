@@ -16,21 +16,21 @@
 
 package utils
 
-import javax.inject._
-import play.api._
-import play.api.http.Status._
+import javax.inject.*
+import play.api.*
+import play.api.http.Status.*
 import play.api.libs.json.Json
-import play.api.mvc.Results._
-import play.api.mvc._
+import play.api.mvc.Results.*
+import play.api.mvc.*
 import uk.gov.hmrc.auth.core.AuthorisationException
-import uk.gov.hmrc.http._
+import uk.gov.hmrc.http.*
 import uk.gov.hmrc.play.audit.http.connector.AuditConnector
 import uk.gov.hmrc.play.bootstrap.backend.http.JsonErrorHandler
 import uk.gov.hmrc.play.bootstrap.config.HttpAuditEvent
 import uk.gov.hmrc.play.http.HeaderCarrierConverter
-import api.models.errors._
+import api.models.errors.*
 
-import scala.concurrent._
+import scala.concurrent.*
 
 @Singleton
 class ErrorHandler @Inject() (config: Configuration, auditConnector: AuditConnector, httpAuditEvent: HttpAuditEvent)(implicit ec: ExecutionContext)

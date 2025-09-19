@@ -16,7 +16,7 @@
 
 package api.connectors.httpparsers
 
-import play.api.http.Status._
+import play.api.http.Status.*
 import play.api.libs.json.Reads
 import uk.gov.hmrc.http.{HttpReads, HttpResponse}
 import api.connectors.DownstreamOutcome

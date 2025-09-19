@@ -36,7 +36,7 @@ class RestoreCheckpointConnector @Inject() (val appConfig: AppConfig, val http: 
   def restoreCheckpoint(
       request: RestoreCheckpointRequest)(implicit ec: ExecutionContext, hc: HeaderCarrier, correlationId: String): Future[DownstreamOutcome[Unit]] = {
 
-    import request._
+    import request.*
 
     implicit val successCode: SuccessCode  = SuccessCode(CREATED)
     implicit val context: ConnectorContext = ConnectorContext(appConfig.stubDownstreamConfig)

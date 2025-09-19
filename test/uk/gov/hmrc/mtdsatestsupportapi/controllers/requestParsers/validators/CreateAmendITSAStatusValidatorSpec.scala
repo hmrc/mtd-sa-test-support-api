@@ -16,7 +16,7 @@
 
 package uk.gov.hmrc.mtdsatestsupportapi.controllers.requestParsers.validators
 
-import api.models.errors._
+import api.models.errors.*
 import api.utils.JsonErrorValidators
 import play.api.libs.json.{JsArray, JsNumber, JsObject, JsString, JsValue, Json}
 import support.UnitSpec

@@ -17,7 +17,7 @@
 package uk.gov.hmrc.mtdsatestsupportapi.services
 
 import api.models.domain.Nino
-import api.models.errors._
+import api.models.errors.*
 import api.models.outcomes.ResponseWrapper
 import api.services.ServiceSpec
 import uk.gov.hmrc.mtdsatestsupportapi.mocks.connectors.MockDeleteVendorStateConnector

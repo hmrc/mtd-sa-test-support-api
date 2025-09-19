@@ -19,7 +19,7 @@ package uk.gov.hmrc.mtdsatestsupportapi.models.response.createTestBusiness
 import api.hateoas.{HateoasData, HateoasLinksFactory, Link}
 import api.models.domain.Nino
 import config.AppConfig
-import play.api.libs.json._
+import play.api.libs.json.*
 import uk.gov.hmrc.mtdsatestsupportapi.models.hateoas.TestBusinessHateoasLinks
 
 case class CreateTestBusinessResponse(businessId: String)
@@ -32,7 +32,7 @@ object CreateTestBusinessResponse extends TestBusinessHateoasLinks {
   implicit object LinksFactory extends HateoasLinksFactory[CreateTestBusinessResponse, CreateTestBusinessHateoasData] {
 
     override def links(appConfig: AppConfig, data: CreateTestBusinessHateoasData): Seq[Link] = {
-      import data._
+      import data.*
       Seq(deleteTestBusiness(appConfig, nino, businessId), listAllBusinesses(appConfig, nino), retrieveBusinessDetails(appConfig, nino, businessId))
     }
 

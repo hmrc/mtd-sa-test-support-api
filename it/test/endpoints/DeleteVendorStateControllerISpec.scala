@@ -16,11 +16,11 @@
 
 package endpoints
 
-import api.models.errors._
+import api.models.errors.*
 import com.github.tomakehurst.wiremock.stubbing.StubMapping
 import play.api.http.HeaderNames.ACCEPT
 import play.api.http.Status.{INTERNAL_SERVER_ERROR, NOT_FOUND, NO_CONTENT, SERVICE_UNAVAILABLE}
-import play.api.libs.json._
+import play.api.libs.json.*
 import play.api.libs.ws.{WSRequest, WSResponse}
 import play.api.test.Helpers.AUTHORIZATION
 import support.IntegrationBaseSpec
@@ -67,7 +67,7 @@ class DeleteVendorStateControllerISpec extends IntegrationBaseSpec {
         (SERVICE_UNAVAILABLE, "SERVICE_UNAVAILABLE", INTERNAL_SERVER_ERROR, InternalError)
       )
 
-      stubErrors.foreach(elem => (serviceError _).tupled(elem))
+      stubErrors.foreach(serviceError.tupled)
     }
   }
 
@@ -89,7 +89,7 @@ class DeleteVendorStateControllerISpec extends IntegrationBaseSpec {
     def request(): WSRequest = {
       setupStubs()
       buildRequest(mtdUri)
-        .addQueryStringParameters(mtdQueryParams: _*)
+        .addQueryStringParameters(mtdQueryParams*)
         .withHttpHeaders(
           (ACCEPT, "application/vnd.hmrc.1.0+json"),
           (AUTHORIZATION, "Bearer 123"), // some bearer token

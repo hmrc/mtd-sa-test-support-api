@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2025 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,12 +16,11 @@
 
 package endpoints
 
-import api.models.errors._
+import api.models.errors.*
 import com.github.tomakehurst.wiremock.stubbing.StubMapping
-import play.api.http.Status.BAD_REQUEST
-import play.api.libs.json._
+import play.api.libs.json.*
 import play.api.libs.ws.{WSRequest, WSResponse}
-import play.api.test.Helpers._
+import play.api.test.Helpers.*
 import support.IntegrationBaseSpec
 
 class ListCheckpointsControllerISpec extends IntegrationBaseSpec {

@@ -57,7 +57,7 @@ class CreateCheckpointControllerISpec extends IntegrationBaseSpec {
         ("BAD_NINO", BAD_REQUEST, NinoFormatError)
       )
 
-      input.foreach(args => (validationErrorTest _).tupled(args))
+      input.foreach(validationErrorTest.tupled)
     }
 
     "return a stub error" when {
@@ -79,7 +79,7 @@ class CreateCheckpointControllerISpec extends IntegrationBaseSpec {
         (NOT_FOUND, "NOT_FOUND", NOT_FOUND, NotFoundError)
       )
 
-      stubErrors.foreach(elem => (serviceError _).tupled(elem))
+      stubErrors.foreach(serviceError.tupled)
     }
   }
 

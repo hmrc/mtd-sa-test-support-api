@@ -18,7 +18,7 @@ package api.hateoas
 
 import support.UnitSpec
 import utils.enums.EnumJsonSpecSupport
-import Method._
+import Method.*
 
 class MethodSpec extends UnitSpec with EnumJsonSpecSupport {
   testRoundTrip[Method](("GET", GET), ("POST", POST), ("DELETE", DELETE))

@@ -21,7 +21,7 @@ import org.scalamock.handlers.CallHandler
 import org.scalamock.scalatest.MockFactory
 import org.scalatest.TestSuite
 import uk.gov.hmrc.mtdsatestsupportapi.controllers.requestParsers.DeleteCheckpointRequestParser
-import uk.gov.hmrc.mtdsatestsupportapi.models.request.deleteCheckpoint._
+import uk.gov.hmrc.mtdsatestsupportapi.models.request.deleteCheckpoint.*
 
 trait MockDeleteCheckpointRequestParser extends TestSuite with MockFactory {
 

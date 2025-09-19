@@ -18,13 +18,13 @@ package config
 
 import api.controllers.ControllerBaseSpec
 import config.rewriters.DocumentationRewriters.{CheckAndRewrite, CheckRewrite}
-import config.rewriters._
+import config.rewriters.*
 import controllers.{RewriteableAssets, Rewriter}
 import definition.ApiDefinitionFactory
 import mocks.MockAppConfig
 import org.scalamock.handlers.CallHandler
 import play.api.mvc.Results.Ok
-import play.api.mvc._
+import play.api.mvc.*
 import uk.gov.hmrc.http.HeaderCarrier
 
 import scala.concurrent.ExecutionContext.Implicits.global

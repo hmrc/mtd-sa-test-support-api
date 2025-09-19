@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2025 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,7 +18,6 @@ package uk.gov.hmrc.mtdsatestsupportapi.controllers
 
 import api.controllers.*
 import api.hateoas.*
-import api.hateoas.Method.GET
 import api.models.domain.Nino
 import api.models.errors.*
 import api.models.outcomes.ResponseWrapper
@@ -28,9 +27,8 @@ import play.api.mvc.Result
 import uk.gov.hmrc.mtdsatestsupportapi.mocks.requestParsers.MockListCheckpointsRequestParser
 import uk.gov.hmrc.mtdsatestsupportapi.mocks.services.MockListCheckpointsService
 import uk.gov.hmrc.mtdsatestsupportapi.mocks.validators.MockListCheckpointsValidator
-import uk.gov.hmrc.mtdsatestsupportapi.models.request.createTestBusiness.{Business, TypeOfBusiness}
 import uk.gov.hmrc.mtdsatestsupportapi.models.request.listCheckpoints.{ListCheckpointsRawData, ListCheckpointsRequest}
-import uk.gov.hmrc.mtdsatestsupportapi.models.response.listCheckpoints.{Checkpoint, ListCheckpointsHateoasData, ListCheckpointsResponse}
+import uk.gov.hmrc.mtdsatestsupportapi.models.response.listCheckpoints.{Checkpoint, ListCheckpointsResponse}
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
@@ -50,11 +48,6 @@ class ListCheckpointsControllerSpec
           override def callController(): Future[Result] =
             controller.handleRequest(Some(nino))(
               fakeRequestWithHeaders(HeaderNames.AUTHORIZATION -> "Bearer Token", "X-Client-Id" -> "some_vendor_id"))
-
-          private val business = Business(TypeOfBusiness.`self-employment`, Some("RCDTS"), None, None, None,
-            None, None, None, None, None, None, None, None, None, None)
-          private val responseData = ListCheckpointsResponse(Seq(business))
-          private val testHateoasLink = Link(href = "/foo/bar", method = GET, rel = "test-relationship")
 
           MockListCheckpointsRequestParser
             .parseRequest(rawDataWithNino)
