@@ -40,7 +40,6 @@ object JsonFormatValidation {
           case EmptyPathsResult.EmptyPaths(paths) => List(RuleIncorrectOrEmptyBodyError.copy(paths = Some(paths)))
           case EmptyPathsResult.NoEmptyPaths      => Nil
         }
-      case null => Nil
     }
 
   def validateOrRead[A: Reads](data: JsValue): Either[List[MtdError], A] = {
