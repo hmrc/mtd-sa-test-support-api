@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2025 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,14 +19,14 @@ package uk.gov.hmrc.mtdsatestsupportapi.models.request.createTestBusiness
 import play.api.libs.json.Reads
 import utils.enums.Enums
 
-sealed abstract class TypeOfBusiness(val isProperty: Boolean, val isSelfEmployment: Boolean)
+enum TypeOfBusiness(val isProperty: Boolean, val isSelfEmployment: Boolean) {
+  case `self-employment`      extends TypeOfBusiness(isProperty = false, isSelfEmployment = true)
+  case `uk-property`          extends TypeOfBusiness(isProperty = true, isSelfEmployment = false)
+  case `foreign-property`     extends TypeOfBusiness(isProperty = true, isSelfEmployment = false)
+  case `property-unspecified` extends TypeOfBusiness(isProperty = true, isSelfEmployment = false)
+}
 
 object TypeOfBusiness {
-  case object `self-employment`      extends TypeOfBusiness(isProperty = false, isSelfEmployment = true)
-  case object `uk-property`          extends TypeOfBusiness(isProperty = true, isSelfEmployment = false)
-  case object `foreign-property`     extends TypeOfBusiness(isProperty = true, isSelfEmployment = false)
-  case object `property-unspecified` extends TypeOfBusiness(isProperty = true, isSelfEmployment = false)
-
-  implicit val reads: Reads[TypeOfBusiness]           = Enums.reads[TypeOfBusiness]
-  val parser: PartialFunction[String, TypeOfBusiness] = Enums.parser[TypeOfBusiness]
+  given Reads[TypeOfBusiness]                         = Enums.reads(values)
+  val parser: PartialFunction[String, TypeOfBusiness] = Enums.parser(values)
 }

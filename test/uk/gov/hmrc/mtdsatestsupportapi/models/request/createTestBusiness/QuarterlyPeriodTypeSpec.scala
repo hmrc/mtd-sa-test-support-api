@@ -18,7 +18,7 @@ package uk.gov.hmrc.mtdsatestsupportapi.models.request.createTestBusiness
 
 import play.api.libs.json.{JsError, JsPath, JsResult, JsString, JsSuccess, JsValue, Json, JsonValidationError}
 import support.UnitSpec
-import uk.gov.hmrc.mtdsatestsupportapi.models.request.createTestBusiness.QuarterlyPeriodType._
+import uk.gov.hmrc.mtdsatestsupportapi.models.request.createTestBusiness.QuarterlyPeriodType.*
 
 class QuarterlyPeriodTypeSpec extends UnitSpec{
 

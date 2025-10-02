@@ -16,7 +16,7 @@
 
 package uk.gov.hmrc.mtdsatestsupportapi.models.response.listCheckpoints
 
-import play.api.libs.json._
+import play.api.libs.json.*
 import support.UnitSpec
 
 class CheckpointSpec extends UnitSpec {

@@ -16,11 +16,11 @@
 
 package uk.gov.hmrc.mtdsatestsupportapi.models.response.listCheckpoints
 
-import api.hateoas._
+import api.hateoas.*
 import api.models.domain.{CheckpointId, Nino}
 import cats.Functor
 import config.AppConfig
-import play.api.libs.json._
+import play.api.libs.json.*
 import uk.gov.hmrc.mtdsatestsupportapi.models.hateoas.CheckpointHateoasLinks
 
 case class ListCheckpointsResponse[I](checkpoints: Seq[I])

@@ -24,7 +24,7 @@ import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.mtdsatestsupportapi.connectors.RestoreCheckpointConnector
 import uk.gov.hmrc.mtdsatestsupportapi.models.request.restoreCheckpoint.RestoreCheckpointRequest
 
-import scala.concurrent._
+import scala.concurrent.*
 
 trait MockRestoreCheckpointConnector extends TestSuite with MockFactory {
 

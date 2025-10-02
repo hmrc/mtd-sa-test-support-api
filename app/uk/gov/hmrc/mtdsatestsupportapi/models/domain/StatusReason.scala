@@ -19,67 +19,24 @@ package uk.gov.hmrc.mtdsatestsupportapi.models.domain
 import play.api.libs.json.{Reads, Writes}
 import utils.enums.Enums
 
-sealed trait StatusReason {
-  def toDownstream: String
+enum StatusReason(val toDownstream: String) {
+  case `Sign up - return available`    extends StatusReason("00")
+  case `Sign up - no return available` extends StatusReason("01")
+  case `ITSA final declaration`        extends StatusReason("02")
+  case `ITSA Q4 declaration`           extends StatusReason("03")
+  case `CESA SA return`                extends StatusReason("04")
+  case Complex                         extends StatusReason("05")
+  case `Ceased income source`          extends StatusReason("06")
+  case `Reinstated income source`      extends StatusReason("07")
+  case Rollover                        extends StatusReason("08")
+  case `Income Source Latency Changes` extends StatusReason("09")
+  case `MTD ITSA Opt-Out`              extends StatusReason("10")
+  case `MTD ITSA Opt-In`               extends StatusReason("11")
+  case `Digitally Exempt`              extends StatusReason("12")
 }
 
 object StatusReason {
-
-  implicit val reads: Reads[StatusReason] = Enums.reads[StatusReason]
-
-  implicit val writes: Writes[StatusReason] = Writes.StringWrites.contramap(_.toDownstream)
-
-  val parser: PartialFunction[String, StatusReason] = Enums.parser[StatusReason]
-
-  case object `Sign up - return available` extends StatusReason {
-    override def toDownstream = "00"
-  }
-
-  case object `Sign up - no return available` extends StatusReason {
-    override def toDownstream = "01"
-  }
-
-  case object `ITSA final declaration` extends StatusReason {
-    override def toDownstream = "02"
-  }
-
-  case object `ITSA Q4 declaration` extends StatusReason {
-    override def toDownstream = "03"
-  }
-
-  case object `CESA SA return` extends StatusReason {
-    override def toDownstream = "04"
-  }
-
-  case object Complex extends StatusReason {
-    override def toDownstream = "05"
-  }
-
-  case object `Ceased income source` extends StatusReason {
-    override def toDownstream = "06"
-  }
-
-  case object `Reinstated income source` extends StatusReason {
-    override def toDownstream = "07"
-  }
-
-  case object Rollover extends StatusReason {
-    override def toDownstream = "08"
-  }
-
-  case object `Income Source Latency Changes` extends StatusReason {
-    override def toDownstream = "09"
-  }
-
-  case object `MTD ITSA Opt-Out` extends StatusReason {
-    override def toDownstream = "10"
-  }
-
-  case object `MTD ITSA Opt-In` extends StatusReason {
-    override def toDownstream = "11"
-  }
-
-  case object `Digitally Exempt` extends StatusReason {
-    override def toDownstream = "12"
-  }
+  given Reads[StatusReason]                         = Enums.reads(values)
+  given Writes[StatusReason]                        = Writes.StringWrites.contramap(_.toDownstream)
+  val parser: PartialFunction[String, StatusReason] = Enums.parser(values)
 }

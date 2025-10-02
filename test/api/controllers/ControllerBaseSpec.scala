@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2025 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,6 +20,7 @@ import api.controllers.ControllerTestRunner.validNino
 import api.mocks.MockIdGenerator
 import api.mocks.services.{MockAuditService, MockAuthService}
 import api.models.errors.MtdError
+import mocks.MockAppConfig
 import play.api.http.{HeaderNames, MimeTypes, Status}
 import play.api.libs.json.JsValue
 import play.api.mvc.{AnyContentAsEmpty, ControllerComponents, Result}
@@ -30,7 +31,7 @@ import uk.gov.hmrc.http.HeaderCarrier
 
 import scala.concurrent.Future
 
-class ControllerBaseSpec extends UnitSpec with Status with MimeTypes with HeaderNames with ResultExtractors with MockAuditService {
+class ControllerBaseSpec extends UnitSpec with Status with MimeTypes with HeaderNames with ResultExtractors with MockAuditService with MockAppConfig {
 
   implicit lazy val fakeRequest: FakeRequest[AnyContentAsEmpty.type] = FakeRequest()
 
@@ -48,7 +49,8 @@ class ControllerBaseSpec extends UnitSpec with Status with MimeTypes with Header
 
   def fakePutRequest[T](body: T): FakeRequest[T] = fakeRequest.withBody(body)
 
-  def fakeRequestWithHeaders(headers: (String, String)*): FakeRequest[AnyContentAsEmpty.type] = fakeRequest.withHeaders(headers: _*)
+  def fakeRequestWithHeaders(headers: (String, String)*): FakeRequest[AnyContentAsEmpty.type] =
+    fakeRequest.withHeaders(headers*)
 
   def fakeRequestWithBody[T](body: T): FakeRequest[T] = fakeRequest.withBody(body)
 
@@ -56,7 +58,7 @@ class ControllerBaseSpec extends UnitSpec with Status with MimeTypes with Header
 
 }
 
-trait ControllerTestRunner extends MockAuthService with MockIdGenerator { _: ControllerBaseSpec =>
+trait ControllerTestRunner extends MockAuthService with MockIdGenerator { self: ControllerBaseSpec =>
   protected val nino: String  = validNino
   protected val correlationId = "X-123"
 
@@ -65,6 +67,7 @@ trait ControllerTestRunner extends MockAuthService with MockIdGenerator { _: Con
 
     MockedEnrolmentsAuthService.authoriseUser()
     MockIdGenerator.getCorrelationId.returns(correlationId)
+    MockAppConfig.apiGatewayContext.returns("individuals/vendor-state/checkpoints").anyNumberOfTimes()
 
     def runOkTest(expectedStatus: Int, maybeExpectedResponseBody: Option[JsValue] = None): Unit = {
       val result: Future[Result] = callController()

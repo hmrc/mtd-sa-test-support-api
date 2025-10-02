@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2025 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,9 +17,9 @@
 package api.controllers.requestParsers.validators.validations
 
 import api.models.errors.RuleIncorrectOrEmptyBodyError
-import play.api.libs.json._
-import shapeless.HNil
+import play.api.libs.json.*
 import support.UnitSpec
+import utils.EmptinessChecker.field
 import utils.EmptinessChecker
 
 class JsonFormatValidationSpec extends UnitSpec {
@@ -33,7 +33,10 @@ class JsonFormatValidationSpec extends UnitSpec {
 
   // at least one of oneOf1 and oneOf2 must be included:
   implicit val emptinessChecker: EmptinessChecker[TestDataObject] = EmptinessChecker.use { o =>
-    "oneOf1" -> o.oneOf1 :: "oneOf2" -> o.oneOf2 :: HNil
+    List(
+      field("oneOf1", o.oneOf1),
+      field("oneOf2", o.oneOf2)
+    )
   }
 
   "validateOrRead" should {
@@ -86,7 +89,7 @@ class JsonFormatValidationSpec extends UnitSpec {
         val json = Json.parse("""{"field": "value"}""")
 
         val validationResult = JsonFormatValidation.validateOrRead[TestDataObject](json)
-        validationResult shouldBe Left(List(RuleIncorrectOrEmptyBodyError.copy(paths = Some(Seq("/field1", "/field2")))))
+        validationResult shouldBe Left(List(RuleIncorrectOrEmptyBodyError.copy(paths = Some(Seq("/field2", "/field1")))))
       }
 
       "a field is supplied with the wrong data type" in {

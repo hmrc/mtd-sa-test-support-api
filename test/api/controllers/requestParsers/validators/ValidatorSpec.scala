@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2025 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -43,13 +43,13 @@ class ValidatorSpec extends UnitSpec with MockFactory {
           )
         }
 
-        val validationSet = List(levelOneValidations)
+        val validationSet: List[TestRawData => List[List[MtdError]]] = List(levelOneValidations)
 
         val inputData: TestRawData = TestRawData("ABCDEF", "12345")
         val result: List[MtdError] = validator.run(validationSet, inputData)
         result.isEmpty shouldBe true
-        levelOneValidationOne.called shouldBe 1
-        levelOneValidationTwo.called shouldBe 1
+        levelOneValidationOne.called.shouldBe(1)
+        levelOneValidationTwo.called.shouldBe(1)
 
       }
     }
@@ -68,15 +68,15 @@ class ValidatorSpec extends UnitSpec with MockFactory {
           )
         }
 
-        val validationSet = List(levelOneValidations)
+        val validationSet: List[TestRawData => List[List[MtdError]]] = List(levelOneValidations)
 
         val inputData: TestRawData = TestRawData("ABCDEF", "12345")
         val result: List[MtdError] = validator.run(validationSet, inputData)
         result.isEmpty shouldBe false
         result.size shouldBe 1
         result.head shouldBe mockError
-        levelOneValidationOne.called shouldBe 1
-        levelOneValidationTwo.called shouldBe 1
+        levelOneValidationOne.called.shouldBe(1)
+        levelOneValidationTwo.called.shouldBe(1)
       }
     }
 
@@ -103,22 +103,22 @@ class ValidatorSpec extends UnitSpec with MockFactory {
           )
         }
 
-        val validationSet = List(levelOneValidations, levelTwoValidations)
+        val validationSet: List[TestRawData => List[List[MtdError]]] = List(levelOneValidations, levelTwoValidations)
 
         val inputData: TestRawData = TestRawData("ABCDEF", "12345")
         val result: List[MtdError] = validator.run(validationSet, inputData)
         result.isEmpty shouldBe false
         result.size shouldBe 1
         result.head shouldBe mockError
-        levelOneValidationOne.called shouldBe 1
-        levelOneValidationTwo.called shouldBe 1
-        levelTwoValidationOne.called shouldBe 1
-        levelTwoValidationTwo.called shouldBe 1
+        levelOneValidationOne.called.shouldBe(1)
+        levelOneValidationTwo.called.shouldBe(1)
+        levelTwoValidationOne.called.shouldBe(1)
+        levelTwoValidationTwo.called.shouldBe(1)
       }
     }
   }
 
-  class MockFunctionObject(name: String) {
+  class MockFunctionObject(val name: String) {
     var called = 0
 
     def validate(shouldError: Boolean, errorToReturn: Option[MtdError]): List[MtdError] = {

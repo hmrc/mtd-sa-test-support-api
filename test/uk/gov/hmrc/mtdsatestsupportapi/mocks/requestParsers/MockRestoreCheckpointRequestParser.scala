@@ -21,7 +21,7 @@ import org.scalamock.handlers.CallHandler
 import org.scalamock.scalatest.MockFactory
 import org.scalatest.TestSuite
 import uk.gov.hmrc.mtdsatestsupportapi.controllers.requestParsers.RestoreCheckpointRequestParser
-import uk.gov.hmrc.mtdsatestsupportapi.models.request.restoreCheckpoint._
+import uk.gov.hmrc.mtdsatestsupportapi.models.request.restoreCheckpoint.*
 
 trait MockRestoreCheckpointRequestParser extends TestSuite with MockFactory {
 

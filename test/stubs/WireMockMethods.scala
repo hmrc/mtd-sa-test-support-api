@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2025 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,8 +16,8 @@
 
 package stubs
 
-import com.github.tomakehurst.wiremock.client.WireMock._
-import com.github.tomakehurst.wiremock.client.{MappingBuilder => WMappingBuilder}
+import com.github.tomakehurst.wiremock.client.MappingBuilder as WMappingBuilder
+import com.github.tomakehurst.wiremock.client.WireMock.*
 import com.github.tomakehurst.wiremock.http.Request
 import com.github.tomakehurst.wiremock.matching.{UrlPattern, ValueMatcher}
 import com.github.tomakehurst.wiremock.stubbing.StubMapping
@@ -25,7 +25,7 @@ import play.api.libs.json.Writes
 import uk.gov.hmrc.http.test.WireMockSupport
 
 trait WireMockMethods {
-  _: WireMockSupport =>
+  self: WireMockSupport =>
 
   def when(method: HTTPMethod,
            uri: String,

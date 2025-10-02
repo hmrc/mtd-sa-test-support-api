@@ -19,43 +19,18 @@ package uk.gov.hmrc.mtdsatestsupportapi.models.domain
 import play.api.libs.json.{Reads, Writes}
 import utils.enums.Enums
 
-sealed trait Status {
-  def toDownstream: String
+enum Status(val toDownstream: String) {
+  case `No Status`     extends Status("00")
+  case `MTD Mandated`  extends Status("01")
+  case `MTD Voluntary` extends Status("02")
+  case Annual          extends Status("03")
+  case `Non Digital`   extends Status("04")
+  case Dormant         extends Status("05")
+  case `MTD Exempt`    extends Status("99")
 }
 
 object Status {
-
-  implicit val reads: Reads[Status] = Enums.reads[Status]
-
+  implicit val reads: Reads[Status] = Enums.reads(values)
   implicit val writes: Writes[Status] = Writes.StringWrites.contramap(_.toDownstream)
-
-  val parser: PartialFunction[String, Status] = Enums.parser[Status]
-
-  case object `No Status` extends Status {
-    override def toDownstream = "00"
-  }
-
-  case object `MTD Mandated` extends Status {
-    override def toDownstream = "01"
-  }
-
-  case object `MTD Voluntary` extends Status {
-    override def toDownstream = "02"
-  }
-
-  case object Annual extends Status {
-    override def toDownstream = "03"
-  }
-
-  case object `Non Digital` extends Status {
-    override def toDownstream = "04"
-  }
-
-  case object Dormant extends Status {
-    override def toDownstream = "05"
-  }
-
-  case object `MTD Exempt` extends Status {
-    override def toDownstream = "99"
-  }
+  val parser: PartialFunction[String, Status] = Enums.parser(values)
 }

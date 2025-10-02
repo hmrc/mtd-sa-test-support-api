@@ -20,7 +20,7 @@ import cats.Functor
 import config.AppConfig
 import mocks.MockAppConfig
 import support.UnitSpec
-import Method._
+import Method.*
 class HateoasFactorySpec extends UnitSpec with MockAppConfig {
 
   val hateoasFactory = new HateoasFactory(mockAppConfig)

@@ -48,7 +48,7 @@ trait RewriteableAssets {
 class RewriteableAssetsImpl @Inject() (errorHandler: HttpErrorHandler, meta: AssetsMetadata, env: Environment)(implicit ec: ExecutionContext)
     extends Assets(errorHandler, meta, env)
     with RewriteableAssets {
-  import meta._
+  import meta.*
 
   def rewriteableAt(path: String, filename: String, rewriters: Seq[Rewriter]): Action[AnyContent] = {
     if (rewriters.isEmpty)

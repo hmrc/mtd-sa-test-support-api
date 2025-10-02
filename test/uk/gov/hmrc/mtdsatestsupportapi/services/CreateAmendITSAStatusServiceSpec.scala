@@ -17,7 +17,7 @@
 package uk.gov.hmrc.mtdsatestsupportapi.services
 
 import api.models.domain.{Nino, TaxYear}
-import api.models.errors._
+import api.models.errors.*
 import api.models.outcomes.ResponseWrapper
 import api.services.ServiceSpec
 import uk.gov.hmrc.mtdsatestsupportapi.mocks.connectors.MockCreateAmendITSAStatusConnector
@@ -70,7 +70,7 @@ class CreateAmendITSAStatusServiceSpec extends ServiceSpec with MockCreateAmendI
           "SERVICE_UNAVAILABLE" -> InternalError
         )
 
-        stubErrors.foreach((serviceError _).tupled)
+        stubErrors.foreach(serviceError.tupled)
       }
 
     }

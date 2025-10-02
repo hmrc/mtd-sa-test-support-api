@@ -16,7 +16,7 @@
 
 package uk.gov.hmrc.mtdsatestsupportapi.controllers.requestParsers.validators
 
-import api.models.errors._
+import api.models.errors.*
 import api.utils.JsonErrorValidators
 import config.FeatureSwitches
 import org.scalactic.source.Position
@@ -25,7 +25,7 @@ import support.UnitSpec
 import uk.gov.hmrc.mtdsatestsupportapi.fixtures.CreateTestBusinessFixtures
 import uk.gov.hmrc.mtdsatestsupportapi.models.request.createTestBusiness.CreateTestBusinessRawData
 
-import java.time._
+import java.time.*
 
 class CreateTestBusinessValidatorSpec extends UnitSpec with JsonErrorValidators with CreateTestBusinessFixtures {
 

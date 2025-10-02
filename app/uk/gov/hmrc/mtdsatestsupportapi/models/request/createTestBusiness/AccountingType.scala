@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2025 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,19 +19,16 @@ package uk.gov.hmrc.mtdsatestsupportapi.models.request.createTestBusiness
 import play.api.libs.json.{JsString, Reads, Writes}
 import utils.enums.Enums
 
-sealed trait AccountingType
+enum AccountingType {
+  case CASH, ACCRUALS
+}
 
 object AccountingType {
-  case object CASH     extends AccountingType
-  case object ACCRUALS extends AccountingType
-
-  implicit val reads: Reads[AccountingType] = Enums.reads[AccountingType]
-
-  implicit val writes: Writes[AccountingType] = {
+  given Reads[AccountingType] = Enums.reads(values)
+  given Writes[AccountingType] = {
     case AccountingType.CASH     => JsString("CASH")
     case AccountingType.ACCRUALS => JsString("ACCRUAL")
   }
-
-  implicit val parser: PartialFunction[String, AccountingType] = Enums.parser[AccountingType]
+  implicit val parser: PartialFunction[String, AccountingType] = Enums.parser(values)
 
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2025 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -32,7 +32,7 @@ class RequestParserSpec extends UnitSpec {
   trait Test {
     test =>
 
-    val validator: Validator[Raw]
+    lazy val validator: Validator[Raw]
 
     val parser: RequestParser[Raw, Request] = new RequestParser[Raw, Request] {
       val validator: Validator[Raw] = test.validator
@@ -46,7 +46,7 @@ class RequestParserSpec extends UnitSpec {
       "the validator returns no errors" in new Test {
         lazy val validator: Validator[Raw] = (_: Raw) => Nil
 
-        parser.parseRequest(Raw(nino)) shouldBe Right(Request(Nino(nino)))
+        parser.parseRequest(Raw(nino)).shouldBe(Right(Request(Nino(nino))))
       }
     }
 
@@ -54,7 +54,7 @@ class RequestParserSpec extends UnitSpec {
       "the validator returns a single error" in new Test {
         lazy val validator: Validator[Raw] = (_: Raw) => List(NinoFormatError)
 
-        parser.parseRequest(Raw(nino)) shouldBe Left(ErrorWrapper(correlationId, NinoFormatError, None))
+        parser.parseRequest(Raw(nino)).shouldBe(Left(ErrorWrapper(correlationId, NinoFormatError, None)))
       }
     }
 

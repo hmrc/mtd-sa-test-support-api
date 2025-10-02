@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2025 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,22 +19,13 @@ package uk.gov.hmrc.mtdsatestsupportapi.models.request.createTestBusiness
 import play.api.libs.json.{Reads, Writes}
 import utils.enums.Enums
 
-sealed trait QuarterlyPeriodType{
-  val downstreamValue: String
+enum QuarterlyPeriodType(val downstreamValue: String) {
+  case `standard` extends QuarterlyPeriodType("STANDARD")
+  case `calendar` extends QuarterlyPeriodType("CALENDAR")
 }
 
 object QuarterlyPeriodType {
-   case object `standard` extends QuarterlyPeriodType {
-     val downstreamValue = "STANDARD"
-   }
-
-   case object `calendar` extends QuarterlyPeriodType {
-     val downstreamValue = "CALENDAR"
-   }
-
-  implicit val reads: Reads[QuarterlyPeriodType] = Enums.reads[QuarterlyPeriodType]
-
-  implicit val writes: Writes[QuarterlyPeriodType] = implicitly[Writes[String]].contramap(_.downstreamValue)
-
-   val parser: PartialFunction[String, QuarterlyPeriodType] = Enums.parser[QuarterlyPeriodType]
+  given Reads[QuarterlyPeriodType]                         = Enums.reads(values)
+  given Writes[QuarterlyPeriodType]                        = implicitly[Writes[String]].contramap(_.downstreamValue)
+  val parser: PartialFunction[String, QuarterlyPeriodType] = Enums.parser(values)
 }

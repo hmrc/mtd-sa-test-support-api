@@ -16,7 +16,7 @@
 
 package api.models.errors
 
-import play.api.libs.functional.syntax._
+import play.api.libs.functional.syntax.*
 import play.api.libs.json.{JsObject, JsPath, Json, OWrites}
 
 case class MtdError(code: String, message: String, httpStatus: Int, paths: Option[Seq[String]] = None) {

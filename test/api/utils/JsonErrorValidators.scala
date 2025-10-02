@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2025 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,11 +16,11 @@
 
 package api.utils
 
-import play.api.libs.json._
+import play.api.libs.json.*
 import support.UnitSpec
 
 trait JsonErrorValidators {
-  _: UnitSpec =>
+  self: UnitSpec =>
 
   type JsError  = (JsPath, Seq[JsonValidationError])
   type JsErrors = Seq[JsError]
@@ -49,6 +49,7 @@ trait JsonErrorValidators {
       case JsError(jsErrors) => jsErrors.map(error => (error._1, error._2.toList)).toList
       case JsSuccess(_, _)   => fail("A JSON error was expected")
     }
+
   }
 
   private def jsPathFrom(str: String) =
@@ -78,6 +79,7 @@ trait JsonErrorValidators {
 
     def replaceWithEmptyObject(path: String): JsValue =
       removeProperty(path).update(path, JsObject.empty)
+
   }
 
   def testMandatoryProperty[A: Reads](json: JsValue)(property: String): Unit = {
@@ -136,10 +138,11 @@ trait JsonErrorValidators {
 
   private def filterErrorByPath(jsPath: JsPath, jsError: JsError): JsonValidationError = {
     jsError match {
-      case (path, err :: Nil) if jsError.path == path => err
+      case (path, err :: Nil) if jsError.path == path => (err: JsonValidationError)
       case (path, _ :: Nil)                           => fail(s"single error returned but path $path does not match $jsPath")
       case (path, errs @ _ :: _)                      => fail(s"multiple errors returned for $path but only 1 required : $errs")
       case _                                          => fail(s"unrecognised error(s) returned")
     }
   }
+
 }

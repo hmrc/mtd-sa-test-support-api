@@ -18,7 +18,7 @@ package uk.gov.hmrc.mtdsatestsupportapi.models.request.createTestBusiness
 
 import api.models.domain.TaxYear
 import api.models.domain.TaxYear.fromMtd
-import play.api.libs.functional.syntax.{toFunctionalBuilderOps, unlift}
+import play.api.libs.functional.syntax.toFunctionalBuilderOps
 import play.api.libs.json.{JsPath, Json, Reads, Writes}
 
 case class QuarterlyTypeChoice(quarterlyPeriodType: QuarterlyPeriodType, taxYearOfChoice: TaxYear)
@@ -32,7 +32,5 @@ object QuarterlyTypeChoice {
   implicit val writes: Writes[QuarterlyTypeChoice] = (
     (JsPath \ "quarterReportingType").write[QuarterlyPeriodType] and
       (JsPath \ "taxYearofElection").write[TaxYear]
-    )(unlift(QuarterlyTypeChoice.unapply))
-
-
+  )(w => Tuple.fromProductTyped(w))
 }

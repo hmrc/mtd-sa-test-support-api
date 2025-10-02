@@ -17,10 +17,10 @@
 package uk.gov.hmrc.mtdsatestsupportapi.services
 
 import api.controllers.RequestContext
-import api.models.errors._
+import api.models.errors.*
 import api.models.outcomes.ResponseWrapper
 import api.services.BaseService
-import cats.implicits._
+import cats.implicits.*
 import uk.gov.hmrc.mtdsatestsupportapi.connectors.CreateTestBusinessConnector
 import uk.gov.hmrc.mtdsatestsupportapi.models.request.createTestBusiness.CreateTestBusinessRequest
 import uk.gov.hmrc.mtdsatestsupportapi.models.response.createTestBusiness.CreateTestBusinessResponse

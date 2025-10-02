@@ -30,7 +30,7 @@ object CreateCheckpointResponse extends CheckpointHateoasLinks {
   implicit object LinksFactory extends HateoasLinksFactory[CreateCheckpointResponse, CreateCheckpointHateoasData] {
 
     override def links(appConfig: AppConfig, data: CreateCheckpointHateoasData): Seq[Link] = {
-      import data._
+      import data.*
       Seq(
         deleteCheckpoint(appConfig, checkpointId),
         restoreCheckpoint(appConfig, checkpointId),

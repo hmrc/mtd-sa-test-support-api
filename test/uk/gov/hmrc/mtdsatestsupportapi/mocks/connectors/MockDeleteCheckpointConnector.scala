@@ -24,7 +24,7 @@ import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.mtdsatestsupportapi.connectors.DeleteCheckpointConnector
 import uk.gov.hmrc.mtdsatestsupportapi.models.request.deleteCheckpoint.DeleteCheckpointRequest
 
-import scala.concurrent._
+import scala.concurrent.*
 trait MockDeleteCheckpointConnector extends TestSuite with MockFactory {
 
   val mockDeleteCheckpointConnector: DeleteCheckpointConnector = mock[DeleteCheckpointConnector]

@@ -20,7 +20,7 @@ import api.models.auth.UserDetails
 import api.models.errors.{ClientNotAuthenticatedError, InternalError, InvalidBearerTokenError}
 import api.models.outcomes.AuthOutcome
 import config.{AppConfig, FeatureSwitches}
-import uk.gov.hmrc.auth.core._
+import uk.gov.hmrc.auth.core.*
 import uk.gov.hmrc.http.HeaderCarrier
 import utils.Logging
 

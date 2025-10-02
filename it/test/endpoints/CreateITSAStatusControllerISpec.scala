@@ -17,24 +17,27 @@
 package endpoints
 
 import api.models.domain.TaxYear
-import api.models.errors._
+import api.models.errors.*
 import api.utils.JsonErrorValidators
 import com.github.tomakehurst.wiremock.stubbing.StubMapping
 import play.api.http.HeaderNames.ACCEPT
-import play.api.libs.json._
+import play.api.libs.json.*
+import play.api.libs.ws.WSBodyWritables.writeableOf_JsValue
 import play.api.libs.ws.{WSRequest, WSResponse}
 import play.api.test.Helpers.{AUTHORIZATION, BAD_REQUEST, NO_CONTENT}
 import support.{IntegrationBaseSpec, UnitSpec}
 
 class CreateITSAStatusControllerISpec extends UnitSpec with IntegrationBaseSpec with JsonErrorValidators {
 
-  private def bodyWith(entries: JsValue*): JsObject = Json.parse(
-    s"""
+  private def bodyWith(entries: JsValue*): JsObject = Json
+    .parse(
+      s"""
       |{
       |  "itsaStatusDetails": ${JsArray(entries)}
       |}
     """.stripMargin
-  ).as[JsObject]
+    )
+    .as[JsObject]
 
   private val itsaStatusDetail: JsValue = Json.parse(
     """
@@ -66,8 +69,8 @@ class CreateITSAStatusControllerISpec extends UnitSpec with IntegrationBaseSpec 
                               expectedStatus: Int,
                               expectedBody: MtdError): Unit = {
         s"validation fails with ${expectedBody.code} error and $requestNino" in new Test {
-          override val nino: String     = requestNino
-          override val taxYear: TaxYear = requestTaxYear
+          override val nino: String          = requestNino
+          override val taxYear: TaxYear      = requestTaxYear
           override val requestBody: JsObject = requestBodyToTest
 
           override def setupStubs(): StubMapping =
@@ -115,7 +118,7 @@ class CreateITSAStatusControllerISpec extends UnitSpec with IntegrationBaseSpec 
         ("AA123456B", TaxYear.fromMtd("2022-23"), bodyWith(), BAD_REQUEST, RuleIncorrectOrEmptyBodyError.withExtraPath("/itsaStatusDetails"))
       )
 
-      input.foreach((validationErrorTest _).tupled)
+      input.foreach(validationErrorTest.tupled)
     }
   }
 

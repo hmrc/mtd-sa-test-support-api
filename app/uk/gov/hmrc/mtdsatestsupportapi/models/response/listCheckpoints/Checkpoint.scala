@@ -17,7 +17,7 @@
 package uk.gov.hmrc.mtdsatestsupportapi.models.response.listCheckpoints
 
 import play.api.libs.functional.syntax.toFunctionalBuilderOps
-import play.api.libs.json._
+import play.api.libs.json.*
 
 case class Checkpoint(checkpointId: String, nino: Option[String], checkpointCreationTimestamp: String)
 

@@ -21,7 +21,7 @@ import api.models.errors.{ClientNotAuthenticatedError, InvalidBearerTokenError, 
 import mocks.MockAppConfig
 import org.scalamock.handlers.CallHandler
 import play.api.Configuration
-import uk.gov.hmrc.auth.core._
+import uk.gov.hmrc.auth.core.*
 import uk.gov.hmrc.auth.core.authorise.{EmptyPredicate, Predicate}
 import uk.gov.hmrc.auth.core.retrieve.{EmptyRetrieval, Retrieval}
 import uk.gov.hmrc.http.HeaderCarrier

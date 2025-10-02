@@ -17,10 +17,10 @@
 package uk.gov.hmrc.mtdsatestsupportapi.services
 
 import api.controllers.RequestContext
-import api.models.errors._
+import api.models.errors.*
 import api.models.outcomes.ResponseWrapper
 import api.services.BaseService
-import cats.implicits._
+import cats.implicits.*
 import uk.gov.hmrc.mtdsatestsupportapi.connectors.CreateCheckpointConnector
 import uk.gov.hmrc.mtdsatestsupportapi.models.request.createCheckpoint.CreateCheckpointRequest
 import uk.gov.hmrc.mtdsatestsupportapi.models.response.createCheckpoint.CreateCheckpointResponse

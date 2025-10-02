@@ -17,7 +17,7 @@
 package uk.gov.hmrc.mtdsatestsupportapi.services
 
 import api.controllers.RequestContext
-import api.models.errors._
+import api.models.errors.*
 import api.models.outcomes.ResponseWrapper
 import api.services.BaseService
 import cats.implicits.toBifunctorOps

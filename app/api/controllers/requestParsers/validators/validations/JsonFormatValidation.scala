@@ -18,7 +18,7 @@ package api.controllers.requestParsers.validators.validations
 
 import api.models.errors.{MtdError, RuleIncorrectOrEmptyBodyError}
 import play.api.Logger
-import play.api.libs.json._
+import play.api.libs.json.*
 import utils.{EmptinessChecker, EmptyPathsResult}
 
 object JsonFormatValidation {
@@ -40,7 +40,6 @@ object JsonFormatValidation {
           case EmptyPathsResult.EmptyPaths(paths) => List(RuleIncorrectOrEmptyBodyError.copy(paths = Some(paths)))
           case EmptyPathsResult.NoEmptyPaths      => Nil
         }
-      case _ => Nil
     }
 
   def validateOrRead[A: Reads](data: JsValue): Either[List[MtdError], A] = {

@@ -38,7 +38,7 @@ class CreateCheckpointConnector @Inject() (val http: HttpClientV2, val appConfig
       hc: HeaderCarrier,
       ec: ExecutionContext,
       correlationId: String): Future[DownstreamOutcome[CreateCheckpointResponse]] = {
-    import request._
+    import request.*
 
     implicit val successCode: SuccessCode  = SuccessCode(CREATED)
     implicit val context: ConnectorContext = ConnectorContext(appConfig.stubDownstreamConfig)

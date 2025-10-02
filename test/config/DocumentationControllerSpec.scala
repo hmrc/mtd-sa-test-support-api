@@ -18,13 +18,13 @@ package config
 
 import api.controllers.ControllerBaseSpec
 import config.rewriters.DocumentationRewriters.{CheckAndRewrite, CheckRewrite}
-import config.rewriters._
+import config.rewriters.*
 import controllers.{RewriteableAssets, Rewriter}
 import definition.ApiDefinitionFactory
 import mocks.MockAppConfig
 import org.scalamock.handlers.CallHandler
 import play.api.mvc.Results.Ok
-import play.api.mvc._
+import play.api.mvc.*
 import uk.gov.hmrc.http.HeaderCarrier
 
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -91,7 +91,7 @@ class DocumentationControllerSpec extends ControllerBaseSpec with MockAppConfig 
     protected def willRewriteUsing(rewriters: Seq[Rewriter]): CallHandler[Action[AnyContent]] =
       (rewriteableAssets.rewriteableAt(_: String, _: String, _: Seq[Rewriter])).expects(s"/public/api/conf/$version", filename, rewriters)
 
-    protected def rewrittenOkAction: Action[AnyContent] = actionBuilder { _: Request[AnyContent] => Ok(rewrittenContent) }
+    protected def rewrittenOkAction: Action[AnyContent] = actionBuilder { (_: Request[AnyContent]) => Ok(rewrittenContent) }
 
     protected val rewriteableAssets: RewriteableAssets = mock[RewriteableAssets]
     protected val controller                           = new DocumentationController(apiFactory, docRewriters, rewriteableAssets, cc)

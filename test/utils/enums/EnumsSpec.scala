@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2025 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,19 +17,17 @@
 package utils.enums
 
 import cats.Show
-import org.scalacheck.{ Arbitrary, Gen }
+import org.scalacheck.{Arbitrary, Gen}
 import org.scalatest.Inspectors
-import play.api.libs.json._
+import play.api.libs.json.*
 import support.UnitSpec
 
-sealed trait Enum
+enum Enum {
+  case `enum-one`, `enum-two`,`enum-three`
+}
 
 object Enum {
-  case object `enum-one`   extends Enum
-  case object `enum-two`   extends Enum
-  case object `enum-three` extends Enum
-
-  implicit val format: Format[Enum] = Enums.format[Enum]
+  given Format[Enum] = Enums.format(values)
 }
 
 case class Foo[A](someField: A)
@@ -40,11 +38,11 @@ object Foo {
 
 class EnumsSpec extends UnitSpec with Inspectors {
 
-  import Enum._
+  import Enum.*
 
   implicit val arbitraryEnumValue: Arbitrary[Enum] = Arbitrary[Enum](Gen.oneOf(`enum-one`, `enum-two`, `enum-three`))
 
-  "SealedTraitEnumJson" must {
+  "EnumJson" must {
 
     "check toString assumption" in {
       `enum-two`.toString shouldBe "enum-two"
@@ -57,48 +55,40 @@ class EnumsSpec extends UnitSpec with Inspectors {
           """.stripMargin)
 
     "generates reads" in {
-      forAll(List(`enum-one`, `enum-two`, `enum-three`)) { value: Enum =>
+      forAll(List(`enum-one`, `enum-two`, `enum-three`)) { (value: Enum) =>
         json(value).as[Foo[Enum]] shouldBe Foo(value)
       }
     }
 
     "generates writes" in {
-      forAll(List(`enum-one`, `enum-two`, `enum-three`)) { value: Enum =>
+      forAll(List(`enum-one`, `enum-two`, `enum-three`)) { (value: Enum) =>
         Json.toJson(Foo(value)) shouldBe json(value)
       }
     }
 
     "allow roundtrip" in {
-      forAll(List(`enum-one`, `enum-two`, `enum-three`)) { value: Enum =>
+      forAll(List(`enum-one`, `enum-two`, `enum-three`)) { (value: Enum) =>
         val foo = Foo(value)
         Json.toJson(foo).as[Foo[Enum]] shouldBe foo
       }
     }
 
     "allows external parse by name" in {
-      Enums.parser[Enum].lift("enum-one") shouldBe Some(`enum-one`)
-      Enums.parser[Enum].lift("unknown") shouldBe None
+      Enums.parser(values).lift("enum-one") shouldBe Some(`enum-one`)
+      Enums.parser(values).lift("unknown") shouldBe None
     }
 
     "allows alternative names (specified by method)" in {
 
-      sealed trait Enum2 {
-        def altName: String
+      enum Enum2(val altName: String) {
+        case `enum-one` extends Enum2("one")
+        case `enum-two` extends Enum2("two")
+        case `enum-three` extends Enum2("three")
       }
 
       object Enum2 {
-        case object `enum-one` extends Enum2 {
-          override def altName: String = "one"
-        }
-        case object `enum-two` extends Enum2 {
-          override def altName: String = "two"
-        }
-        case object `enum-three` extends Enum2 {
-          override def altName: String = "three"
-        }
-
         implicit val show: Show[Enum2]     = Show.show[Enum2](_.altName)
-        implicit val format: Format[Enum2] = Enums.format[Enum2]
+        given Format[Enum2] = Enums.format(values)
       }
 
       val json = Json.parse("""
@@ -130,15 +120,16 @@ class EnumsSpec extends UnitSpec with Inspectors {
       badJson.validate[Foo[Enum]] shouldBe JsError(__ \ "someField", JsonValidationError("error.expected.jsstring"))
     }
 
-    "only work for sealed trait singletons (objects)" in {
+    "only work for enum singletons (objects)" in {
       assertTypeError("""
-        |      sealed trait NotEnum
+        |      enum NotEnum {
+        |         case ObjectOne
+        |         case CaseClassTwo(value: String)
+        |      }
         |
-        |      case object ObjectOne                  extends NotEnum
-        |      case class CaseClassTwo(value: String) extends NotEnum
-        |
-        |      Enums.format[NotEnum]
+        |     Enums.format(NotEnums.values)
         """.stripMargin)
     }
   }
+
 }
