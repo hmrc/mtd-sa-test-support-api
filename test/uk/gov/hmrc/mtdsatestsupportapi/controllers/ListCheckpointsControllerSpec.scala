@@ -17,7 +17,6 @@
 package uk.gov.hmrc.mtdsatestsupportapi.controllers
 
 import api.controllers.*
-import api.hateoas.*
 import api.models.domain.Nino
 import api.models.errors.*
 import api.models.outcomes.ResponseWrapper
@@ -39,7 +38,7 @@ class ListCheckpointsControllerSpec
     with MockListCheckpointsRequestParser
     with MockListCheckpointsService
     with MockListCheckpointsValidator
-    with ControllerSpecHateoasSupport {
+    {
 
   "ListCheckpointsController" when {
     "X-Client-Id header is present" when {
@@ -63,24 +62,7 @@ class ListCheckpointsControllerSpec
                |    {
                |      "checkpointId": "$checkpointId",
                |      "nino": "$nino",
-               |      "checkpointCreationTimestamp": "$checkpointCreationTimestamp",
-               |      "links": [
-               |        {
-               |          "href": "/individuals/vendor-state/checkpoints/vendor-state/checkpoints/?nino=$nino",
-               |          "method": "POST",
-               |          "rel": "create-checkpoint"
-               |        },
-               |        {
-               |          "href": "/individuals/vendor-state/checkpoints/vendor-state/checkpoints/some_checkpoint_id",
-               |          "method": "DELETE",
-               |          "rel": "delete-checkpoint"
-               |        },
-               |        {
-               |          "href": "/individuals/vendor-state/checkpoints/vendor-state/checkpoints/some_checkpoint_id/restore",
-               |          "method": "POST",
-               |          "rel": "restore-checkpoint"
-               |        }
-               |      ]
+               |      "checkpointCreationTimestamp": "$checkpointCreationTimestamp"
                |    }
                |  ]
                |}
@@ -136,25 +118,19 @@ class ListCheckpointsControllerSpec
     protected val nino           = "TC663795B"
     protected val vendorClientId = "some_vendor_id"
     protected val correlationId  = "X-123"
-
-    private val checkpoint = Checkpoint(checkpointId, Some(nino), checkpointCreationTimestamp)
-
+    
     protected val rawDataWithNino: ListCheckpointsRawData     = ListCheckpointsRawData(vendorClientId, Some(nino))
     protected val requestDataWithNino: ListCheckpointsRequest = ListCheckpointsRequest(vendorClientId, Some(Nino(nino)))
 
     protected val responseDataWithNino: ListCheckpointsResponse[Checkpoint] = ListCheckpointsResponse(
       Seq(Checkpoint(checkpointId, Some(nino), checkpointCreationTimestamp)))
-
-    protected val hateoasResponse: ListCheckpointsResponse[HateoasWrapper[Checkpoint]] = ListCheckpointsResponse(
-      Seq(HateoasWrapper(checkpoint, hateoaslinks)))
-
+    
     protected val controller = new ListCheckpointsController(
       mockEnrolmentsAuthService,
       cc,
       mockListCheckpointsRequestParser,
       mockListCheckpointsService,
-      mockIdGenerator,
-      new HateoasFactory(mockAppConfig))
+      mockIdGenerator)
 
   }
 

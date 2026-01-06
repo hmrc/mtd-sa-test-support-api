@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2025 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,30 +16,12 @@
 
 package uk.gov.hmrc.mtdsatestsupportapi.models.response.createCheckpoint
 
-import api.hateoas.{HateoasData, HateoasLinksFactory, Link}
-import api.models.domain.{CheckpointId, Nino}
-import config.AppConfig
+import api.models.domain.CheckpointId
 import play.api.libs.json.{Json, OFormat}
-import uk.gov.hmrc.mtdsatestsupportapi.models.hateoas.CheckpointHateoasLinks
 
 case class CreateCheckpointResponse(checkpointId: CheckpointId)
 
-object CreateCheckpointResponse extends CheckpointHateoasLinks {
+object CreateCheckpointResponse {
   implicit val formats: OFormat[CreateCheckpointResponse] = Json.format
-
-  implicit object LinksFactory extends HateoasLinksFactory[CreateCheckpointResponse, CreateCheckpointHateoasData] {
-
-    override def links(appConfig: AppConfig, data: CreateCheckpointHateoasData): Seq[Link] = {
-      import data.*
-      Seq(
-        deleteCheckpoint(appConfig, checkpointId),
-        restoreCheckpoint(appConfig, checkpointId),
-        listCheckpoints(appConfig, Some(nino))
-      )
-    }
-
-  }
-
+  
 }
-
-case class CreateCheckpointHateoasData(nino: Nino, checkpointId: CheckpointId) extends HateoasData

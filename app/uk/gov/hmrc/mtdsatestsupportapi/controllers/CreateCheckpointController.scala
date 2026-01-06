@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2025 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,12 +17,10 @@
 package uk.gov.hmrc.mtdsatestsupportapi.controllers
 
 import api.controllers.*
-import api.hateoas.HateoasFactory
 import api.services.AuthService
 import play.api.mvc.{Action, AnyContent, ControllerComponents}
 import uk.gov.hmrc.mtdsatestsupportapi.controllers.requestParsers.CreateCheckpointRequestParser
 import uk.gov.hmrc.mtdsatestsupportapi.models.request.createCheckpoint.CreateCheckpointRawData
-import uk.gov.hmrc.mtdsatestsupportapi.models.response.createCheckpoint.CreateCheckpointHateoasData
 import uk.gov.hmrc.mtdsatestsupportapi.services.CreateCheckpointService
 import utils.{IdGenerator, Logging}
 
@@ -34,7 +32,6 @@ class CreateCheckpointController @Inject() (val cc: ControllerComponents,
                                             val authService: AuthService,
                                             parser: CreateCheckpointRequestParser,
                                             service: CreateCheckpointService,
-                                            hateoasFactory: HateoasFactory,
                                             idGenerator: IdGenerator)(implicit ec: ExecutionContext)
     extends AuthorisedController(cc)
     with Logging {
@@ -50,11 +47,7 @@ class CreateCheckpointController @Inject() (val cc: ControllerComponents,
         val requestHandler = RequestHandler
           .withParser(parser)
           .withService(service.createCheckpoint)
-          .withHateoasResultFrom(hateoasFactory)(
-            (request, response) => CreateCheckpointHateoasData(request.nino, response.checkpointId),
-            CREATED
-          )
-
+          .withPlainJsonResult(CREATED)
         requestHandler.handleRequest(rawData)
 
       case None =>

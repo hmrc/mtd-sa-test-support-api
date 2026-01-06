@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2025 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,7 +17,6 @@
 package api.controllers
 
 import api.controllers.requestParsers.RequestParser
-import api.hateoas.{HateoasData, HateoasFactory, HateoasLinksFactory, HateoasWrapper}
 import api.models.errors.{ErrorWrapper, InternalError}
 import api.models.outcomes.ResponseWrapper
 import api.models.request.RawData
@@ -86,28 +85,7 @@ object RequestHandler {
       */
     def withNoContentResult(successStatus: Int = Status.NO_CONTENT): RequestHandlerBuilder[InputRaw, Input, Output] =
       withResultCreator(ResultCreator.noContent(successStatus))
-
-    /** Shorthand for
-      * {{{
-      * withResultCreator(ResultCreator.hateoasWrapping(hateoasFactory, successStatus)(data))
-      * }}}
-      */
-    def withHateoasResultFrom[HData <: HateoasData](
-        hateoasFactory: HateoasFactory)(data: (Input, Output) => HData, successStatus: Int = Status.OK)(implicit
-        linksFactory: HateoasLinksFactory[Output, HData],
-        writes: Writes[HateoasWrapper[Output]]): RequestHandlerBuilder[InputRaw, Input, Output] =
-      withResultCreator(ResultCreator.hateoasWrapping(hateoasFactory, successStatus)(data))
-
-    /** Shorthand for
-      * {{{
-      * withResultCreator(ResultCreator.hateoasWrapping(hateoasFactory, successStatus)((_,_) => data))
-      * }}}
-      */
-    def withHateoasResult[HData <: HateoasData](hateoasFactory: HateoasFactory)(data: HData, successStatus: Int = Status.OK)(implicit
-        linksFactory: HateoasLinksFactory[Output, HData],
-        writes: Writes[HateoasWrapper[Output]]): RequestHandlerBuilder[InputRaw, Input, Output] =
-      withResultCreator(ResultCreator.hateoasWrapping(hateoasFactory, successStatus)((_, _) => data))
-
+    
     // Scoped as a private delegate so as to keep the logic completely separate from the configuration
     private object Delegate extends RequestHandler[InputRaw] with Logging with RequestContextImplicits {
 

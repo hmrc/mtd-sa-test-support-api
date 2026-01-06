@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2025 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,7 +17,6 @@
 package uk.gov.hmrc.mtdsatestsupportapi.controllers
 
 import api.controllers.*
-import api.hateoas.HateoasFactory
 import api.services.AuthService
 import play.api.mvc.*
 import uk.gov.hmrc.mtdsatestsupportapi.controllers.requestParsers.ListCheckpointsRequestParser
@@ -34,8 +33,8 @@ class ListCheckpointsController @Inject() (val authService: AuthService,
                                            cc: ControllerComponents,
                                            parser: ListCheckpointsRequestParser,
                                            service: ListCheckpointsService,
-                                           idGenerator: IdGenerator,
-                                           hateoasFactory: HateoasFactory)(implicit ec: ExecutionContext)
+                                           idGenerator: IdGenerator
+                                          )(implicit ec: ExecutionContext)
     extends AuthorisedController(cc)
     with Logging {
 
@@ -50,9 +49,7 @@ class ListCheckpointsController @Inject() (val authService: AuthService,
         val requestHandler = RequestHandler
           .withParser(parser)
           .withService(service.listCheckpoints)
-          .withResultCreator(ResultCreator
-            .hateoasListWrapping(hateoasFactory)((_, _) => ListCheckpointsHateoasData))
-
+          .withPlainJsonResult()
         requestHandler.handleRequest(rawData)
 
       case None =>

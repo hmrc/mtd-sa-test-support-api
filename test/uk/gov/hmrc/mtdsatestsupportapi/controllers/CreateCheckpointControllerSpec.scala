@@ -16,32 +16,29 @@
 
 package uk.gov.hmrc.mtdsatestsupportapi.controllers
 
-import api.controllers.{ControllerBaseSpec, ControllerSpecHateoasSupport, ControllerTestRunner}
-import api.hateoas.{HateoasWrapper, MockHateoasFactory}
+import api.controllers.{ControllerBaseSpec, ControllerTestRunner}
 import api.mocks.MockIdGenerator
 import api.mocks.services.MockAuthService
 import api.models.domain.{CheckpointId, Nino}
 import api.models.errors.*
 import api.models.outcomes.ResponseWrapper
 import play.api.http.HeaderNames
-import play.api.libs.json.{JsObject, Json}
+import play.api.libs.json.Json
 import play.api.mvc.Result
 import uk.gov.hmrc.mtdsatestsupportapi.mocks.requestParsers.MockCreateCheckpointRequestParser
 import uk.gov.hmrc.mtdsatestsupportapi.mocks.services.MockCreateCheckpointService
 import uk.gov.hmrc.mtdsatestsupportapi.models.request.createCheckpoint.{CreateCheckpointRawData, CreateCheckpointRequest}
-import uk.gov.hmrc.mtdsatestsupportapi.models.response.createCheckpoint.{CreateCheckpointHateoasData, CreateCheckpointResponse}
+import uk.gov.hmrc.mtdsatestsupportapi.models.response.createCheckpoint.CreateCheckpointResponse
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
 class CreateCheckpointControllerSpec
     extends ControllerBaseSpec
-    with ControllerSpecHateoasSupport
     with ControllerTestRunner
     with MockCreateCheckpointService
     with MockCreateCheckpointRequestParser
     with MockAuthService
-    with MockHateoasFactory
     with MockIdGenerator {
 
   trait Test extends ControllerTest {
@@ -61,11 +58,7 @@ class CreateCheckpointControllerSpec
       authService = mockEnrolmentsAuthService,
       parser = mockRequestParser,
       service = mockService,
-      hateoasFactory = mockHateoasFactory,
       idGenerator = mockIdGenerator)
-
-    protected val hateoasResponse: JsObject = Json.obj("checkpointId" -> checkpointId) ++ hateoaslinksJson
-
   }
 
   "handleRequest" should {
@@ -81,13 +74,16 @@ class CreateCheckpointControllerSpec
         MockCreateCheckpointService
           .createCheckpoint(requestData)
           .returns(Future.successful(Right(ResponseWrapper(correlationId, response))))
-
-        MockHateoasFactory
-          .wrap(response, CreateCheckpointHateoasData(Nino(nino), CheckpointId(checkpointId)))
-          .returns(HateoasWrapper(response, hateoaslinks))
-
-        runOkTest(expectedStatus = CREATED, maybeExpectedResponseBody = Some(hateoasResponse))
-      }
+        
+        runOkTest(
+          expectedStatus = CREATED,
+          maybeExpectedResponseBody = Some(
+            Json.obj(
+              "checkpointId" -> checkpointId
+            )
+          )
+        )
+       }
     }
 
     "return the error as per spec" when {

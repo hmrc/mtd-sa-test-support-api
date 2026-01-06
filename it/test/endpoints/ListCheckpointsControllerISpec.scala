@@ -132,24 +132,7 @@ class ListCheckpointsControllerISpec extends IntegrationBaseSpec {
            |    {
            |      "checkpointId": "$checkpointId1",
            |      "nino": "$nino",
-           |      "checkpointCreationTimestamp": "$checkpointCreationTimestamp1",
-           |      "links": [
-           |        {
-           |          "href": "/individuals/self-assessment-test-support/vendor-state/checkpoints/?nino=$nino",
-           |          "method": "POST",
-           |          "rel": "create-checkpoint"
-           |        },
-           |        {
-           |          "href": "/individuals/self-assessment-test-support/vendor-state/checkpoints/$checkpointId1",
-           |          "method": "DELETE",
-           |          "rel": "delete-checkpoint"
-           |        },
-           |        {
-           |          "href": "/individuals/self-assessment-test-support/vendor-state/checkpoints/$checkpointId1/restore",
-           |          "method": "POST",
-           |          "rel": "restore-checkpoint"
-           |        }
-           |      ]
+           |      "checkpointCreationTimestamp": "$checkpointCreationTimestamp1"
            |    }
            |  ]
            |}
@@ -161,40 +144,11 @@ class ListCheckpointsControllerISpec extends IntegrationBaseSpec {
            |    {
            |      "checkpointId": "$checkpointId1",
            |      "nino": "$nino",
-           |      "checkpointCreationTimestamp": "$checkpointCreationTimestamp1",
-           |      "links": [
-           |        {
-           |          "href": "/individuals/self-assessment-test-support/vendor-state/checkpoints/?nino=$nino",
-           |          "method": "POST",
-           |          "rel": "create-checkpoint"
-           |        },
-           |        {
-           |          "href": "/individuals/self-assessment-test-support/vendor-state/checkpoints/$checkpointId1",
-           |          "method": "DELETE",
-           |          "rel": "delete-checkpoint"
-           |        },
-           |        {
-           |          "href": "/individuals/self-assessment-test-support/vendor-state/checkpoints/$checkpointId1/restore",
-           |          "method": "POST",
-           |          "rel": "restore-checkpoint"
-           |        }
-           |      ]
+           |      "checkpointCreationTimestamp": "$checkpointCreationTimestamp1"
            |    },
            |    {
            |      "checkpointId": "$checkpointId2",
-           |      "checkpointCreationTimestamp": "$checkpointCreationTimestamp2",
-           |      "links": [
-           |        {
-           |          "href": "/individuals/self-assessment-test-support/vendor-state/checkpoints/$checkpointId2",
-           |          "method": "DELETE",
-           |          "rel": "delete-checkpoint"
-           |        },
-           |        {
-           |          "href": "/individuals/self-assessment-test-support/vendor-state/checkpoints/$checkpointId2/restore",
-           |          "method": "POST",
-           |          "rel": "restore-checkpoint"
-           |        }
-           |      ]
+           |      "checkpointCreationTimestamp": "$checkpointCreationTimestamp2"
            |    }
            |  ]
            |}
