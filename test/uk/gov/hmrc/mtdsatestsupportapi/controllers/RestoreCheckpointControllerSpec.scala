@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2025 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,7 +17,6 @@
 package uk.gov.hmrc.mtdsatestsupportapi.controllers
 
 import api.controllers.*
-import api.hateoas.{HateoasWrapper, MockHateoasFactory}
 import api.mocks.MockIdGenerator
 import api.mocks.services.MockAuthService
 import api.models.domain.CheckpointId
@@ -29,20 +28,16 @@ import support.UnitSpec
 import uk.gov.hmrc.mtdsatestsupportapi.mocks.requestParsers.MockRestoreCheckpointRequestParser
 import uk.gov.hmrc.mtdsatestsupportapi.mocks.services.MockRestoreCheckpointService
 import uk.gov.hmrc.mtdsatestsupportapi.models.request.restoreCheckpoint.{RestoreCheckpointRawData, RestoreCheckpointRequest}
-import uk.gov.hmrc.mtdsatestsupportapi.models.response.restoreCheckpoint.RestoreCheckpointHateoasData
-
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
 class RestoreCheckpointControllerSpec
     extends ControllerBaseSpec
-    with ControllerSpecHateoasSupport
     with ControllerTestRunner
     with UnitSpec
     with MockRestoreCheckpointRequestParser
     with MockRestoreCheckpointService
     with MockAuthService
-    with MockHateoasFactory
     with MockIdGenerator {
 
   trait Test extends ControllerTest {
@@ -57,7 +52,6 @@ class RestoreCheckpointControllerSpec
       authService = mockEnrolmentsAuthService,
       parser = mockRestoreCheckpointRequestParser,
       service = mockRestoreCheckpointService,
-      hateoasFactory = mockHateoasFactory,
       idGenerator = mockIdGenerator)
 
   }
@@ -77,12 +71,8 @@ class RestoreCheckpointControllerSpec
           MockRestoreCheckpointService
             .restoreCheckpoint(requestData)
             .returns(Future.successful(Right(ResponseWrapper(correlationId, ()))))
-
-          MockHateoasFactory
-            .wrap((), RestoreCheckpointHateoasData(checkpointId))
-            .returns(HateoasWrapper((), hateoaslinks))
-
-          runOkTest(expectedStatus = CREATED, maybeExpectedResponseBody = Some(hateoaslinksJson))
+          
+          runOkTest(expectedStatus = CREATED)
         }
       }
       "a request is unsuccessful due to failing parser validation" should {

@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2025 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,20 +16,18 @@
 
 package uk.gov.hmrc.mtdsatestsupportapi.controllers
 
-import api.controllers.{ControllerBaseSpec, ControllerSpecHateoasSupport, ControllerTestRunner}
-import api.hateoas.{HateoasWrapper, MockHateoasFactory}
+import api.controllers.{ControllerBaseSpec, ControllerTestRunner}
+import uk.gov.hmrc.mtdsatestsupportapi.models.response.createTestBusiness.CreateTestBusinessResponse
 import api.models.domain.Nino
 import api.models.errors.{ErrorWrapper, InternalError, NinoFormatError, RulePropertyBusinessAddedError}
 import api.models.outcomes.ResponseWrapper
 import play.api.http.HeaderNames
-import play.api.libs.json.{JsObject, Json}
+import play.api.libs.json.Json
 import play.api.mvc.Result
 import uk.gov.hmrc.mtdsatestsupportapi.fixtures.CreateTestBusinessFixtures
 import uk.gov.hmrc.mtdsatestsupportapi.mocks.requestParsers.MockCreateTestBusinessRequestParser
 import uk.gov.hmrc.mtdsatestsupportapi.mocks.services.MockCreateTestBusinessService
 import uk.gov.hmrc.mtdsatestsupportapi.models.request.createTestBusiness.{CreateTestBusinessRawData, CreateTestBusinessRequest}
-import uk.gov.hmrc.mtdsatestsupportapi.models.response.createTestBusiness.CreateTestBusinessHateoasData
-
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
@@ -39,29 +37,24 @@ class CreateTestBusinessControllerSpec
     with CreateTestBusinessFixtures
     with MockCreateTestBusinessRequestParser
     with MockCreateTestBusinessService
-    with MockHateoasFactory
-    with ControllerSpecHateoasSupport {
+    {
 
   trait Test extends ControllerTest {
     val nino           = "AA123456A"
     val vendorClientId = "someId"
-    val businessId     = ExampleCreateTestBusinessResponse.businessId
+    val businessId: String = ExampleCreateTestBusinessResponse.businessId
 
     val rawData: CreateTestBusinessRawData     = CreateTestBusinessRawData(nino, MinimalCreateTestBusinessRequest.SelfEmployment.mtdBusinessJson)
     val requestData: CreateTestBusinessRequest = CreateTestBusinessRequest(Nino(nino), MinimalCreateTestBusinessRequest.SelfEmployment.business)
-    val response                           = ExampleCreateTestBusinessResponse.response
+    val response: CreateTestBusinessResponse = ExampleCreateTestBusinessResponse.response
 
     val controller = new CreateTestBusinessController(
       cc = cc,
       authService = mockEnrolmentsAuthService,
       parser = mockParser,
       service = mockService,
-      idGenerator = mockIdGenerator,
-      hateoasFactory = mockHateoasFactory
+      idGenerator = mockIdGenerator
     )
-
-    protected val hateoasResponse: JsObject = Json.obj("businessId" -> businessId) ++ hateoaslinksJson
-
   }
 
   "CreateTestBusinessController" must {
@@ -76,12 +69,13 @@ class CreateTestBusinessControllerSpec
         MockCreateTestBusinessRequestParser.parseRequest(rawData).returns(Right(requestData))
 
         MockCreateTestBusinessService.CreateTestBusiness(requestData).returns(Future.successful(Right(ResponseWrapper(correlationId, response))))
-
-        MockHateoasFactory
-          .wrap(response, CreateTestBusinessHateoasData(Nino(nino), businessId))
-          .returns(HateoasWrapper(response, hateoaslinks))
-
-        runOkTest(expectedStatus = CREATED, maybeExpectedResponseBody = Some(hateoasResponse))
+        
+        runOkTest(expectedStatus = CREATED, maybeExpectedResponseBody = Some(
+          Json.obj(
+            "businessId" -> businessId
+          )
+        )
+        )
       }
     }
     "return error according to spec" when {

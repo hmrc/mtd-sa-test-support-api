@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2025 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,13 +17,11 @@
 package uk.gov.hmrc.mtdsatestsupportapi.controllers
 
 import api.controllers.{AuthorisedController, EndpointLogContext, RequestContext, RequestHandler}
-import api.hateoas.HateoasFactory
 import api.services.AuthService
 import play.api.libs.json.JsValue
 import play.api.mvc.{Action, ControllerComponents}
 import uk.gov.hmrc.mtdsatestsupportapi.controllers.requestParsers.CreateTestBusinessRequestParser
 import uk.gov.hmrc.mtdsatestsupportapi.models.request.createTestBusiness.CreateTestBusinessRawData
-import uk.gov.hmrc.mtdsatestsupportapi.models.response.createTestBusiness.CreateTestBusinessHateoasData
 import uk.gov.hmrc.mtdsatestsupportapi.services.CreateTestBusinessService
 import utils.{IdGenerator, Logging}
 
@@ -35,7 +33,6 @@ class CreateTestBusinessController @Inject() (val cc: ControllerComponents,
                                               val authService: AuthService,
                                               parser: CreateTestBusinessRequestParser,
                                               service: CreateTestBusinessService,
-                                              hateoasFactory: HateoasFactory,
                                               idGenerator: IdGenerator)(implicit ec: ExecutionContext)
     extends AuthorisedController(cc)
     with Logging {
@@ -51,11 +48,7 @@ class CreateTestBusinessController @Inject() (val cc: ControllerComponents,
         val requestHandler = RequestHandler
           .withParser(parser)
           .withService(service.createTestBusiness)
-          .withHateoasResultFrom(hateoasFactory)(
-            (request, response) => CreateTestBusinessHateoasData(request.nino, response.businessId),
-            CREATED
-          )
-
+          .withPlainJsonResult(CREATED)
         requestHandler.handleRequest(rawData)
 
       case None =>

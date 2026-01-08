@@ -92,24 +92,7 @@ class CreateCheckpointControllerISpec extends IntegrationBaseSpec {
     val expectedResponseBody: JsValue = Json.parse(
       s"""
          |{
-         | "checkpointId": "$checkpointId",
-         | "links": [
-         |   {
-         |     "href": "/individuals/self-assessment-test-support/vendor-state/checkpoints/$checkpointId",
-         |     "rel": "delete-checkpoint",
-         |     "method": "DELETE"
-         |   },
-         |   {
-         |     "href": "/individuals/self-assessment-test-support/vendor-state/checkpoints/$checkpointId/restore",
-         |     "rel": "restore-checkpoint",
-         |     "method": "POST"
-         |   },
-         |   {
-         |     "href": "/individuals/self-assessment-test-support/vendor-state/checkpoints?nino=$nino",
-         |     "rel": "list-checkpoints",
-         |     "method": "GET"
-         |   }
-         | ]
+         | "checkpointId": "$checkpointId"
          |}""".stripMargin
     )
 

@@ -57,24 +57,7 @@ class CreateTestBusinessControllerISpec extends UnitSpec with IntegrationBaseSpe
 
     val expectedResponseBody: String =
       s"""{
-        |  "businessId": "$businessId",
-        |  "links": [
-        |    {
-        |      "href": "/individuals/self-assessment-test-support/business/$nino/$businessId",
-        |      "method": "DELETE",
-        |      "rel": "delete-business"
-        |    },
-        |    {
-        |      "href": "/individuals/business/details/$nino/list",
-        |      "method": "GET",
-        |      "rel": "list-businesses"
-        |    },
-        |    {
-        |      "href": "/individuals/business/details/$nino/$businessId",
-        |      "method": "GET",
-        |      "rel": "self"
-        |    }
-        |  ]
+        |  "businessId": "$businessId"
         |}""".stripMargin
 
   }

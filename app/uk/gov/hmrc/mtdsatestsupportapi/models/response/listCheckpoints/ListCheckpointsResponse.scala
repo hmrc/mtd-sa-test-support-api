@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2025 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,37 +16,17 @@
 
 package uk.gov.hmrc.mtdsatestsupportapi.models.response.listCheckpoints
 
-import api.hateoas.*
-import api.models.domain.{CheckpointId, Nino}
 import cats.Functor
-import config.AppConfig
 import play.api.libs.json.*
-import uk.gov.hmrc.mtdsatestsupportapi.models.hateoas.CheckpointHateoasLinks
 
 case class ListCheckpointsResponse[I](checkpoints: Seq[I])
 
-object ListCheckpointsResponse extends CheckpointHateoasLinks {
+object ListCheckpointsResponse {
 
   implicit def reads: Reads[ListCheckpointsResponse[Checkpoint]] = Json.reads[ListCheckpointsResponse[Checkpoint]]
 
   implicit def writes[I: Writes]: OWrites[ListCheckpointsResponse[I]] = Json.writes[ListCheckpointsResponse[I]]
-
-  implicit object LinksFactory extends HateoasListLinksFactory[ListCheckpointsResponse, Checkpoint, ListCheckpointsHateoasData.type] {
-
-    override def itemLinks(appConfig: AppConfig, data: ListCheckpointsHateoasData.type, item: Checkpoint): Seq[Link] = {
-      val maybeCreateHateoas = item.nino match {
-        case Some(nino) => Seq(createCheckpoint(appConfig, Nino(nino)))
-        case None       => Seq.empty
-      }
-      maybeCreateHateoas ++ Seq(
-        deleteCheckpoint(appConfig, CheckpointId(item.checkpointId)),
-        restoreCheckpoint(appConfig, CheckpointId(item.checkpointId))
-      )
-    }
-
-    override def links(appConfig: AppConfig, data: ListCheckpointsHateoasData.type): Seq[Link] = Seq.empty
-  }
-
+  
   implicit object ResponseFunctor extends Functor[ListCheckpointsResponse] {
 
     override def map[A, B](fa: ListCheckpointsResponse[A])(f: A => B): ListCheckpointsResponse[B] =
@@ -55,5 +35,3 @@ object ListCheckpointsResponse extends CheckpointHateoasLinks {
   }
 
 }
-
-case object ListCheckpointsHateoasData extends HateoasData

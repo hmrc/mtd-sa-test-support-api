@@ -16,14 +16,14 @@
 
 package uk.gov.hmrc.mtdsatestsupportapi.controllers
 
-import api.controllers.{ControllerBaseSpec, ControllerSpecHateoasSupport, ControllerTestRunner}
+import api.controllers.{ControllerBaseSpec, ControllerTestRunner}
 import api.mocks.MockIdGenerator
 import api.mocks.services.MockAuthService
 import api.models.domain.{Nino, TaxYear}
 import api.models.errors.{ErrorWrapper, InternalError, NinoFormatError, ServiceUnavailableError}
 import api.models.outcomes.ResponseWrapper
 import play.api.http.HeaderNames
-import play.api.libs.json.{JsObject, JsValue, Json}
+import play.api.libs.json.{JsValue, Json}
 import play.api.mvc.Result
 import uk.gov.hmrc.mtdsatestsupportapi.mocks.requestParsers.MockCreateAmendITSAStatusRequestParser
 import uk.gov.hmrc.mtdsatestsupportapi.mocks.services.MockCreateAmendITSAStatusService
@@ -40,7 +40,6 @@ import scala.concurrent.ExecutionContext.Implicits.global
 
 class CreateAmendITSAStatusControllerSpec
     extends ControllerBaseSpec
-    with ControllerSpecHateoasSupport
     with ControllerTestRunner
     with MockCreateAmendITSAStatusService
     with MockCreateAmendITSAStatusRequestParser
@@ -82,9 +81,6 @@ class CreateAmendITSAStatusControllerSpec
       parser = mockRequestParser,
       service = mockService,
       idGenerator = mockIdGenerator)
-
-    protected val hateoasResponse: JsObject = hateoaslinksJson
-
   }
 
   "handleRequest" should {

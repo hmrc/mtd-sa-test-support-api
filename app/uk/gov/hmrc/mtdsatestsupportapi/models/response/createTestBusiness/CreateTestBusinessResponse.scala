@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2025 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,28 +16,14 @@
 
 package uk.gov.hmrc.mtdsatestsupportapi.models.response.createTestBusiness
 
-import api.hateoas.{HateoasData, HateoasLinksFactory, Link}
-import api.models.domain.Nino
-import config.AppConfig
+
 import play.api.libs.json.*
-import uk.gov.hmrc.mtdsatestsupportapi.models.hateoas.TestBusinessHateoasLinks
 
 case class CreateTestBusinessResponse(businessId: String)
 
-object CreateTestBusinessResponse extends TestBusinessHateoasLinks {
+object CreateTestBusinessResponse {
   implicit val reads: Reads[CreateTestBusinessResponse] = (__ \ "incomeSourceId").read[String].map(CreateTestBusinessResponse.apply)
 
   implicit val writes: OWrites[CreateTestBusinessResponse] = Json.writes
-
-  implicit object LinksFactory extends HateoasLinksFactory[CreateTestBusinessResponse, CreateTestBusinessHateoasData] {
-
-    override def links(appConfig: AppConfig, data: CreateTestBusinessHateoasData): Seq[Link] = {
-      import data.*
-      Seq(deleteTestBusiness(appConfig, nino, businessId), listAllBusinesses(appConfig, nino), retrieveBusinessDetails(appConfig, nino, businessId))
-    }
-
-  }
-
+  
 }
-
-case class CreateTestBusinessHateoasData(nino: Nino, businessId: String) extends HateoasData
