@@ -1,20 +1,3 @@
 {
-  "checkpointId": "a1e8057e-fbbc-47a8-a8b4-78d9f015c253",
-  "links": [
-    {
-      "href": "/individuals/self-assessment-test-support/vendor-state/checkpoints/a1e8057e-fbbc-47a8-a8b4-78d9f015c253/restore",
-      "method": "POST",
-      "rel": "restore-checkpoint"
-    },
-    {
-      "href": "/individuals/self-assessment-test-support/vendor-state/checkpoints/a1e8057e-fbbc-47a8-a8b4-78d9f015c253",
-      "method": "DELETE",
-      "rel": "delete-checkpoint"
-    },
-    {
-      "href": "/individuals/self-assessment-test-support/vendor-state/checkpoints",
-      "method": "GET",
-      "rel": "list-checkpoints"
-    }
-  ]
+  "checkpointId": "a1e8057e-fbbc-47a8-a8b4-78d9f015c253"
 }
