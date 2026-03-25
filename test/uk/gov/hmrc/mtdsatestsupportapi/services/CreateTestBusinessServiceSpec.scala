@@ -50,8 +50,7 @@ class CreateTestBusinessServiceSpec extends ServiceSpec with MockCreateTestBusin
 
     "the service call is unsuccessful" should {
       "map the received errors from the stub" when {
-        def serviceErrorTest(stubErrorCode: String, mtdError: MtdError)
-                            (implicit pos: Position): Unit =
+        def serviceErrorTest(stubErrorCode: String, mtdError: MtdError)(implicit pos: Position): Unit =
           s"a $stubErrorCode error is returned from the service" in {
 
             MockCreateTestBusinessConnector

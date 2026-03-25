@@ -23,5 +23,5 @@ case class CreateCheckpointResponse(checkpointId: CheckpointId)
 
 object CreateCheckpointResponse {
   implicit val formats: OFormat[CreateCheckpointResponse] = Json.format
-  
+
 }

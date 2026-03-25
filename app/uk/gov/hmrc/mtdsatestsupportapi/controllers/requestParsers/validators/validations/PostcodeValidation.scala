@@ -26,4 +26,5 @@ object PostcodeValidation extends RegexValidation {
 
   def validate(value: String, error: => MtdError = PostcodeFormatError): Seq[MtdError] =
     validateRegex(value, error)
+
 }

@@ -35,4 +35,5 @@ class DownstreamErrorCodeSpec extends UnitSpec {
       json.as[DownstreamErrorCode] shouldBe DownstreamErrorCode("CODE")
     }
   }
+
 }

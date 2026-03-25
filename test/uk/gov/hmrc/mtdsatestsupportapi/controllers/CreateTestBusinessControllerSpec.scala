@@ -36,17 +36,16 @@ class CreateTestBusinessControllerSpec
     with ControllerTestRunner
     with CreateTestBusinessFixtures
     with MockCreateTestBusinessRequestParser
-    with MockCreateTestBusinessService
-    {
+    with MockCreateTestBusinessService {
 
   trait Test extends ControllerTest {
-    val nino           = "AA123456A"
-    val vendorClientId = "someId"
+    val nino               = "AA123456A"
+    val vendorClientId     = "someId"
     val businessId: String = ExampleCreateTestBusinessResponse.businessId
 
     val rawData: CreateTestBusinessRawData     = CreateTestBusinessRawData(nino, MinimalCreateTestBusinessRequest.SelfEmployment.mtdBusinessJson)
     val requestData: CreateTestBusinessRequest = CreateTestBusinessRequest(Nino(nino), MinimalCreateTestBusinessRequest.SelfEmployment.business)
-    val response: CreateTestBusinessResponse = ExampleCreateTestBusinessResponse.response
+    val response: CreateTestBusinessResponse   = ExampleCreateTestBusinessResponse.response
 
     val controller = new CreateTestBusinessController(
       cc = cc,
@@ -55,6 +54,7 @@ class CreateTestBusinessControllerSpec
       service = mockService,
       idGenerator = mockIdGenerator
     )
+
   }
 
   "CreateTestBusinessController" must {
@@ -69,20 +69,23 @@ class CreateTestBusinessControllerSpec
         MockCreateTestBusinessRequestParser.parseRequest(rawData).returns(Right(requestData))
 
         MockCreateTestBusinessService.CreateTestBusiness(requestData).returns(Future.successful(Right(ResponseWrapper(correlationId, response))))
-        
-        runOkTest(expectedStatus = CREATED, maybeExpectedResponseBody = Some(
-          Json.obj(
-            "businessId" -> businessId
-          )
-        )
-        )
+
+        runOkTest(
+          expectedStatus = CREATED,
+          maybeExpectedResponseBody = Some(
+            Json.obj(
+              "businessId" -> businessId
+            )
+          ))
       }
     }
     "return error according to spec" when {
       "the request lacks an X-Client-Id header" in new Test {
         override protected def callController(): Future[Result] =
           controller.handleRequest(nino)(
-            fakeRequest.withBody(MinimalCreateTestBusinessRequest.SelfEmployment.mtdBusinessJson).withHeaders(HeaderNames.AUTHORIZATION -> "Bearer Token"))
+            fakeRequest
+              .withBody(MinimalCreateTestBusinessRequest.SelfEmployment.mtdBusinessJson)
+              .withHeaders(HeaderNames.AUTHORIZATION -> "Bearer Token"))
 
         val result: Future[Result] = callController()
 

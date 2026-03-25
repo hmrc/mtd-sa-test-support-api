@@ -68,7 +68,7 @@ class DocumentationControllerSpec extends ControllerBaseSpec with MockAppConfig 
     protected def requestAsset(filename: String, accept: String = "text/yaml"): Future[Result] =
       controller.asset("1.0", filename)(fakeGetRequest.withHeaders(ACCEPT -> accept))
 
-    private val apiFactory = new ApiDefinitionFactory(mockAppConfig)
+    private val apiFactory    = new ApiDefinitionFactory(mockAppConfig)
     private val actionBuilder = DefaultActionBuilder(BodyParsers.utils.ignore[AnyContent](AnyContentAsEmpty))
 
     protected val check1: CheckRewrite = mock[CheckRewrite]

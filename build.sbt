@@ -22,6 +22,7 @@ val appName = "mtd-sa-test-support-api"
 ThisBuild / scalaVersion := "3.5.2"
 ThisBuild / majorVersion := 0
 ThisBuild / scalacOptions ++= Seq("-Werror", "-Wconf:msg=Flag.*repeatedly:s")
+ThisBuild / scalafmtOnCompile := true
 
 lazy val microservice = Project(appName, file("."))
   .enablePlugins(play.sbt.PlayScala, SbtDistributablesPlugin)

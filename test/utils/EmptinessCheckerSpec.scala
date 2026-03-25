@@ -33,6 +33,7 @@ class EmptinessCheckerSpec extends UnitSpec {
 
   case class Baz(a: Option[Int] = None, e: Option[SomeEnum] = None)
   case class Bar(baz: Option[Baz] = None, arr: Option[List[Bar]] = None)
+
   case class Foo(bar: Option[Bar] = None,
                  arr1: Option[List[Bar]] = None,
                  arr2: Option[List[Bar]] = None,
@@ -51,7 +52,7 @@ class EmptinessCheckerSpec extends UnitSpec {
     "all arrays and objects are non empty" must {
       "return empty" in {
         val barFull = Bar(baz = Some(Baz(Some(1))))
-        val result = EmptinessChecker.findEmptyPaths(Foo(bar = Some(barFull), arr1 = Some(List(barFull))))
+        val result  = EmptinessChecker.findEmptyPaths(Foo(bar = Some(barFull), arr1 = Some(List(barFull))))
 
         result shouldBe NoEmptyPaths
       }
@@ -106,4 +107,5 @@ class EmptinessCheckerSpec extends UnitSpec {
       }
     }
   }
+
 }

@@ -85,7 +85,7 @@ object RequestHandler {
       */
     def withNoContentResult(successStatus: Int = Status.NO_CONTENT): RequestHandlerBuilder[InputRaw, Input, Output] =
       withResultCreator(ResultCreator.noContent(successStatus))
-    
+
     // Scoped as a private delegate so as to keep the logic completely separate from the configuration
     private object Delegate extends RequestHandler[InputRaw] with Logging with RequestContextImplicits {
 

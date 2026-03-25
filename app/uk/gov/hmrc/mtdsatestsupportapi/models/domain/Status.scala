@@ -30,7 +30,7 @@ enum Status(val toDownstream: String) {
 }
 
 object Status {
-  implicit val reads: Reads[Status] = Enums.reads(values)
-  implicit val writes: Writes[Status] = Writes.StringWrites.contramap(_.toDownstream)
+  implicit val reads: Reads[Status]           = Enums.reads(values)
+  implicit val writes: Writes[Status]         = Writes.StringWrites.contramap(_.toDownstream)
   val parser: PartialFunction[String, Status] = Enums.parser(values)
 }

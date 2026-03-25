@@ -27,8 +27,9 @@ trait CreateTestBusinessFixtures {
 
     object SelfEmployment {
 
-      val mtdBusinessJson: JsObject = Json.parse(
-        """
+      val mtdBusinessJson: JsObject = Json
+        .parse(
+          """
           |{
           |  "typeOfBusiness": "self-employment",
           |  "tradingName": "Self Employed Name",
@@ -36,7 +37,8 @@ trait CreateTestBusinessFixtures {
           |  "businessAddressCountryCode": "FR"
           |}
         """.stripMargin
-      ).as[JsObject]
+        )
+        .as[JsObject]
 
       val business: Business = Business(
         typeOfBusiness = TypeOfBusiness.`self-employment`,
@@ -56,8 +58,9 @@ trait CreateTestBusinessFixtures {
         businessAddressCountryCode = Some("FR")
       )
 
-      val downstreamBusinessJson: JsObject = Json.parse(
-        """
+      val downstreamBusinessJson: JsObject = Json
+        .parse(
+          """
           |{
           |  "propertyIncomeFlag": false,
           |  "tradingName": "Self Employed Name",
@@ -76,19 +79,22 @@ trait CreateTestBusinessFixtures {
           |  ]
           |}
         """.stripMargin
-      ).as[JsObject]
+        )
+        .as[JsObject]
 
     }
 
     object UkProperty {
 
-      val mtdBusinessJson: JsObject = Json.parse(
-        """
+      val mtdBusinessJson: JsObject = Json
+        .parse(
+          """
           |{
           |  "typeOfBusiness": "uk-property"
           |}
         """.stripMargin
-      ).as[JsObject]
+        )
+        .as[JsObject]
 
       val business: Business = Business(
         typeOfBusiness = TypeOfBusiness.`uk-property`,

@@ -48,7 +48,8 @@ class CreateAmendITSAStatusRequestParserSpec extends UnitSpec with MockCreateAme
       submittedOn = "2021-03-23T16:02:34.039Z",
       status = Status.`No Status`,
       statusReason = StatusReason.`Sign up - no return available`,
-      businessIncome2YearsPrior = Some(234))))
+      businessIncome2YearsPrior = Some(234)
+    )))
 
   private val inputData = CreateAmendITSAStatusRawData(nino, taxYear, body)
 

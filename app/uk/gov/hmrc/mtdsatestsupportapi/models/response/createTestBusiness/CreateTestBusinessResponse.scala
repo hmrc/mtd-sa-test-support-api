@@ -16,7 +16,6 @@
 
 package uk.gov.hmrc.mtdsatestsupportapi.models.response.createTestBusiness
 
-
 import play.api.libs.json.*
 
 case class CreateTestBusinessResponse(businessId: String)
@@ -25,5 +24,5 @@ object CreateTestBusinessResponse {
   implicit val reads: Reads[CreateTestBusinessResponse] = (__ \ "incomeSourceId").read[String].map(CreateTestBusinessResponse.apply)
 
   implicit val writes: OWrites[CreateTestBusinessResponse] = Json.writes
-  
+
 }

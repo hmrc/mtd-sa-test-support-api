@@ -35,7 +35,7 @@ class CreateAmendITSAStatusController @Inject() (val cc: ControllerComponents,
                                                  parser: CreateAmendITSAStatusRequestParser,
                                                  service: CreateAmendITSAStatusService,
                                                  idGenerator: IdGenerator)(implicit ec: ExecutionContext)
-  extends AuthorisedController(cc)
+    extends AuthorisedController(cc)
     with Logging {
 
   def handleRequest(nino: String, taxYear: String): Action[JsValue] = authorisedAction().async(parse.json) { implicit request =>
@@ -49,7 +49,6 @@ class CreateAmendITSAStatusController @Inject() (val cc: ControllerComponents,
           .withParser(parser)
           .withService(service.createAmend)
 
-
         requestHandler.handleRequest(rawData)
 
       case None =>
@@ -57,4 +56,5 @@ class CreateAmendITSAStatusController @Inject() (val cc: ControllerComponents,
         Future.successful(InternalServerError)
     }
   }
+
 }

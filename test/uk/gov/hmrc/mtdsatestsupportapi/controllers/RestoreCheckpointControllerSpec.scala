@@ -61,8 +61,7 @@ class RestoreCheckpointControllerSpec
       "a valid request is processed successfully" should {
         "return a success 201 result" in new Test {
           override protected def callController(): Future[Result] =
-            controller.handleRequest(checkpointId)(
-              fakeRequestWithHeaders(HeaderNames.AUTHORIZATION -> "Bearer Token", "X-Client-Id" -> "some_id"))
+            controller.handleRequest(checkpointId)(fakeRequestWithHeaders(HeaderNames.AUTHORIZATION -> "Bearer Token", "X-Client-Id" -> "some_id"))
 
           MockRestoreCheckpointRequestParser
             .parseRequest(rawData)
@@ -71,15 +70,14 @@ class RestoreCheckpointControllerSpec
           MockRestoreCheckpointService
             .restoreCheckpoint(requestData)
             .returns(Future.successful(Right(ResponseWrapper(correlationId, ()))))
-          
+
           runOkTest(expectedStatus = CREATED)
         }
       }
       "a request is unsuccessful due to failing parser validation" should {
         "return the corresponding error" in new Test {
           override protected def callController(): Future[Result] =
-            controller.handleRequest(checkpointId)(
-              fakeRequestWithHeaders(HeaderNames.AUTHORIZATION -> "Bearer Token", "X-Client-Id" -> "some_id"))
+            controller.handleRequest(checkpointId)(fakeRequestWithHeaders(HeaderNames.AUTHORIZATION -> "Bearer Token", "X-Client-Id" -> "some_id"))
 
           MockRestoreCheckpointRequestParser
             .parseRequest(rawData)
@@ -91,8 +89,7 @@ class RestoreCheckpointControllerSpec
       "the service returns an error during processing" should {
         "return the corresponding error" in new Test {
           override protected def callController(): Future[Result] =
-            controller.handleRequest(checkpointId)(
-              fakeRequestWithHeaders(HeaderNames.AUTHORIZATION -> "Bearer Token", "X-Client-Id" -> "some_id"))
+            controller.handleRequest(checkpointId)(fakeRequestWithHeaders(HeaderNames.AUTHORIZATION -> "Bearer Token", "X-Client-Id" -> "some_id"))
 
           MockRestoreCheckpointRequestParser
             .parseRequest(rawData)

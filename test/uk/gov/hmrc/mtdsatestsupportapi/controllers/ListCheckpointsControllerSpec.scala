@@ -37,8 +37,7 @@ class ListCheckpointsControllerSpec
     with ControllerTestRunner
     with MockListCheckpointsRequestParser
     with MockListCheckpointsService
-    with MockListCheckpointsValidator
-    {
+    with MockListCheckpointsValidator {
 
   "ListCheckpointsController" when {
     "X-Client-Id header is present" when {
@@ -118,19 +117,15 @@ class ListCheckpointsControllerSpec
     protected val nino           = "TC663795B"
     protected val vendorClientId = "some_vendor_id"
     protected val correlationId  = "X-123"
-    
+
     protected val rawDataWithNino: ListCheckpointsRawData     = ListCheckpointsRawData(vendorClientId, Some(nino))
     protected val requestDataWithNino: ListCheckpointsRequest = ListCheckpointsRequest(vendorClientId, Some(Nino(nino)))
 
     protected val responseDataWithNino: ListCheckpointsResponse[Checkpoint] = ListCheckpointsResponse(
       Seq(Checkpoint(checkpointId, Some(nino), checkpointCreationTimestamp)))
-    
-    protected val controller = new ListCheckpointsController(
-      mockEnrolmentsAuthService,
-      cc,
-      mockListCheckpointsRequestParser,
-      mockListCheckpointsService,
-      mockIdGenerator)
+
+    protected val controller =
+      new ListCheckpointsController(mockEnrolmentsAuthService, cc, mockListCheckpointsRequestParser, mockListCheckpointsService, mockIdGenerator)
 
   }
 

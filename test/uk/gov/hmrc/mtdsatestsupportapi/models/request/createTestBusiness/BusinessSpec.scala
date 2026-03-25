@@ -138,7 +138,7 @@ class BusinessSpec extends UnitSpec with CreateTestBusinessFixtures {
                 Json.obj(
                   "selfEmployments" -> Json.arr(
                     Json.obj(
-                      "accountingType" -> "ACCRUAL",
+                      "accountingType"     -> "ACCRUAL",
                       "lateAccountingDate" -> Json.obj("eligible" -> false, "disapply" -> false)
                     )
                   )
@@ -148,9 +148,7 @@ class BusinessSpec extends UnitSpec with CreateTestBusinessFixtures {
               }
 
               val expected = {
-                expectedIncomeSourceType.map(
-                  x => Json.obj("incomeSourceType" -> x)
-                ).getOrElse(JsObject.empty) ++ typeOfBusinessJson ++
+                expectedIncomeSourceType.map(x => Json.obj("incomeSourceType" -> x)).getOrElse(JsObject.empty) ++ typeOfBusinessJson ++
                   Json
                     .parse(
                       s"""
@@ -182,7 +180,8 @@ class BusinessSpec extends UnitSpec with CreateTestBusinessFixtures {
                         |  }
                         |}
                       """.stripMargin
-                    ).as[JsObject]
+                    )
+                    .as[JsObject]
               }
 
               downstreamJson shouldBe expected

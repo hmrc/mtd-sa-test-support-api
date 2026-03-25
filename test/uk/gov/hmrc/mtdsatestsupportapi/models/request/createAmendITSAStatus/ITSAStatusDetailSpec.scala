@@ -24,7 +24,8 @@ class ITSAStatusDetailSpec extends UnitSpec {
 
   private val itsaStatusDetail = ITSAStatusDetail(
     "2021-03-23T16:02:34.039Z",
-    Status.`No Status`, StatusReason.`Sign up - return available`,
+    Status.`No Status`,
+    StatusReason.`Sign up - return available`,
     None
   )
 

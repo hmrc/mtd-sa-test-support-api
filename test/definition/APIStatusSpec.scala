@@ -29,4 +29,5 @@ class APIStatusSpec extends UnitSpec with EnumJsonSpecSupport {
     ("DEPRECATED", DEPRECATED),
     ("RETIRED", RETIRED)
   )
+
 }

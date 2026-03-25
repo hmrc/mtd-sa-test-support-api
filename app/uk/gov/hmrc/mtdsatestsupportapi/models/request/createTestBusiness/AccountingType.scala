@@ -25,10 +25,12 @@ enum AccountingType {
 
 object AccountingType {
   given Reads[AccountingType] = Enums.reads(values)
+
   given Writes[AccountingType] = {
     case AccountingType.CASH     => JsString("CASH")
     case AccountingType.ACCRUALS => JsString("ACCRUAL")
   }
+
   implicit val parser: PartialFunction[String, AccountingType] = Enums.parser(values)
 
 }

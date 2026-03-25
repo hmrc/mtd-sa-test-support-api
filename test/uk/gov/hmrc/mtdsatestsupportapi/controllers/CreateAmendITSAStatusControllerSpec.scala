@@ -70,7 +70,8 @@ class CreateAmendITSAStatusControllerSpec
         submittedOn = "2021-03-23T16:02:34.039Z",
         status = Status.`No Status`,
         statusReason = StatusReason.`Sign up - no return available`,
-        businessIncome2YearsPrior = Some(234))))
+        businessIncome2YearsPrior = Some(234)
+      )))
 
     val rawData: CreateAmendITSAStatusRawData     = CreateAmendITSAStatusRawData(nino, taxYear.asMtd, body)
     val requestData: CreateAmendITSAStatusRequest = CreateAmendITSAStatusRequest(Nino(nino), taxYear, parsedBody)
@@ -81,6 +82,7 @@ class CreateAmendITSAStatusControllerSpec
       parser = mockRequestParser,
       service = mockService,
       idGenerator = mockIdGenerator)
+
   }
 
   "handleRequest" should {

@@ -24,7 +24,7 @@ import uk.gov.hmrc.mtdsatestsupportapi.models.request.createTestBusiness.{Busine
 import javax.inject.{Inject, Singleton}
 
 @Singleton
-class CreateTestBusinessRequestParser @Inject()(val validator: CreateTestBusinessValidator)
+class CreateTestBusinessRequestParser @Inject() (val validator: CreateTestBusinessValidator)
     extends RequestParser[CreateTestBusinessRawData, CreateTestBusinessRequest] {
 
   override protected def requestFor(data: CreateTestBusinessRawData): CreateTestBusinessRequest =

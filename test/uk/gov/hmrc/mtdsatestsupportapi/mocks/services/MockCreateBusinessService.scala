@@ -34,7 +34,8 @@ trait MockCreateTestBusinessService extends TestSuite with MockFactory {
 
   object MockCreateTestBusinessService {
 
-    def CreateTestBusiness(request: CreateTestBusinessRequest): CallHandler[Future[Either[ErrorWrapper, ResponseWrapper[CreateTestBusinessResponse]]]] =
+    def CreateTestBusiness(
+        request: CreateTestBusinessRequest): CallHandler[Future[Either[ErrorWrapper, ResponseWrapper[CreateTestBusinessResponse]]]] =
       (mockService.createTestBusiness(_: CreateTestBusinessRequest)(_: ExecutionContext, _: RequestContext)).expects(request, *, *)
 
   }

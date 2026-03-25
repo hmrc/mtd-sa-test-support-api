@@ -16,7 +16,7 @@
 
 package api.models.audit
 
-import play.api.libs.json.{ JsValue, Json, OWrites }
+import play.api.libs.json.{JsValue, Json, OWrites}
 
 case class AuditResponse(httpStatus: Int, errors: Option[Seq[AuditError]], body: Option[JsValue])
 
@@ -28,4 +28,5 @@ object AuditResponse {
       case Right(body) => AuditResponse(httpStatus, None, body)
       case Left(errs)  => AuditResponse(httpStatus, Some(errs), None)
     }
+
 }

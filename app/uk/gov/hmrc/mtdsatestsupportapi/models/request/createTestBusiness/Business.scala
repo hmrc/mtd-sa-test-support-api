@@ -34,16 +34,15 @@ case class Business(typeOfBusiness: TypeOfBusiness,
                     businessAddressLineThree: Option[String],
                     businessAddressLineFour: Option[String],
                     businessAddressPostcode: Option[String],
-                    businessAddressCountryCode: Option[String]
-                   ) {
+                    businessAddressCountryCode: Option[String]) {
 
   def hasAnyBusinessAddressDetails: Boolean = {
     businessAddressLineOne.isDefined ||
-      businessAddressLineTwo.isDefined ||
-      businessAddressLineThree.isDefined ||
-      businessAddressLineFour.isDefined ||
-      businessAddressPostcode.isDefined ||
-      businessAddressCountryCode.isDefined
+    businessAddressLineTwo.isDefined ||
+    businessAddressLineThree.isDefined ||
+    businessAddressLineFour.isDefined ||
+    businessAddressPostcode.isDefined ||
+    businessAddressCountryCode.isDefined
   }
 
 }
@@ -58,9 +57,9 @@ object Business {
       val propertyIncomeJson = Json.obj("propertyIncomeFlag" -> typeOfBusiness.isProperty)
 
       typeOfBusiness match {
-        case `uk-property` => propertyIncomeJson + ("incomeSourceType" -> JsString("02"))
+        case `uk-property`      => propertyIncomeJson + ("incomeSourceType" -> JsString("02"))
         case `foreign-property` => propertyIncomeJson + ("incomeSourceType" -> JsString("03"))
-        case _ => propertyIncomeJson
+        case _                  => propertyIncomeJson
       }
     }
   }
@@ -68,29 +67,29 @@ object Business {
   implicit val writes: OWrites[Business] = { business =>
     def trimEmpty(jsonObj: JsObject): JsObject = JsObject(
       jsonObj.fields.filter {
-        case (_, JsNull) => false
+        case (_, JsNull)          => false
         case (_, value: JsObject) => value.fields.nonEmpty
-        case _ => true
+        case _                    => true
       }
     )
 
     val baseJson: JsObject = trimEmpty(
       Json.obj(
-        "tradingName" -> business.tradingName,
+        "tradingName"                    -> business.tradingName,
         "firstAccountingPeriodStartDate" -> business.firstAccountingPeriodStartDate,
-        "firstAccountingPeriodEndDate" -> business.firstAccountingPeriodEndDate,
-        "latencyDetails" -> business.latencyDetails,
-        "quarterTypeElection" -> business.quarterlyTypeChoice,
-        "tradingSDate" -> business.commencementDate,
-        "cessationDate" -> business.cessationDate,
+        "firstAccountingPeriodEndDate"   -> business.firstAccountingPeriodEndDate,
+        "latencyDetails"                 -> business.latencyDetails,
+        "quarterTypeElection"            -> business.quarterlyTypeChoice,
+        "tradingSDate"                   -> business.commencementDate,
+        "cessationDate"                  -> business.cessationDate,
         "businessAddressDetails" -> trimEmpty(
           Json.obj(
             "addressLine1" -> business.businessAddressLineOne,
             "addressLine2" -> business.businessAddressLineTwo,
             "addressLine3" -> business.businessAddressLineThree,
             "addressLine4" -> business.businessAddressLineFour,
-            "postalCode" -> business.businessAddressPostcode,
-            "countryCode" -> business.businessAddressCountryCode
+            "postalCode"   -> business.businessAddressPostcode,
+            "countryCode"  -> business.businessAddressCountryCode
           )
         )
       )
@@ -109,7 +108,7 @@ object Business {
     } else {
       val typeOfBusiness: String = business.typeOfBusiness match {
         case TypeOfBusiness.`foreign-property` => "foreignProperty"
-        case _ => "ukProperty"
+        case _                                 => "ukProperty"
       }
 
       Json.obj(typeOfBusiness -> Json.arr(accountingTypeJson))

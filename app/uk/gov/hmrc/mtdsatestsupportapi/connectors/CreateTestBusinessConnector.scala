@@ -35,9 +35,9 @@ class CreateTestBusinessConnector @Inject() (val http: HttpClientV2, val appConf
     with StandardDownstreamHttpParser {
 
   def createTestBusiness(request: CreateTestBusinessRequest)(implicit
-                                                         hc: HeaderCarrier,
-                                                         ec: ExecutionContext,
-                                                         correlationId: String): Future[DownstreamOutcome[CreateTestBusinessResponse]] = {
+      hc: HeaderCarrier,
+      ec: ExecutionContext,
+      correlationId: String): Future[DownstreamOutcome[CreateTestBusinessResponse]] = {
     import request.*
 
     implicit val successCode: SuccessCode  = SuccessCode(CREATED)

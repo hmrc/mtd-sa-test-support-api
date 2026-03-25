@@ -37,6 +37,7 @@ trait MockListCheckpointsConnector extends TestSuite with MockFactory {
       (mockListCheckpointsConnector
         .listCheckpoints(_: ListCheckpointsRequest)(_: HeaderCarrier, _: ExecutionContext, _: String))
         .expects(request, *, *, *)
+
   }
 
 }

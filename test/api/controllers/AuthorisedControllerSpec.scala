@@ -63,8 +63,7 @@ class AuthorisedControllerSpec extends ControllerBaseSpec {
       def testNotAuth(error: MtdError): Unit =
         s"the service returns an error with code ${error.code}" must {
           s"return a ${error.httpStatus} with code ${error.code}" in new Test {
-            MockedEnrolmentsAuthService
-              .authorised
+            MockedEnrolmentsAuthService.authorised
               .returns(Future.successful(Left(error)))
 
             private val result = target.action()(fakeGetRequest)
@@ -79,8 +78,7 @@ class AuthorisedControllerSpec extends ControllerBaseSpec {
 
     "auth returns an unexpected error" should {
       "return a 500" in new Test {
-        MockedEnrolmentsAuthService
-          .authorised
+        MockedEnrolmentsAuthService.authorised
           .returns(Future.successful(Left(InternalError)))
 
         private val result = target.action()(fakeGetRequest)

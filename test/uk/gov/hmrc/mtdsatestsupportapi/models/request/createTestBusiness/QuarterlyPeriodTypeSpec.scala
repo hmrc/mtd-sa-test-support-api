@@ -20,7 +20,7 @@ import play.api.libs.json.{JsError, JsPath, JsResult, JsString, JsSuccess, JsVal
 import support.UnitSpec
 import uk.gov.hmrc.mtdsatestsupportapi.models.request.createTestBusiness.QuarterlyPeriodType.*
 
-class QuarterlyPeriodTypeSpec extends UnitSpec{
+class QuarterlyPeriodTypeSpec extends UnitSpec {
 
   private val allQuarterlyPeriodTypes: List[QuarterlyPeriodType] = List(`standard`, `calendar`)
 

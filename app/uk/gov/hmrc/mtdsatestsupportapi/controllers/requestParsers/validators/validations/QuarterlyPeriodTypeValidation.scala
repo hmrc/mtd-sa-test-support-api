@@ -20,7 +20,7 @@ import api.controllers.requestParsers.validators.validations.EnumValidation
 import api.models.errors.{MtdError, QuarterlyPeriodTypeFormatError}
 import uk.gov.hmrc.mtdsatestsupportapi.models.request.createTestBusiness.QuarterlyPeriodType
 
-object QuarterlyPeriodTypeValidation extends EnumValidation[QuarterlyPeriodType]{
+object QuarterlyPeriodTypeValidation extends EnumValidation[QuarterlyPeriodType] {
   override val parser: PartialFunction[String, QuarterlyPeriodType] = QuarterlyPeriodType.parser
 
   def validate(value: String, error: => MtdError = QuarterlyPeriodTypeFormatError): Seq[MtdError] = validateEnum(value, error)

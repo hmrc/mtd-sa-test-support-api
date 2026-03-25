@@ -33,7 +33,7 @@ trait MockStatefulTestDataRequestParser extends TestSuite with MockFactory {
       (mockRequestParser
         .parseRequest(_: DeleteStatefulTestDataRawData)(_: String))
         .expects(data, *)
+
   }
+
 }
-
-

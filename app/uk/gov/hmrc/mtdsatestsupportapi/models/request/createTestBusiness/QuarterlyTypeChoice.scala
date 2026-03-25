@@ -33,4 +33,5 @@ object QuarterlyTypeChoice {
     (JsPath \ "quarterReportingType").write[QuarterlyPeriodType] and
       (JsPath \ "taxYearofElection").write[TaxYear]
   )(w => Tuple.fromProductTyped(w))
+
 }

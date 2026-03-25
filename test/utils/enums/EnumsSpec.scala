@@ -23,7 +23,7 @@ import play.api.libs.json.*
 import support.UnitSpec
 
 enum Enum {
-  case `enum-one`, `enum-two`,`enum-three`
+  case `enum-one`, `enum-two`, `enum-three`
 }
 
 object Enum {
@@ -81,14 +81,14 @@ class EnumsSpec extends UnitSpec with Inspectors {
     "allows alternative names (specified by method)" in {
 
       enum Enum2(val altName: String) {
-        case `enum-one` extends Enum2("one")
-        case `enum-two` extends Enum2("two")
+        case `enum-one`   extends Enum2("one")
+        case `enum-two`   extends Enum2("two")
         case `enum-three` extends Enum2("three")
       }
 
       object Enum2 {
-        implicit val show: Show[Enum2]     = Show.show[Enum2](_.altName)
-        given Format[Enum2] = Enums.format(values)
+        implicit val show: Show[Enum2] = Show.show[Enum2](_.altName)
+        given Format[Enum2]            = Enums.format(values)
       }
 
       val json = Json.parse("""

@@ -37,14 +37,7 @@ import uk.gov.hmrc.play.audit.http.connector.AuditResult
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.{ExecutionContext, Future}
 
-class RequestHandlerSpec
-  extends UnitSpec
-    with MockAuditService
-    with MockIdGenerator
-    with Status
-    with HeaderNames
-    with ResultExtractors
-    {
+class RequestHandlerSpec extends UnitSpec with MockAuditService with MockIdGenerator with Status with HeaderNames with ResultExtractors {
 
   private val successResponseJson = Json.obj("result" -> "SUCCESS!")
   private val successCode         = Status.ACCEPTED
@@ -113,7 +106,7 @@ class RequestHandlerSpec
         header("X-CorrelationId", result) shouldBe Some(serviceCorrelationId)
         status(result) shouldBe NO_CONTENT
       }
-      
+
     }
 
     "a request fails with validation errors" must {

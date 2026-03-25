@@ -33,8 +33,7 @@ class ListCheckpointsController @Inject() (val authService: AuthService,
                                            cc: ControllerComponents,
                                            parser: ListCheckpointsRequestParser,
                                            service: ListCheckpointsService,
-                                           idGenerator: IdGenerator
-                                          )(implicit ec: ExecutionContext)
+                                           idGenerator: IdGenerator)(implicit ec: ExecutionContext)
     extends AuthorisedController(cc)
     with Logging {
 

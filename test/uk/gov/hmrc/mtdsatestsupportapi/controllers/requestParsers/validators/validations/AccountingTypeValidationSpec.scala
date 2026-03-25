@@ -39,5 +39,5 @@ class AccountingTypeValidationSpec extends UnitSpec {
       }
     }
   }
-}
 
+}

@@ -38,7 +38,7 @@ class TaxYearSpec extends UnitSpec with TableDrivenPropertyChecks {
       "done through the copy method" must {
         "not compile" in {
           val taxYearGood: TaxYear = TaxYear.ending(2020)
-          val _ = taxYearGood
+          val _                    = taxYearGood
           "taxYearGood.copy(2021)" shouldNot compile
         }
       }
