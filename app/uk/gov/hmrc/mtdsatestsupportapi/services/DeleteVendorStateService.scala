@@ -28,16 +28,17 @@ import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class DeleteVendorStateService @Inject()(connector: DeleteVendorStateConnector) extends BaseService {
+class DeleteVendorStateService @Inject() (connector: DeleteVendorStateConnector) extends BaseService {
 
-  def deleteVendorState(request: DeleteStatefulTestDataRequest)(implicit ec: ExecutionContext, rc: RequestContext): Future[Either[ErrorWrapper, ResponseWrapper[Unit]]] =
+  def deleteVendorState(request: DeleteStatefulTestDataRequest)(implicit
+      ec: ExecutionContext,
+      rc: RequestContext): Future[Either[ErrorWrapper, ResponseWrapper[Unit]]] =
     connector.deleteVendorState(request).map(_.leftMap(mapDownstreamErrors(stubErrorMap)))
-
 
   private val stubErrorMap: Map[String, MtdError] = {
     Map(
-      "NOT_FOUND" -> NotFoundError,
-      "SERVER_ERROR" -> InternalError,
+      "NOT_FOUND"           -> NotFoundError,
+      "SERVER_ERROR"        -> InternalError,
       "SERVICE_UNAVAILABLE" -> InternalError
     )
   }

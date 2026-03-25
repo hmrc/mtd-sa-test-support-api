@@ -29,11 +29,11 @@ import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class CreateTestBusinessService @Inject()(connector: CreateTestBusinessConnector) extends BaseService {
+class CreateTestBusinessService @Inject() (connector: CreateTestBusinessConnector) extends BaseService {
 
   def createTestBusiness(request: CreateTestBusinessRequest)(implicit
-                                                         ec: ExecutionContext,
-                                                         rc: RequestContext): Future[Either[ErrorWrapper, ResponseWrapper[CreateTestBusinessResponse]]] =
+      ec: ExecutionContext,
+      rc: RequestContext): Future[Either[ErrorWrapper, ResponseWrapper[CreateTestBusinessResponse]]] =
     connector.createTestBusiness(request).map(_.leftMap(mapDownstreamErrors(stubErrorMap)))
 
   private val stubErrorMap: Map[String, MtdError] =

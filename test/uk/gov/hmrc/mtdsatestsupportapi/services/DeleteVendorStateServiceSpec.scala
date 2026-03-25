@@ -51,8 +51,8 @@ class DeleteVendorStateServiceSpec extends ServiceSpec {
           }
 
         val stubErrors: List[(String, MtdError)] = List(
-          "NOT_FOUND" -> NotFoundError,
-          "SERVER_ERROR" -> InternalError,
+          "NOT_FOUND"           -> NotFoundError,
+          "SERVER_ERROR"        -> InternalError,
           "SERVICE_UNAVAILABLE" -> InternalError
         )
 
@@ -67,4 +67,5 @@ class DeleteVendorStateServiceSpec extends ServiceSpec {
 
     protected val request: DeleteStatefulTestDataRequest = DeleteStatefulTestDataRequest(vendorClientId = "someId", nino = Some(Nino("TC663795B")))
   }
+
 }

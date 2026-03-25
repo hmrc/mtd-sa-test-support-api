@@ -26,4 +26,5 @@ object CheckpointIdValidation {
       NoValidationErrors
     else
       List(CheckpointIdFormatError)
+
 }

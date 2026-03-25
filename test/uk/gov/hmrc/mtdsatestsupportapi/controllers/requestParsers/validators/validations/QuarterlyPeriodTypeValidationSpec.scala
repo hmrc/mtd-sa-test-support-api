@@ -19,7 +19,8 @@ package uk.gov.hmrc.mtdsatestsupportapi.controllers.requestParsers.validators.va
 import api.models.errors.QuarterlyPeriodTypeFormatError
 import support.UnitSpec
 
-class QuarterlyPeriodTypeValidationSpec extends UnitSpec{
+class QuarterlyPeriodTypeValidationSpec extends UnitSpec {
+
   "QuarterlyPeriodTypeValidation" should {
     "return no error" when {
       checkValid("standard")
@@ -36,4 +37,5 @@ class QuarterlyPeriodTypeValidationSpec extends UnitSpec{
       }
     }
   }
+
 }

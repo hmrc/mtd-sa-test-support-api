@@ -25,9 +25,11 @@ enum LatencyIndicator {
 
 object LatencyIndicator {
   given Reads[LatencyIndicator] = Enums.reads(values)
+
   given Writes[LatencyIndicator] = {
     case LatencyIndicator.A => JsString("A")
     case LatencyIndicator.Q => JsString("Q")
   }
+
   implicit val parser: PartialFunction[String, LatencyIndicator] = Enums.parser(values)
 }

@@ -54,6 +54,7 @@ class DeleteCheckpointControllerSpec
       parser = mockDeleteCheckpointRequestParser,
       service = mockDeleteCheckpointService,
       idGenerator = mockIdGenerator)
+
   }
 
   "DeleteCheckpointController" when {

@@ -29,7 +29,7 @@ import java.time.*
 
 class CreateTestBusinessValidatorSpec extends UnitSpec with JsonErrorValidators with CreateTestBusinessFixtures {
 
-  private val validNino = "AA123456A"
+  private val validNino                   = "AA123456A"
   private val now                         = Instant.parse("2020-01-01T10:11:12.123Z")
   private val clock                       = Clock.fixed(now, ZoneOffset.UTC)
   private def localDate(instant: Instant) = LocalDate.ofInstant(instant, ZoneOffset.UTC)
@@ -130,7 +130,8 @@ class CreateTestBusinessValidatorSpec extends UnitSpec with JsonErrorValidators 
 
     "return FORMAT_TYPE_OF_BUSINESS error" when {
       "format of the business type field is not valid" in new Test {
-        validator.validate(CreateTestBusinessRawData(validNino, bodySelfEmploymentValid.update("/typeOfBusiness", JsString("badValue")))) shouldBe Seq(
+        validator.validate(
+          CreateTestBusinessRawData(validNino, bodySelfEmploymentValid.update("/typeOfBusiness", JsString("badValue")))) shouldBe Seq(
           TypeOfBusinessFormatError)
       }
     }
@@ -177,7 +178,8 @@ class CreateTestBusinessValidatorSpec extends UnitSpec with JsonErrorValidators 
     }
 
     "return RULE_FIRST_ACCOUNTING_DATE_RANGE_INVALID when the first accounting period date range is not a full tax year" in new Test {
-      validator.validate(CreateTestBusinessRawData(validNino, bodySelfEmploymentValid.update("/firstAccountingPeriodStartDate", JsString("2023-01-01")))) shouldBe
+      validator.validate(
+        CreateTestBusinessRawData(validNino, bodySelfEmploymentValid.update("/firstAccountingPeriodStartDate", JsString("2023-01-01")))) shouldBe
         Seq(RuleFirstAccountingDateRangeInvalid)
     }
 
@@ -211,14 +213,16 @@ class CreateTestBusinessValidatorSpec extends UnitSpec with JsonErrorValidators 
 
     "return RULE_COMMENCEMENT_DATE_NOT_SUPPORTED error" when {
       "the commencement date is not in the past" in new Test {
-        validator.validate(CreateTestBusinessRawData(validNino, bodySelfEmploymentValid.update("/commencementDate", Json.toJson(localDate(now))))) shouldBe
+        validator.validate(
+          CreateTestBusinessRawData(validNino, bodySelfEmploymentValid.update("/commencementDate", Json.toJson(localDate(now))))) shouldBe
           Seq(RuleCommencementDateNotSupported)
       }
     }
 
     "return FORMAT_POSTCODE error" when {
       "the format of the postcode field is not valid" in new Test {
-        validator.validate(CreateTestBusinessRawData(validNino, bodySelfEmploymentValid.update("/businessAddressPostcode", JsString("badValue")))) shouldBe
+        validator.validate(
+          CreateTestBusinessRawData(validNino, bodySelfEmploymentValid.update("/businessAddressPostcode", JsString("badValue")))) shouldBe
           Seq(PostcodeFormatError)
       }
     }
@@ -244,7 +248,8 @@ class CreateTestBusinessValidatorSpec extends UnitSpec with JsonErrorValidators 
 
     "return FORMAT_COUNTRY_CODE error" when {
       "a the country code is not valid" in new Test {
-        validator.validate(CreateTestBusinessRawData(validNino, bodySelfEmploymentValid.update("/businessAddressCountryCode", JsString("badValue")))) shouldBe
+        validator.validate(
+          CreateTestBusinessRawData(validNino, bodySelfEmploymentValid.update("/businessAddressCountryCode", JsString("badValue")))) shouldBe
           Seq(CountryCodeFormatError)
       }
     }
@@ -261,11 +266,11 @@ class CreateTestBusinessValidatorSpec extends UnitSpec with JsonErrorValidators 
         }
       }
 
-      testWithForbiddenAddressField(path = "/businessAddressLineOne",     value = "Addr Line 1")
-      testWithForbiddenAddressField(path = "/businessAddressLineTwo",     value = "Addr Line 2")
-      testWithForbiddenAddressField(path = "/businessAddressLineThree",   value = "Addr Line 3")
-      testWithForbiddenAddressField(path = "/businessAddressLineFour",    value = "Addr Line 4")
-      testWithForbiddenAddressField(path = "/businessAddressPostcode",    value = "SW1A 1AA")
+      testWithForbiddenAddressField(path = "/businessAddressLineOne", value = "Addr Line 1")
+      testWithForbiddenAddressField(path = "/businessAddressLineTwo", value = "Addr Line 2")
+      testWithForbiddenAddressField(path = "/businessAddressLineThree", value = "Addr Line 3")
+      testWithForbiddenAddressField(path = "/businessAddressLineFour", value = "Addr Line 4")
+      testWithForbiddenAddressField(path = "/businessAddressPostcode", value = "SW1A 1AA")
       testWithForbiddenAddressField(path = "/businessAddressCountryCode", value = "FR")
     }
 
@@ -307,9 +312,12 @@ class CreateTestBusinessValidatorSpec extends UnitSpec with JsonErrorValidators 
       }
     }
 
-    "return FORMAT_QUARTERLY_PERIOD_TYPE" when{
+    "return FORMAT_QUARTERLY_PERIOD_TYPE" when {
       "invalid quarterlyPeriodType value is provided" in new Test {
-        validator.validate(CreateTestBusinessRawData(validNino, bodySelfEmploymentValid.update("/quarterlyTypeChoice/quarterlyPeriodType", JsString("badValue")))) shouldBe
+        validator.validate(
+          CreateTestBusinessRawData(
+            validNino,
+            bodySelfEmploymentValid.update("/quarterlyTypeChoice/quarterlyPeriodType", JsString("badValue")))) shouldBe
           Seq(QuarterlyPeriodTypeFormatError)
       }
     }

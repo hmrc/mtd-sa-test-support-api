@@ -36,7 +36,10 @@ trait AuditHandler extends RequestContextImplicits {
 object AuditHandler {
 
   trait AuditDetailCreator[A] {
-    def createAuditDetail(userDetails: UserDetails, requestBody: Option[JsValue], auditResponse: AuditResponse, versionNumber: String)(implicit ctx: RequestContext): A
+
+    def createAuditDetail(userDetails: UserDetails, requestBody: Option[JsValue], auditResponse: AuditResponse, versionNumber: String)(implicit
+        ctx: RequestContext): A
+
   }
 
   def custom[A: Writes](auditService: AuditService,

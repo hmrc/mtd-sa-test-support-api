@@ -24,6 +24,7 @@ trait DownstreamStub extends WireMockMethods {
   self: WireMockSupport =>
 
   object DownstreamStub {
+
     def onSuccess(method: HTTPMethod, uri: String, status: Int, body: JsValue): StubMapping = {
       when(method = method, uri = uri)
         .thenReturn(status = status, body)

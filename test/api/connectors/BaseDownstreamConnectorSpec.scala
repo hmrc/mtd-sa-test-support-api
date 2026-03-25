@@ -153,7 +153,7 @@ class BaseDownstreamConnectorSpec extends ConnectorSpec {
 
     "put empty body" must {
       "puts with the required headers and returns the result" in new Test {
-        implicit val hc: HeaderCarrier = HeaderCarrier(otherHeaders = headersInRequest :+ ("Content-Type" -> "application/json"))
+        implicit val hc: HeaderCarrier                   = HeaderCarrier(otherHeaders = headersInRequest :+ ("Content-Type" -> "application/json"))
         implicit val context: connector.ConnectorContext = connector.ConnectorContext(downstreamConfig)
 
         when(PUT, url)

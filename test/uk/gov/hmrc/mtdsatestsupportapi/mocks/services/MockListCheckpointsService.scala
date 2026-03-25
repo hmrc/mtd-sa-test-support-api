@@ -33,8 +33,11 @@ trait MockListCheckpointsService extends TestSuite with MockFactory {
   val mockListCheckpointsService: ListCheckpointsService = mock[ListCheckpointsService]
 
   object MockListCheckpointsService {
-    def listCheckpoints(request: ListCheckpointsRequest): CallHandler[Future[Either[ErrorWrapper, ResponseWrapper[ListCheckpointsResponse[Checkpoint]]]]] =
-      (mockListCheckpointsService.listCheckpoints(_: ListCheckpointsRequest)(_: ExecutionContext, _: RequestContext)).expects(request,*, *)
+
+    def listCheckpoints(
+        request: ListCheckpointsRequest): CallHandler[Future[Either[ErrorWrapper, ResponseWrapper[ListCheckpointsResponse[Checkpoint]]]]] =
+      (mockListCheckpointsService.listCheckpoints(_: ListCheckpointsRequest)(_: ExecutionContext, _: RequestContext)).expects(request, *, *)
+
   }
 
 }

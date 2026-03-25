@@ -36,11 +36,7 @@ trait VersionRoutingMap {
   final def versionRouter(version: String): Option[Router] = map.get(version)
 }
 
-case class VersionRoutingMapImpl @Inject() (appConfig: AppConfig,
-                                            defaultRouter: Router,
-                                            v1Router: v1.Routes)
-    extends VersionRoutingMap
-    with Logging {
+case class VersionRoutingMapImpl @Inject() (appConfig: AppConfig, defaultRouter: Router, v1Router: v1.Routes) extends VersionRoutingMap with Logging {
 
   val featureSwitches: FeatureSwitches = FeatureSwitches(appConfig.featureSwitches)
 

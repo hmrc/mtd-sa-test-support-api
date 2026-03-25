@@ -28,11 +28,11 @@ import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class RestoreCheckpointService @Inject()(connector: RestoreCheckpointConnector) extends BaseService {
+class RestoreCheckpointService @Inject() (connector: RestoreCheckpointConnector) extends BaseService {
 
   def restoreCheckpoint(request: RestoreCheckpointRequest)(implicit
-                                                          ec: ExecutionContext,
-                                                          rc: RequestContext
+      ec: ExecutionContext,
+      rc: RequestContext
   ): Future[Either[ErrorWrapper, ResponseWrapper[Unit]]] =
     connector.restoreCheckpoint(request).map(_.leftMap(mapDownstreamErrors(stubErrorMap)))
 

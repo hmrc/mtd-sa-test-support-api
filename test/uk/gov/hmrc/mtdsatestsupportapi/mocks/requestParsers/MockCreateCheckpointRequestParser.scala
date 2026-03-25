@@ -33,7 +33,7 @@ trait MockCreateCheckpointRequestParser extends TestSuite with MockFactory {
       (mockRequestParser
         .parseRequest(_: CreateCheckpointRawData)(_: String))
         .expects(data, *)
+
   }
+
 }
-
-

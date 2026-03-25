@@ -26,7 +26,7 @@ object ListCheckpointsResponse {
   implicit def reads: Reads[ListCheckpointsResponse[Checkpoint]] = Json.reads[ListCheckpointsResponse[Checkpoint]]
 
   implicit def writes[I: Writes]: OWrites[ListCheckpointsResponse[I]] = Json.writes[ListCheckpointsResponse[I]]
-  
+
   implicit object ResponseFunctor extends Functor[ListCheckpointsResponse] {
 
     override def map[A, B](fa: ListCheckpointsResponse[A])(f: A => B): ListCheckpointsResponse[B] =

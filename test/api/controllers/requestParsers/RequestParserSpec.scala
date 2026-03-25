@@ -39,6 +39,7 @@ class RequestParserSpec extends UnitSpec {
 
       protected def requestFor(data: Raw): Request = Request(Nino(data.nino))
     }
+
   }
 
   "parse" should {

@@ -67,8 +67,8 @@ class CreateTestBusinessValidator @Inject() (clock: Clock, featureSwitches: Feat
       validateLatencyIndicator("/latencyDetails/latencyIndicator2") ++
       validateTaxYear("/latencyDetails/taxYear1") ++
       validateTaxYear("/latencyDetails/taxYear2") ++
-      validateQuarterlyPeriodType("/quarterlyTypeChoice/quarterlyPeriodType")++
-      validateTaxYear("/quarterlyTypeChoice/taxYearOfChoice")++
+      validateQuarterlyPeriodType("/quarterlyTypeChoice/quarterlyPeriodType") ++
+      validateTaxYear("/quarterlyTypeChoice/taxYearOfChoice") ++
       validateField("/businessAddressCountryCode")(CountryCodeValidation.validate(_)) ++
       validateField("/businessAddressPostcode")(PostcodeValidation.validate(_)) ++
       validateDate("/firstAccountingPeriodStartDate") ++
@@ -168,7 +168,7 @@ class CreateTestBusinessValidator @Inject() (clock: Clock, featureSwitches: Feat
 
   private def requiresBusinessPostcode(business: Business): Boolean = {
     !forbidsBusinessAddress(business) &&
-      business.businessAddressCountryCode.contains("GB")
+    business.businessAddressCountryCode.contains("GB")
   }
 
   private def requiresBusinessAddress(business: Business): Boolean = business.typeOfBusiness.isSelfEmployment

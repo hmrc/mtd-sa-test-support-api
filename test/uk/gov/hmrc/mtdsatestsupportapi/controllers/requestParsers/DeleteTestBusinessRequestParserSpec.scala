@@ -29,14 +29,14 @@ class DeleteTestBusinessRequestParserSpec extends UnitSpec with MockDeleteTestBu
   implicit val correlationId: String = "X-123"
   val nino                           = "AA999999A"
   val businessId                     = "XAIS12345678910"
-  val rawData                        = DeleteTestBusinessRawData( nino, businessId)
+  val rawData                        = DeleteTestBusinessRawData(nino, businessId)
 
   "DeleteTestBusinessRequestParser" must {
     "parse clean rawData into a request" in {
 
       MockDeleteTestBusinessValidator.validate(rawData).returns(Nil)
 
-      parser.parseRequest(rawData) shouldBe Right(DeleteTestBusinessRequest( Nino(nino), businessId))
+      parser.parseRequest(rawData) shouldBe Right(DeleteTestBusinessRequest(Nino(nino), businessId))
 
     }
     "return an error" when {

@@ -23,7 +23,7 @@ import uk.gov.hmrc.mtdsatestsupportapi.models.request.createCheckpoint.CreateChe
 class CreateCheckpointValidatorSpec extends UnitSpec {
 
   private val vendorClientId = "some_id"
-  private val validator = new CreateCheckpointValidator()
+  private val validator      = new CreateCheckpointValidator()
 
   "CreateCheckpointValidator when validating" should {
     "return no errors" when {

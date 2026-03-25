@@ -34,7 +34,7 @@ object MtdError {
     (JsPath \ "code").write[String] and
       (JsPath \ "message").write[String] and
       (JsPath \ "paths").writeNullable[Seq[String]]
-    )(unlift(MtdError.unapply))
+  )(unlift(MtdError.unapply))
 
   // excludes httpStatus
   def unapply(e: MtdError): Option[(String, String, Option[Seq[String]])] = Some((e.code, e.message, e.paths))

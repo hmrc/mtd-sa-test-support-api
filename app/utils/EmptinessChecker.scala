@@ -28,7 +28,7 @@ object EmptyPathsResult {
 }
 
 /** Type class to locate paths to empty objects or arrays within an instance of an object.
- */
+  */
 trait EmptinessChecker[A] {
   import EmptinessChecker.*
 

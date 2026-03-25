@@ -45,5 +45,5 @@ object ResultCreator {
   def plainJson[InputRaw <: RawData, Input, Output](successStatus: Int = Status.OK)(implicit
       ws: Writes[Output]): ResultCreator[InputRaw, Input, Output] =
     (_: InputRaw, _: Input, output: Output) => ResultWrapper(successStatus, Some(Json.toJson(output)))
-  
+
 }

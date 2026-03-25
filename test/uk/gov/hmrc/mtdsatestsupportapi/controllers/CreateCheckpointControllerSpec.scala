@@ -59,6 +59,7 @@ class CreateCheckpointControllerSpec
       parser = mockRequestParser,
       service = mockService,
       idGenerator = mockIdGenerator)
+
   }
 
   "handleRequest" should {
@@ -74,7 +75,7 @@ class CreateCheckpointControllerSpec
         MockCreateCheckpointService
           .createCheckpoint(requestData)
           .returns(Future.successful(Right(ResponseWrapper(correlationId, response))))
-        
+
         runOkTest(
           expectedStatus = CREATED,
           maybeExpectedResponseBody = Some(
@@ -83,7 +84,7 @@ class CreateCheckpointControllerSpec
             )
           )
         )
-       }
+      }
     }
 
     "return the error as per spec" when {

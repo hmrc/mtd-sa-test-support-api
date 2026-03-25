@@ -54,23 +54,24 @@ trait EnumJsonSpecSupport {
       }
     }
 
-  /**
-    * Tests round-tripping
+  /** Tests round-tripping
     *
-    * @param namesAndValues Pairs (name, object) for all the objects in the enumeration under test
-    * @tparam A the type of enumeration (sealed trait of objects) being tested
+    * @param namesAndValues
+    *   Pairs (name, object) for all the objects in the enumeration under test
+    * @tparam A
+    *   the type of enumeration (sealed trait of objects) being tested
     */
 
   def testRoundTrip[A: Format](namesAndValues: (String, A)*): Unit =
     "JSON formats" must {
       "support round trip" in {
-        namesAndValues.foreach {
-          case (name, obj) =>
-            val json = Json.parse(s""""$name"""")
+        namesAndValues.foreach { case (name, obj) =>
+          val json = Json.parse(s""""$name"""")
 
-            Json.toJson(obj) shouldBe json
-            json.as[A] shouldBe obj
+          Json.toJson(obj) shouldBe json
+          json.as[A] shouldBe obj
         }
       }
     }
+
 }

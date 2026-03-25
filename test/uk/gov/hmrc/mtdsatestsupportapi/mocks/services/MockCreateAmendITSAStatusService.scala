@@ -40,4 +40,5 @@ trait MockCreateAmendITSAStatusService extends TestSuite with MockFactory {
     }
 
   }
+
 }

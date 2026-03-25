@@ -46,10 +46,14 @@ class ListCheckpointsConnectorSpec extends ConnectorSpec {
             .thenReturn[JsValue](status = 200, body = response, headers = responseHeaders)
 
           await(connector.listCheckpoints(requestDataWithoutNino)) shouldBe Right(
-            ResponseWrapper(responseCorrelationId, ListCheckpointsResponse(Seq(
-              Checkpoint(checkpointId1, Some(nino), checkpointCreationTimestamp1),
-              Checkpoint(checkpointId2, None, checkpointCreationTimestamp2)
-            ))))
+            ResponseWrapper(
+              responseCorrelationId,
+              ListCheckpointsResponse(
+                Seq(
+                  Checkpoint(checkpointId1, Some(nino), checkpointCreationTimestamp1),
+                  Checkpoint(checkpointId2, None, checkpointCreationTimestamp2)
+                ))
+            ))
         }
       }
       "the downstream call is unsuccessful" should {

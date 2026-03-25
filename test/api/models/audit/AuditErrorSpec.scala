@@ -37,4 +37,5 @@ class AuditErrorSpec extends UnitSpec {
       }
     }
   }
+
 }

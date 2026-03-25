@@ -29,4 +29,5 @@ object Checkpoint {
       (JsPath \ "taxableEntityId").readNullable[String] and
       (JsPath \ "checkpointCreationTimestamp").read[String]
   )((checkpointId, nino, checkpointCreationTimestamp) => Checkpoint(checkpointId, nino, checkpointCreationTimestamp))
+
 }

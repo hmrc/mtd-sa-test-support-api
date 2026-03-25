@@ -36,7 +36,7 @@ class DeleteTestBusinessControllerISpec extends IntegrationBaseSpec {
       }
     }
     "return validation errors according to the spec" when {
-      def validationErrorTest(inputNino: String, inputBusinessId:String, expectedStatus: Int, expectedBody: MtdError): Unit = {
+      def validationErrorTest(inputNino: String, inputBusinessId: String, expectedStatus: Int, expectedBody: MtdError): Unit = {
         s"validation fails with ${expectedBody.code} error" in new Test {
 
           override def setupStubs(): StubMapping =

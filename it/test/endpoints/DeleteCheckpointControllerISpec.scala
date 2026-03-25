@@ -94,7 +94,7 @@ class DeleteCheckpointControllerISpec extends IntegrationBaseSpec {
     val vendorClientId = "some_client_id"
     val checkpointId   = "a1e8057e-fbbc-47a8-a8b4-78d9f015c253"
 
-    val downstreamUri = s"/test-support/vendor-state/$vendorClientId/checkpoints/$checkpointId"
+    val downstreamUri                                = s"/test-support/vendor-state/$vendorClientId/checkpoints/$checkpointId"
     val downstreamQueryParams: Seq[(String, String)] = Seq.empty
 
     def setupStubs(): StubMapping
