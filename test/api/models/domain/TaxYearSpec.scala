@@ -66,18 +66,21 @@ class TaxYearSpec extends UnitSpec with TableDrivenPropertyChecks {
     "constructed from TYS format" must {
       "work" in {
         TaxYear.fromTys("23-24") shouldBe TaxYear.ending(2024)
+        assertThrows[IllegalArgumentException](TaxYear.fromTys("invalid value"))
       }
     }
 
     "constructed from YYYY format" must {
       "work" in {
         TaxYear.fromDownstream("2024") shouldBe TaxYear.ending(2024)
+        assertThrows[IllegalArgumentException](TaxYear.fromDownstream("invalid value"))
       }
     }
 
     "constructed from MTD format" must {
       "work" in {
         TaxYear.fromMtd("2023-24") shouldBe TaxYear.ending(2024)
+        assertThrows[IllegalArgumentException](TaxYear.fromMtd("invalid value"))
       }
     }
 
@@ -96,6 +99,13 @@ class TaxYearSpec extends UnitSpec with TableDrivenPropertyChecks {
     "getting in MTD format" must {
       "work" in {
         TaxYear.ending(2024).asMtd shouldBe "2023-24"
+      }
+    }
+
+    "getting .toString" must {
+      "work" in {
+        val taxYear = TaxYear.ending(2023)
+        taxYear.toString shouldBe "TaxYear(2022 - 2023)"
       }
     }
 

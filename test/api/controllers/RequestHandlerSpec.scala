@@ -33,7 +33,7 @@ import play.api.test.{FakeRequest, ResultExtractors}
 import support.UnitSpec
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.audit.http.connector.AuditResult
-
+import api.models.errors.InternalError
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -242,7 +242,35 @@ class RequestHandlerSpec extends UnitSpec with MockAuditService with MockIdGener
           verifyAudit(serviceCorrelationId, AuditResponse(NinoFormatError.httpStatus, Left(Seq(AuditError(NinoFormatError.code)))))
         }
       }
+
+      "given an error handler that doesn't handle an error" should {
+        "return an InternalServerError" in {
+          val errorHandler = ErrorHandling {
+            case _: ErrorWrapper if false =>
+              throw new Exception("Should not have been matched")
+          }
+          val requestHandler = basicRequestHandler.withErrorHandling(errorHandler)
+
+          parseRequest returns Right(Input)
+          service returns Future.successful(Left(ErrorWrapper(serviceCorrelationId, NinoFormatError)))
+
+          val result = requestHandler.handleRequest(InputRaw)
+
+          status(result) shouldBe InternalError.httpStatus
+          contentAsJson(result) shouldBe InternalError.asJson
+        }
+      }
+
+      "withErrorHandling()" should {
+        "return a new RequestHandlerBuilder with the expected error handling" in {
+          class CustomErrorHandling extends ErrorHandling(null)
+
+          val result = basicRequestHandler.withErrorHandling(new CustomErrorHandling)
+          result.errorHandling shouldBe a[CustomErrorHandling]
+        }
+      }
     }
+
   }
 
 }

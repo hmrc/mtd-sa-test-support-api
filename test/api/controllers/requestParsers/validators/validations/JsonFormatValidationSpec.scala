@@ -105,7 +105,7 @@ class JsonFormatValidationSpec extends UnitSpec {
     "validate against the json format" in {
       val json = Json.parse("""{ "field1" : "Something" }""")
 
-      val validationResult = JsonFormatValidation.validate[TestDataObject](json)
+      val validationResult = JsonFormatValidation.validateAndCheckNonEmpty[TestDataObject](json)
       validationResult shouldBe List(RuleIncorrectOrEmptyBodyError.copy(paths = Some(Seq("/field2"))))
     }
 

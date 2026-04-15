@@ -53,17 +53,6 @@ object JsonFormatValidation {
     }
   }
 
-  def validateAndCheckNonEmptyOrRead[A: Reads: EmptinessChecker](data: JsValue): Either[List[MtdError], A] =
-    validateOrRead[A](data) match {
-      case Left(schemaErrors) => Left(schemaErrors)
-      case Right(body) =>
-        EmptinessChecker.findEmptyPaths(body) match {
-          case EmptyPathsResult.CompletelyEmpty   => Left(List(RuleIncorrectOrEmptyBodyError))
-          case EmptyPathsResult.EmptyPaths(paths) => Left(List(RuleIncorrectOrEmptyBodyError.copy(paths = Some(paths))))
-          case EmptyPathsResult.NoEmptyPaths      => Right(body)
-        }
-    }
-
   private def handleErrors(errors: Seq[(JsPath, Seq[JsonValidationError])]): List[MtdError] = {
     val failures = errors.map {
       case (path: JsPath, Seq(JsonValidationError(Seq("error.path.missing"))))                              => MissingMandatoryField(path)

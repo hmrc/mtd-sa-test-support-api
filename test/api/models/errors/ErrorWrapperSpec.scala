@@ -98,7 +98,7 @@ class ErrorWrapperSpec extends UnitSpec {
 
     "return false" when {
       "given no matching errors" in {
-        val result = errorWrapper.containsAnyOf(DateFormatError, ValueFormatError)
+        val result = errorWrapper.containsAnyOf(DateFormatError, ValueFormatError, SubmissionIdNotFoundError)
         result shouldBe false
       }
       "given a matching error in 'errors' but not the single 'error' which should be a BadRequestError" in {
