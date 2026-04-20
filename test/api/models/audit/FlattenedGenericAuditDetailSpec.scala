@@ -90,17 +90,11 @@ class FlattenedGenericAuditDetailSpec extends UnitSpec with MockAppConfig {
     """.stripMargin
   )
 
-  val invalidTaxYearAuditDetailModel: FlattenedGenericAuditDetail = FlattenedGenericAuditDetail(
-    versionNumber = Some(versionNumber),
-    userType = userDetails.userType,
-    agentReferenceNumber = agentReferenceNumber,
-    params = Map("nino" -> nino, "taxYear" -> "2021-2022"),
-    request = Some(requestBodyJson),
-    `X-CorrelationId` = correlationId,
-    response = "error",
-    httpStatusCode = BAD_REQUEST,
+  val invalidTaxYearAuditDetailModel: FlattenedGenericAuditDetail = auditDetailModelSuccess.copy(
+    params = auditDetailModelSuccess.params + ("taxYear" -> "2021-2022"),
     errorCodes = Some(List(TaxYearFormatError.code)),
-    responseBody = None
+    response = "error",
+    httpStatusCode = BAD_REQUEST
   )
 
   "FlattenedGenericAuditDetail" when {

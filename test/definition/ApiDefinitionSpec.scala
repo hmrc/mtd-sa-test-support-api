@@ -17,12 +17,59 @@
 package definition
 
 import definition.APIStatus.ALPHA
+import play.api.libs.json.Json
 import support.UnitSpec
 
 class ApiDefinitionSpec extends UnitSpec {
 
   val apiVersion: APIVersion       = APIVersion("a", ALPHA, endpointsEnabled = false)
   val apiDefinition: APIDefinition = APIDefinition("b", "c", "d", Seq("e"), Seq(apiVersion), Some(false), isTestSupport = true)
+
+  private val apiVersionJson = Json.parse("""
+        {
+          "version": "a",
+          "status": "ALPHA",
+          "endpointsEnabled": false
+        }
+      """)
+
+  private val apiDefinitionJson = Json.parse("""
+        {
+          "name": "b",
+          "description": "c",
+          "context": "d",
+          "categories": ["e"],
+          "versions": [
+            {
+              "version": "a",
+              "status": "ALPHA",
+              "endpointsEnabled": false
+            }
+          ],
+          "requiresTrust": false,
+          "isTestSupport": true
+        }
+      """)
+
+  private val definitionJson = Json.parse("""
+        {
+          "api": {
+            "name": "b",
+            "description": "c",
+            "context": "d",
+            "categories": ["e"],
+            "versions": [
+              {
+                "version": "a",
+                "status": "ALPHA",
+                "endpointsEnabled": false
+              }
+            ],
+            "requiresTrust": false,
+            "isTestSupport": true
+          }
+        }
+      """)
 
   "APIVersion" when {
     "the 'version' parameter is empty" should {
@@ -81,6 +128,38 @@ class ApiDefinitionSpec extends UnitSpec {
       assertThrows[IllegalArgumentException](
         apiDefinition.copy(versions = Seq())
       )
+    }
+  }
+
+  "APIVersion" should {
+    "deserialise to model" in {
+      apiVersionJson.as[APIVersion] shouldBe apiVersion
+    }
+
+    "serialise to JSON" in {
+      Json.toJson(apiVersion) shouldBe apiVersionJson
+    }
+  }
+
+  "APIDefinition" should {
+    "deserialise to model" in {
+      apiDefinitionJson.as[APIDefinition] shouldBe apiDefinition
+    }
+
+    "serialise to JSON" in {
+      Json.toJson(apiDefinition) shouldBe apiDefinitionJson
+    }
+  }
+
+  "Definition" should {
+    val definition = Definition(apiDefinition)
+
+    "deserialise to model" in {
+      definitionJson.as[Definition] shouldBe definition
+    }
+
+    "serialise to JSON" in {
+      Json.toJson(definition) shouldBe definitionJson
     }
   }
 
