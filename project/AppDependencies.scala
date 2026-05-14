@@ -21,10 +21,12 @@ private object AppDependencies {
   val bootstrapPlayVersion = "10.7.0"
 
   val compile: Seq[ModuleID] = Seq(
-    "uk.gov.hmrc"       %% "bootstrap-backend-play-30" % bootstrapPlayVersion,
-    "org.typelevel"     %% "cats-core"                 % "2.13.0",
-    "com.neovisionaries" % "nv-i18n"                   % "1.29",
-    "com.github.jknack"  % "handlebars"                % "4.3.1"
+    "uk.gov.hmrc"               %% "bootstrap-backend-play-30"  % bootstrapPlayVersion,
+    "org.typelevel"             %% "cats-core"                  % "2.13.0",
+    "com.neovisionaries"        % "nv-i18n"                     % "1.29",
+    "com.github.jknack"         % "handlebars"                  % "4.3.1",
+    "com.microsoft.playwright"  % "playwright"                  % "1.45.0"
+
   )
 
   val test: Seq[sbt.ModuleID] = Seq(
