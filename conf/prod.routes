@@ -1,6 +1,7 @@
 # Add all the application routes to the app.routes file
 ->         /                     health.Routes
 ->         /                     definition.Routes
+->         /                     internal.Routes
 
 # NOTE: versioned API routes (e.g. v1.routes) are handled automatically
 # via VersionRoutingRequestHandler and so there is no need to include them here
