@@ -30,9 +30,9 @@ import scala.util.control.NonFatal
 
 @Singleton
 class FormAutomationService @Inject() (
-                                        lifecycle: ApplicationLifecycle,
-                                        @Named("playwrightEc") playwrightEc: ExecutionContext
-                                      ) extends Logging {
+    lifecycle: ApplicationLifecycle,
+    @Named("playwrightEc") playwrightEc: ExecutionContext
+) extends Logging {
 
   private val playwright: Playwright = Playwright.create()
 

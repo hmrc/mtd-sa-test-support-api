@@ -32,6 +32,11 @@ trait MockAppConfig extends TestSuite with MockFactory {
     def stubEnv: CallHandler[String]                        = (() => mockAppConfig.stubEnv).expects()
     def stubToken: CallHandler[String]                      = (() => mockAppConfig.stubToken).expects()
 
+    // Oauth Config
+    def oauthDownstreamConfig: CallHandler[DownstreamConfig] = (() => mockAppConfig.oauthDownstreamConfig).expects()
+    def oauthToken: CallHandler[String]                      = (() => mockAppConfig.oauthToken).expects()
+    def oauthEnv: CallHandler[String]                        = (() => mockAppConfig.oauthEnv).expects()
+
     // API Config
     def featureSwitches: CallHandler[Configuration]             = (() => mockAppConfig.featureSwitches).expects()
     def apiGatewayContext: CallHandler[String]                  = (() => mockAppConfig.apiGatewayContext).expects()
