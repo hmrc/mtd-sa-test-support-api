@@ -14,12 +14,9 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.internaltestsupport.models
+package uk.gov.hmrc.internaltestsupport.services
 
-import play.api.libs.json.{Json, OFormat}
+import org.scalamock.scalatest.MockFactory
+import support.UnitSpec
 
-case class FormSubmitResult(oauthCode: Option[String] = None, error: Option[String] = None)
-
-object FormSubmitResult {
-  implicit val format: OFormat[FormSubmitResult] = Json.format[FormSubmitResult]
-}
+class FormAutomationServiceSpec extends UnitSpec with MockFactory {}

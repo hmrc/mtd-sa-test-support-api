@@ -1,1 +1,1 @@
-GET         /auth/callback                                     ???
+POST        /auth/generate  uk.gov.hmrc.internaltestsupport.controllers.OauthController.post()
