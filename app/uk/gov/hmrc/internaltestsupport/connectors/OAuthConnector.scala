@@ -31,13 +31,13 @@ import scala.concurrent.{ExecutionContext, Future}
 @Singleton
 class OAuthConnector @Inject() (val http: HttpClientV2, val appConfig: AppConfig) extends BaseDownstreamConnector with StandardDownstreamHttpParser {
 
-  def getOauthToken(
+  def getOAuthToken(
       request: OAuthRequest)(implicit hc: HeaderCarrier, ec: ExecutionContext, correlationId: String): Future[DownstreamOutcome[OAuthResponse]] = {
 
     implicit val successCode: SuccessCode  = SuccessCode(OK)
     implicit val context: ConnectorContext = ConnectorContext(appConfig.oauthDownstreamConfig)
 
-    post(request, DownstreamUri[OAuthResponse](s"oauth/token"))
+    postUrlEncoded(request.urlEncoded, DownstreamUri[OAuthResponse](s"oauth/token"))
   }
 
 }

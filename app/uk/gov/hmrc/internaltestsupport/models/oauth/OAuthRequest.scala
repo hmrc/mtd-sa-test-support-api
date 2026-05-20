@@ -18,7 +18,17 @@ package uk.gov.hmrc.internaltestsupport.models.oauth
 
 import play.api.libs.json.{Json, OFormat}
 
-case class OAuthRequest(grant_type: String, code: String, redirect_uri: String, client_id: String, client_secret: String)
+case class OAuthRequest(grant_type: String, code: String, redirect_uri: String, client_id: String, client_secret: String) {
+
+  val urlEncoded: String = {
+    s"grant_type=${this.grant_type}" +
+      s"&code=${this.code}" +
+      s"&redirect_uri=${this.redirect_uri}" +
+      s"&client_id=${this.client_id}" +
+      s"&client_secret=${this.client_secret}"
+  }
+
+}
 
 object OAuthRequest {
   implicit val format: OFormat[OAuthRequest] = Json.format[OAuthRequest]

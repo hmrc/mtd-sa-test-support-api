@@ -126,7 +126,7 @@ class FormAutomationService @Inject() (
       page
         .locator(GGSelectors.redirectUrlInput)
         .fill(
-          s"$oauthUrl/authorize?client_id=$clientId&scope=read:self-assessment+write:self-assessment&response_type=code&redirect_uri=http://localhost:9000/callback&state=12345"
+          s"$oauthUrl/authorize?client_id=$clientId&scope=read:self-assessment+write:self-assessment&response_type=code&redirect_uri=http://localhost:9000&state=12345"
         )
 
       page.locator(GGSelectors.enrolmentKeyInput).fill("HMRC-MTD-IT")

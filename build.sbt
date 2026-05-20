@@ -24,6 +24,10 @@ ThisBuild / majorVersion := 0
 ThisBuild / scalacOptions ++= Seq("-Werror", "-Wconf:msg=Flag.*repeatedly:s")
 ThisBuild / scalafmtOnCompile := true
 
+Compile / scalacOptions += "-Xno-enrich-error-messages"
+Test / scalacOptions    += "-Xno-enrich-error-messages"
+
+
 lazy val microservice = Project(appName, file("."))
   .enablePlugins(play.sbt.PlayScala, SbtDistributablesPlugin)
   .disablePlugins(JUnitXmlReportPlugin) //Required to prevent https://github.com/scalatest/scalatest/issues/1427
