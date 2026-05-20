@@ -1,1 +1,1 @@
-POST        /auth/generate  uk.gov.hmrc.internaltestsupport.controllers.OauthController.post()
+POST        /auth/generate  uk.gov.hmrc.internaltestsupport.controllers.OAuthController.post()

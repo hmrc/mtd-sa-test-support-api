@@ -18,7 +18,7 @@ package uk.gov.hmrc.internaltestsupport.models.oauth
 
 import play.api.libs.json.{Json, OFormat}
 
-case class OAuthResponse(accessToken: String, refreshToken: String, expiresIn: Int, scope: String, tokenType: String)
+case class OAuthResponse(access_token: String, refresh_token: String, expires_in: Int, scope: String, token_type: String)
 
 object OAuthResponse {
   implicit val format: OFormat[OAuthResponse] = Json.format[OAuthResponse]

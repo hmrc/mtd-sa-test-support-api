@@ -16,9 +16,27 @@
 
 package uk.gov.hmrc.internaltestsupport.services
 
-import play.api.Logging
+import api.controllers.RequestContext
+import api.models.errors.*
+import api.services.{BaseService, ServiceOutcome}
+import cats.implicits.toBifunctorOps
+import uk.gov.hmrc.internaltestsupport.connectors.OAuthConnector
+import uk.gov.hmrc.internaltestsupport.models.oauth.{OAuthRequest, OAuthResponse}
 
 import javax.inject.*
+import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class OAuthService @Inject() () extends Logging {}
+class OAuthService @Inject() (connector: OAuthConnector) extends BaseService {
+
+  def getOAuthToken(request: OAuthRequest)(implicit ec: ExecutionContext, rc: RequestContext): Future[ServiceOutcome[OAuthResponse]] = {
+    connector.getOAuthToken(request).map(_.leftMap(mapDownstreamErrors(errorMap)))
+  }
+
+  private val errorMap: Map[String, MtdError] = {
+    Map(
+      "SERVER_ERROR" -> InternalError
+    )
+  }
+
+}

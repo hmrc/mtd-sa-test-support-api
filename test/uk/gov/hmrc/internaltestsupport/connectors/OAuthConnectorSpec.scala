@@ -36,7 +36,7 @@ class OAuthConnectorSpec extends ConnectorSpec {
             .withHeaders(Seq(("content-type", "application/json")))
             .thenReturn(OK, oauthSuccessResponse)
 
-          await(connector.getOauthToken(testOauthRequest)) shouldBe Right(
+          await(connector.getOAuthToken(testOauthRequest)) shouldBe Right(
             ResponseWrapper("", oauthSuccessResponse)
           )
         }
@@ -50,7 +50,8 @@ class OAuthConnectorSpec extends ConnectorSpec {
             .withHeaders(Seq(("content-type", "application/json")))
             .thenReturn[JsValue](status = 400, body = oauthErrorResponse)
 
-          await(connector.getOauthToken(testOauthRequest)) shouldBe Left(ResponseWrapper("", DownstreamErrors.single(DownstreamErrorCode("INVALID_REQUEST"))))
+          await(connector.getOAuthToken(testOauthRequest)) shouldBe Left(
+            ResponseWrapper("", DownstreamErrors.single(DownstreamErrorCode("INVALID_REQUEST"))))
         }
       }
     }
