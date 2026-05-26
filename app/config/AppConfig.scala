@@ -37,6 +37,9 @@ trait AppConfig {
   def stubEnv: String
   def stubToken: String
 
+  // MTD ID Lookup Config
+  def mtdIdBaseUrl: String
+
   // Oauth config
   def oauthDownstreamConfig: DownstreamConfig
   def oauthEnv: String
@@ -67,6 +70,9 @@ class AppConfigImpl @Inject() (config: ServicesConfig, configuration: Configurat
   // Stub Config
   val stubEnv: String   = config.getString("microservice.services.stub.env")
   val stubToken: String = config.getString("microservice.services.stub.token")
+
+  // MTD ID Lookup Config
+  val mtdIdBaseUrl: String = config.baseUrl("mtd-id-lookup")
 
   // Oauth Config
   val oauthEnv: String   = config.getString("microservice.services.oauth.env")
