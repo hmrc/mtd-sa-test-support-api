@@ -16,48 +16,43 @@
 
 package uk.gov.hmrc.internaltestsupport.utils
 
-import java.net.URLDecoder
-import scala.util.control.NonFatal
+import api.models.errors.MtdError
+import uk.gov.hmrc.internaltestsupport.models.OAuthCodeRetrievalError
+
+import java.net.{URI, URLDecoder}
+import scala.util.Try
+import scala.util.matching.Regex
 
 object UrlParser {
 
-  def extractCode(url: String): String = {
-    try {
-      try {
-        val uri      = new java.net.URI(url)
-        val queryOpt = Option(uri.getQuery)
-        val fragOpt  = Option(uri.getFragment)
+  private val CodeRegex: Regex = "code=([^&<\\s]+)".r
 
-        def extractFrom(s: String): Option[String] = {
-          if (s == null || s.isEmpty) None
-          else {
-            s.split("&").toList.collectFirst {
-              case part if part.startsWith("code=") =>
-                URLDecoder.decode(part.substring(5), "UTF-8")
-            }
+  def extractCode(url: String): Either[MtdError, String] = {
+
+    def decode(s: String): String =
+      URLDecoder.decode(s, "UTF-8")
+
+    def extractFrom(component: String): Option[String] =
+      Option(component)
+        .filter(_.nonEmpty)
+        .flatMap { str =>
+          str.split("&amp;").iterator.collectFirst {
+            case part if part.startsWith("code=") =>
+              decode(part.substring("code=".length))
           }
         }
 
-        val codeOpt = queryOpt.flatMap(extractFrom).orElse(fragOpt.flatMap(extractFrom))
-
-        codeOpt.getOrElse {
-          val CodeRegex = "code=([^&<\\s]+)".r
-          CodeRegex
-            .findFirstMatchIn(url)
-            .map(_.group(1))
-            .getOrElse(throw new RuntimeException(s"No OAuth code found in URL: $url"))
-        }
-      } catch {
-        case _: java.net.URISyntaxException =>
-          val CodeRegex = "code=([^&<\\s]+)".r
-          CodeRegex
-            .findFirstMatchIn(url)
-            .map(_.group(1))
-            .getOrElse(throw new RuntimeException(s"No OAuth code found in URL: $url"))
+    def fromUri(u: String): Option[String] =
+      Try(new URI(u)).toOption.flatMap { uri =>
+        extractFrom(uri.getQuery).orElse(extractFrom(uri.getFragment))
       }
-    } catch {
-      case NonFatal(e) => throw e
-    }
+
+    def fromRegex(u: String): Option[String] =
+      CodeRegex.findFirstMatchIn(u).map(m => decode(m.group(1)))
+
+    fromUri(url)
+      .orElse(fromRegex(url))
+      .toRight(OAuthCodeRetrievalError)
   }
 
 }

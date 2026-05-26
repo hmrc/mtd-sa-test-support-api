@@ -17,24 +17,25 @@
 package uk.gov.hmrc.internaltestsupport.controllers
 
 import api.controllers.{AuthorisedController, EndpointLogContext, RequestContext}
+import api.models.errors.ErrorWrapper
 import api.services.AuthService
+import cats.data.EitherT
 import play.api.Logging
 import play.api.libs.json.*
 import play.api.mvc.*
 import uk.gov.hmrc.internaltestsupport.models.oauth.OAuthRequest
-import uk.gov.hmrc.internaltestsupport.models.{FormSubmitRawRequest, FormSubmitRequest}
-import uk.gov.hmrc.internaltestsupport.services.{FormAutomationService, OAuthService}
+import uk.gov.hmrc.internaltestsupport.models.*
+import uk.gov.hmrc.internaltestsupport.services.{GGAutomationService, OAuthService}
 import utils.IdGenerator
 
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
-import scala.util.control.NonFatal
 
 @Singleton
 class OAuthController @Inject() (
     val cc: ControllerComponents,
     val authService: AuthService,
-    ggAuthService: FormAutomationService,
+    ggAuthService: GGAutomationService,
     oauthService: OAuthService,
     idGenerator: IdGenerator
 )(implicit ec: ExecutionContext)
@@ -45,9 +46,8 @@ class OAuthController @Inject() (
     val endpointLogContext           = EndpointLogContext(controllerName = "OauthController", endpointName = "GetOauthToken")
     implicit val ctx: RequestContext = RequestContext.from(idGenerator, endpointLogContext)
 
-    // If you want to keep `.as[...]` for now, that’s fine (but validate is safer; see below)
     request.body
-      .validate[FormSubmitRawRequest]
+      .validate[AuthSubmitRawRequest]
       .fold(
         errs => Future.successful(BadRequest(JsError.toJson(errs))),
         submission => {
@@ -56,44 +56,40 @@ class OAuthController @Inject() (
           val clientId     = "PyWtcKfIuJ729591F3STlG7lSAXN"         // TODO config
           val clientSecret = "3e89acac-7df4-4825-a881-f75e20329495" // TODO config
 
-          ggAuthService
-            .submitForm(FormSubmitRequest.from(submission, identifier))
-            .flatMap { result =>
-              logger.info(s"Form submission result: $result")
-
-              result.oauthCode match {
-                case None =>
-                  // Minimal behaviour for now: message + 404/400 as you prefer
-                  val msg = result.error.getOrElse("No oauthCode returned from GG auth journey")
-                  logger.warn(msg)
-                  Future.successful(NotFound(Json.obj("error" -> msg)))
-
-                case Some(code) =>
-                  logger.info(s"OAuth code received: $code")
-
-                  val oauthRequest = OAuthRequest(
-                    grant_type = "authorization_code",
-                    code = code,
-                    redirect_uri = "http://localhost:9000",
-                    client_id = clientId,
-                    client_secret = clientSecret
-                  )
-
-                  oauthService.getOAuthToken(oauthRequest).map {
-                    case Right(response) =>
-                      Ok(Json.obj("Authorization" -> s"Bearer ${response.responseData.access_token}"))
-                    case Left(error) =>
-                      logger.error(s"Error fetching OAuth token: $error")
-                      InternalServerError(Json.obj("error" -> error.toString))
-                  }
+          val result: EitherT[Future, ErrorWrapper, Result] = {
+            for {
+              ggAuthResponse <- EitherT(ggAuthService.submitForm(AuthSubmitRequest.from(submission, identifier)))
+              oauthCode <- {
+                val oauthRequest = OAuthRequest(
+                  grant_type = "authorization_code",
+                  code = ggAuthResponse.responseData.oauthCode,
+                  redirect_uri = "http://localhost:9000",
+                  client_id = clientId,
+                  client_secret = clientSecret
+                )
+                EitherT(oauthService.getOAuthToken(oauthRequest))
               }
+            } yield {
+              Ok(Json.obj("Authorization" -> s"Bearer ${oauthCode.responseData.access_token}"))
             }
-            .recover { case NonFatal(e) =>
-              logger.error("Unexpected failure in OAuth flow", e)
-              InternalServerError(Json.obj("error" -> e.getMessage))
+          }
+
+          result
+            .leftMap[Result] { errorWrapper =>
+              logger.error(s"${errorWrapper.error.code} error in OAuth flow: ${errorWrapper.error.message}")
+              val leftResult = errorResultMap(errorWrapper)
+              leftResult
             }
+            .merge
         }
       )
+  }
+
+  private def errorResultMap(errorWrapper: ErrorWrapper): Result = {
+    (errorWrapper.error: @unchecked) match {
+      case GrantScopeRetrievalError | OAuthCodeRetrievalError => UnprocessableEntity(Json.toJson(errorWrapper))
+      case PWTimeoutError | PWError                           => InternalServerError(Json.toJson(errorWrapper))
+    }
   }
 
 }
