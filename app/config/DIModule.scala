@@ -16,9 +16,12 @@
 
 package config
 
-import com.google.inject.AbstractModule
+import com.google.inject.{AbstractModule, Provides}
 
+import org.apache.pekko.actor.ActorSystem
 import java.time.Clock
+import javax.inject.Named
+import scala.concurrent.ExecutionContext
 
 class DIModule extends AbstractModule {
 
@@ -26,5 +29,9 @@ class DIModule extends AbstractModule {
     bind(classOf[AppConfig]).to(classOf[AppConfigImpl]).asEagerSingleton()
     bind(classOf[Clock]).toInstance(Clock.systemUTC())
   }
+
+  @Provides
+  @Named("playwrightEc") def providePlaywrightEc(actorSystem: ActorSystem): ExecutionContext =
+    actorSystem.dispatchers.lookup("playwright-dispatcher")
 
 }

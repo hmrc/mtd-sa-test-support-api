@@ -37,6 +37,11 @@ trait AppConfig {
   def stubEnv: String
   def stubToken: String
 
+  // Oauth config
+  def oauthDownstreamConfig: DownstreamConfig
+  def oauthEnv: String
+  def oauthToken: String
+
 }
 
 @Singleton
@@ -62,6 +67,15 @@ class AppConfigImpl @Inject() (config: ServicesConfig, configuration: Configurat
   // Stub Config
   val stubEnv: String   = config.getString("microservice.services.stub.env")
   val stubToken: String = config.getString("microservice.services.stub.token")
+
+  // Oauth Config
+  val oauthEnv: String   = config.getString("microservice.services.oauth.env")
+  val oauthToken: String = config.getString("microservice.services.oauth.token")
+
+  val oauthDownstreamConfig: DownstreamConfig = {
+    val oauthBaseUrl = config.baseUrl("oauth")
+    DownstreamConfig(baseUrl = oauthBaseUrl, env = oauthEnv, token = oauthToken, environmentHeaders = None)
+  }
 
 }
 

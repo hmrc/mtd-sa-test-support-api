@@ -22,6 +22,9 @@ import play.api.libs.json.{Json, Writes}
 import play.api.libs.ws.WSBodyWritables.writeableOf_JsValue
 import uk.gov.hmrc.http.client.HttpClientV2
 import uk.gov.hmrc.http.{HeaderCarrier, HttpReads}
+
+import play.api.libs.ws.WSBodyWritables.writeableOf_String
+
 import utils.Logging
 
 import java.net.URL
@@ -38,6 +41,16 @@ trait BaseDownstreamConnector extends Logging {
       val hc: HeaderCarrier,
       val correlationId: String) {
     def baseUrl: String = downstreamConfig.baseUrl
+  }
+
+  def postUrlEncoded[Resp](requestBody: String, downstreamUri: DownstreamUri[Resp])(implicit
+      httpReads: HttpReads[DownstreamOutcome[Resp]],
+      connectorContext: ConnectorContext): Future[DownstreamOutcome[Resp]] = {
+
+    implicit val hc: HeaderCarrier    = downstreamHeaderCarrier(HeaderNames.CONTENT_TYPE -> MimeTypes.FORM)
+    implicit val ec: ExecutionContext = connectorContext.ec
+
+    http.post(url(downstreamUri)).withBody(requestBody).execute
   }
 
   def post[Body: Writes, Resp](body: Body, downstreamUri: DownstreamUri[Resp])(implicit
