@@ -19,4 +19,4 @@ package uk.gov.hmrc.internaltestsupport.services
 import org.scalamock.scalatest.MockFactory
 import support.UnitSpec
 
-class FormAutomationServiceSpec extends UnitSpec with MockFactory {}
+class GGAutomationServiceSpec extends UnitSpec with MockFactory {}

@@ -18,20 +18,19 @@ package uk.gov.hmrc.internaltestsupport.models
 
 import play.api.libs.json.{Json, OFormat}
 
-//TODO: Make the timeout config driven and remove the default value
-case class FormSubmitRawRequest(nino: String, identifier: Option[String] = None, timeoutMs: Option[Int] = Some(15000))
+case class AuthSubmitRawRequest(nino: String, identifier: Option[String] = None)
 
-object FormSubmitRawRequest {
-  implicit val format: OFormat[FormSubmitRawRequest] = Json.format[FormSubmitRawRequest]
+object AuthSubmitRawRequest {
+  implicit val format: OFormat[AuthSubmitRawRequest] = Json.format[AuthSubmitRawRequest]
 }
 
-case class FormSubmitRequest(nino: String, identifier: String)
+case class AuthSubmitRequest(nino: String, identifier: String)
 
-object FormSubmitRequest {
+object AuthSubmitRequest {
 
-  def from(m: FormSubmitRawRequest, identifier: String): FormSubmitRequest = {
-    FormSubmitRequest(m.nino, identifier)
+  def from(m: AuthSubmitRawRequest, identifier: String): AuthSubmitRequest = {
+    AuthSubmitRequest(m.nino, m.identifier.fold(identifier)(identity))
   }
 
-  implicit val format: OFormat[FormSubmitRequest] = Json.format[FormSubmitRequest]
+  implicit val format: OFormat[AuthSubmitRequest] = Json.format[AuthSubmitRequest]
 }
