@@ -16,21 +16,10 @@
 
 package uk.gov.hmrc.internaltestsupport.models
 
-import play.api.libs.json.{Json, OFormat}
+import play.api.libs.json.{OFormat, Json}
 
-case class AuthSubmitRawRequest(nino: String, identifier: Option[String] = None)
+case class SubmitResponse(Authorization: String)
 
-object AuthSubmitRawRequest {
-  implicit val format: OFormat[AuthSubmitRawRequest] = Json.format[AuthSubmitRawRequest]
-}
-
-case class AuthSubmitRequest(nino: String, identifier: String)
-
-object AuthSubmitRequest {
-
-  def from(m: AuthSubmitRawRequest, identifier: String): AuthSubmitRequest = {
-    AuthSubmitRequest(m.nino, m.identifier.fold(identifier)(identity))
-  }
-
-  implicit val format: OFormat[AuthSubmitRequest] = Json.format[AuthSubmitRequest]
+object SubmitResponse {
+  implicit val format: OFormat[SubmitResponse] = Json.format[SubmitResponse]
 }

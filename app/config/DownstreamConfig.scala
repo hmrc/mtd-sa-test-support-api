@@ -16,9 +16,22 @@
 
 package config
 
+trait BaseDownstreamConfig {
+  def baseUrl: String
+  def environmentHeaders: Option[Seq[String]]
+}
+
 case class DownstreamConfig(
     baseUrl: String,
     env: String,
     token: String,
     environmentHeaders: Option[Seq[String]]
-)
+) extends BaseDownstreamConfig
+
+case class BasicAuthDownstreamConfig(
+    baseUrl: String,
+    env: String,
+    clientId: String,
+    clientSecret: String,
+    environmentHeaders: Option[Seq[String]]
+) extends BaseDownstreamConfig
