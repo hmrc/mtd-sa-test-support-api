@@ -32,6 +32,7 @@ class LookupService @Inject() (connector: BusinessDetailsConnector) {
     connector.getMtdId(nino).map {
       case Right(response) =>
         Right(response.responseData)
+        //TODO: check if these are handled appropriately for response mapping in controller
       case Left(ResponseWrapper(_, NotFoundError)) => Left(NotFoundError)
       case _                                       => Left(InternalError)
     }

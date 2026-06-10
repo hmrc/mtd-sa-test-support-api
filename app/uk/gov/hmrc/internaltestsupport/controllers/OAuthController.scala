@@ -33,6 +33,8 @@ import utils.IdGenerator
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 
+//TODO: this controller should be feature switched along with its route so it is never published past QA
+
 @Singleton
 class OAuthController @Inject() (
     val cc: ControllerComponents,
@@ -103,6 +105,7 @@ class OAuthController @Inject() (
       )
   }
 
+  //TODO: check all error cases and return appropriate status codes
   private def errorResultMap(errorWrapper: ErrorWrapper): Result = {
     (errorWrapper.error: @unchecked) match {
       case GrantScopeRetrievalError | OAuthCodeRetrievalError => UnprocessableEntity(Json.toJson(errorWrapper))
