@@ -16,15 +16,12 @@
 
 package api.connectors
 
-import config.{AppConfig, DownstreamConfig}
+import config.{AppConfig, BaseDownstreamConfig}
 import play.api.http.{HeaderNames, MimeTypes}
 import play.api.libs.json.{Json, Writes}
-import play.api.libs.ws.WSBodyWritables.writeableOf_JsValue
+import play.api.libs.ws.WSBodyWritables.{writeableOf_JsValue, writeableOf_String}
 import uk.gov.hmrc.http.client.HttpClientV2
 import uk.gov.hmrc.http.{HeaderCarrier, HttpReads}
-
-import play.api.libs.ws.WSBodyWritables.writeableOf_String
-
 import utils.Logging
 
 import java.net.URL
@@ -36,7 +33,7 @@ trait BaseDownstreamConnector extends Logging {
 
   private val jsonContentTypeHeader = HeaderNames.CONTENT_TYPE -> MimeTypes.JSON
 
-  case class ConnectorContext(downstreamConfig: DownstreamConfig)(implicit
+  case class ConnectorContext(downstreamConfig: BaseDownstreamConfig)(implicit
       val ec: ExecutionContext,
       val hc: HeaderCarrier,
       val correlationId: String) {
@@ -81,6 +78,22 @@ trait BaseDownstreamConnector extends Logging {
     implicit val ec: ExecutionContext = connectorContext.ec
 
     http.get(url(downstreamUri)).execute
+  }
+
+  def getWithBasicAuth[Resp](downstreamUri: DownstreamUri[Resp], downstreamStrategy: DownstreamStrategy)(implicit
+      httpReads: HttpReads[DownstreamOutcome[Resp]],
+      connectorContext: ConnectorContext): Future[DownstreamOutcome[Resp]] = {
+
+    implicit val hc: HeaderCarrier    = downstreamHeaderCarrier()
+    implicit val ec: ExecutionContext = connectorContext.ec
+
+    for {
+      contractHeaders <- downstreamStrategy.contractHeaders(connectorContext.correlationId)
+      result <- {
+        val headers = hc.withExtraHeaders(contractHeaders*)
+        http.get(url(downstreamUri))(headers).execute
+      }
+    } yield result
   }
 
   def put[Body: Writes, Resp](body: Body, downstreamUri: DownstreamUri[Resp])(implicit

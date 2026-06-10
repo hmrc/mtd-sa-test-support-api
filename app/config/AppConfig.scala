@@ -37,8 +37,24 @@ trait AppConfig {
   def stubEnv: String
   def stubToken: String
 
-  // MTD ID Lookup Config
-  def mtdIdBaseUrl: String
+  // HIP Config
+  def hipBaseUrl: String
+  def hipEnv: String
+  def hipClientId: String
+  def hipClientSecret: String
+  def hipEnvironmentHeaders: Option[Seq[String]]
+
+  // ATS App
+  def atsAppClientId: String
+  def atsAppClientSecret: String
+
+  lazy val hipDownstreamConfig: BasicAuthDownstreamConfig = BasicAuthDownstreamConfig(
+    baseUrl = hipBaseUrl,
+    env = hipEnv,
+    clientId = hipClientId,
+    clientSecret = hipClientSecret,
+    environmentHeaders = hipEnvironmentHeaders
+  )
 
   // Oauth config
   def oauthDownstreamConfig: DownstreamConfig
@@ -71,8 +87,16 @@ class AppConfigImpl @Inject() (config: ServicesConfig, configuration: Configurat
   val stubEnv: String   = config.getString("microservice.services.stub.env")
   val stubToken: String = config.getString("microservice.services.stub.token")
 
-  // MTD ID Lookup Config
-  val mtdIdBaseUrl: String = config.baseUrl("mtd-id-lookup")
+  // HIP Config
+  def hipBaseUrl: String                         = config.baseUrl("hip")
+  def hipEnv: String                             = config.getString("microservice.services.hip.env")
+  def hipClientId: String                        = config.getString("microservice.services.hip.clientId")
+  def hipClientSecret: String                    = config.getString("microservice.services.hip.clientSecret")
+  def hipEnvironmentHeaders: Option[Seq[String]] = configuration.getOptional[Seq[String]]("microservice.services.hip.environmentHeaders")
+
+  // ATS App Config
+  def atsAppClientId: String     = config.getString("ats-app.clientId")
+  def atsAppClientSecret: String = config.getString("ats-app.clientSecret")
 
   // Oauth Config
   val oauthEnv: String   = config.getString("microservice.services.oauth.env")

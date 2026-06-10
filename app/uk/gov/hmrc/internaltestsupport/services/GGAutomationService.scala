@@ -24,6 +24,7 @@ import com.microsoft.playwright.*
 import com.microsoft.playwright.options.WaitUntilState
 import play.api.inject.ApplicationLifecycle
 import uk.gov.hmrc.internaltestsupport.models.*
+import uk.gov.hmrc.internaltestsupport.models.ggauth.GGAuthResponse
 import uk.gov.hmrc.internaltestsupport.utils.UrlParser
 
 import java.util.regex.Pattern
@@ -84,10 +85,10 @@ class GGAutomationService @Inject() (
     val givePermission        = "#givePermission"
   }
 
-  def submitForm(req: AuthSubmitRequest)(implicit rc: RequestContext): Future[ServiceOutcome[GGAuthResponse]] =
+  def submitForm(req: SubmitRequest)(implicit rc: RequestContext): Future[ServiceOutcome[GGAuthResponse]] =
     Future(blockingSubmit(req))(playwrightEc)
 
-  private def blockingSubmit(req: AuthSubmitRequest): ServiceOutcome[GGAuthResponse] = {
+  private def blockingSubmit(req: SubmitRequest): ServiceOutcome[GGAuthResponse] = {
     val context = browser.newContext(new Browser.NewContextOptions().setViewportSize(1280, 720))
     val page    = context.newPage()
 

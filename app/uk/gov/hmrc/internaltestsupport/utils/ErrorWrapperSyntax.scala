@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2026 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,24 +14,19 @@
  * limitations under the License.
  */
 
-package config
+package uk.gov.hmrc.internaltestsupport.utils
 
-trait BaseDownstreamConfig {
-  def baseUrl: String
-  def environmentHeaders: Option[Seq[String]]
+import api.controllers.RequestContext
+import api.models.errors.{ErrorWrapper, MtdError}
+
+object ErrorWrapperSyntax {
+
+  extension (error: MtdError)
+
+    def toErrorWrapper(using rc: RequestContext): ErrorWrapper =
+      ErrorWrapper(
+        correlationId = rc.correlationId,
+        error = error
+      )
+
 }
-
-case class DownstreamConfig(
-    baseUrl: String,
-    env: String,
-    token: String,
-    environmentHeaders: Option[Seq[String]]
-) extends BaseDownstreamConfig
-
-case class BasicAuthDownstreamConfig(
-    baseUrl: String,
-    env: String,
-    clientId: String,
-    clientSecret: String,
-    environmentHeaders: Option[Seq[String]]
-) extends BaseDownstreamConfig

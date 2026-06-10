@@ -17,15 +17,17 @@
 package uk.gov.hmrc.internaltestsupport.controllers
 
 import api.controllers.{AuthorisedController, EndpointLogContext, RequestContext}
-import api.models.errors.ErrorWrapper
+import api.models.errors.{ErrorWrapper, MtdError}
+import api.models.outcomes.ResponseWrapper
 import api.services.AuthService
 import cats.data.EitherT
+import config.AppConfig
 import play.api.Logging
 import play.api.libs.json.*
 import play.api.mvc.*
-import uk.gov.hmrc.internaltestsupport.models.oauth.OAuthRequest
 import uk.gov.hmrc.internaltestsupport.models.*
-import uk.gov.hmrc.internaltestsupport.services.{GGAutomationService, OAuthService}
+import uk.gov.hmrc.internaltestsupport.models.oauth.{OAuthRequest, OAuthResponse}
+import uk.gov.hmrc.internaltestsupport.services.{GGAutomationService, LookupService, OAuthService}
 import utils.IdGenerator
 
 import javax.inject.{Inject, Singleton}
@@ -37,42 +39,58 @@ class OAuthController @Inject() (
     val authService: AuthService,
     ggAuthService: GGAutomationService,
     oauthService: OAuthService,
+    idLookup: LookupService,
     idGenerator: IdGenerator
-)(implicit ec: ExecutionContext)
+)(implicit ec: ExecutionContext, appConfig: AppConfig)
     extends AuthorisedController(cc)
     with Logging {
 
   def post(): Action[JsValue] = Action.async(parse.json) { implicit request =>
-    val endpointLogContext           = EndpointLogContext(controllerName = "OauthController", endpointName = "GetOauthToken")
-    implicit val ctx: RequestContext = RequestContext.from(idGenerator, endpointLogContext)
+    val endpointLogContext             = EndpointLogContext(controllerName = "OauthController", endpointName = "GetOauthToken")
+    implicit val ctx: RequestContext   = RequestContext.from(idGenerator, endpointLogContext)
+    implicit val correlationId: String = idGenerator.getCorrelationId
+
+    import uk.gov.hmrc.internaltestsupport.utils.ErrorWrapperSyntax.*
 
     request.body
-      .validate[AuthSubmitRawRequest]
+      .validate[SubmitRawRequest]
       .fold(
         errs => Future.successful(BadRequest(JsError.toJson(errs))),
         submission => {
 
-          val identifier   = "XXIT00001017604"                      // TODO source from 1171
-          val clientId     = "PyWtcKfIuJ729591F3STlG7lSAXN"         // TODO config
-          val clientSecret = "3e89acac-7df4-4825-a881-f75e20329495" // TODO config
+          val clientId     = appConfig.atsAppClientId
+          val clientSecret = appConfig.atsAppClientSecret
 
-          val result: EitherT[Future, ErrorWrapper, Result] = {
-            for {
-              ggAuthResponse <- EitherT(ggAuthService.submitForm(AuthSubmitRequest.from(submission, identifier)))
-              oauthCode <- {
-                val oauthRequest = OAuthRequest(
+          def resolvedMtdId: EitherT[Future, ErrorWrapper, MtdIdReference] =
+            submission.identifier.fold {
+              EitherT(idLookup.getMtdId(submission.nino)).leftMap(_.toErrorWrapper)
+            } { id =>
+              EitherT.rightT[Future, ErrorWrapper](MtdIdReference(id))
+            }
+
+          def exchangeOAuthCode(code: String): EitherT[Future, ErrorWrapper, ResponseWrapper[OAuthResponse]] =
+            EitherT(
+              oauthService.getOAuthToken(
+                OAuthRequest(
                   grant_type = "authorization_code",
-                  code = ggAuthResponse.responseData.oauthCode,
+                  code = code,
                   redirect_uri = "http://localhost:9000",
                   client_id = clientId,
                   client_secret = clientSecret
                 )
-                EitherT(oauthService.getOAuthToken(oauthRequest))
-              }
-            } yield {
-              Ok(Json.obj("Authorization" -> s"Bearer ${oauthCode.responseData.access_token}"))
-            }
-          }
+              )
+            )
+
+          val result =
+            for {
+              mtdIdReference <- resolvedMtdId
+              ggAuthResponse <- EitherT(
+                ggAuthService.submitForm(
+                  SubmitRequest.from(submission, mtdIdReference.mtdbsa)
+                )
+              )
+              oauthResponse <- exchangeOAuthCode(ggAuthResponse.responseData.oauthCode)
+            } yield Ok(Json.toJson(SubmitResponse(s"Bearer ${oauthResponse.responseData.access_token}")))
 
           result
             .leftMap[Result] { errorWrapper =>

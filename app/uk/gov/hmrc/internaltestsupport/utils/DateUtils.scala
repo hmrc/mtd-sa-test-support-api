@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2025 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,24 +14,13 @@
  * limitations under the License.
  */
 
-package config
+package uk.gov.hmrc.internaltestsupport.utils
 
-trait BaseDownstreamConfig {
-  def baseUrl: String
-  def environmentHeaders: Option[Seq[String]]
+import java.time.format.DateTimeFormatter
+import java.time.{ZoneId, ZonedDateTime}
+
+object DateUtils {
+  private val iso8601UtcDateTimeFormatter: DateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss'Z'")
+
+  def nowAsUtc: String = ZonedDateTime.now(ZoneId.of("UTC")).format(iso8601UtcDateTimeFormatter)
 }
-
-case class DownstreamConfig(
-    baseUrl: String,
-    env: String,
-    token: String,
-    environmentHeaders: Option[Seq[String]]
-) extends BaseDownstreamConfig
-
-case class BasicAuthDownstreamConfig(
-    baseUrl: String,
-    env: String,
-    clientId: String,
-    clientSecret: String,
-    environmentHeaders: Option[Seq[String]]
-) extends BaseDownstreamConfig
