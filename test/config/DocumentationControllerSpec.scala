@@ -17,14 +17,18 @@
 package config
 
 import api.controllers.ControllerBaseSpec
-import config.rewriters.DocumentationRewriters.{CheckAndRewrite, CheckRewrite}
+import com.typesafe.config.ConfigFactory
 import config.rewriters.*
+import config.rewriters.DocumentationRewriters.{CheckAndRewrite, CheckRewrite}
 import controllers.{RewriteableAssets, Rewriter}
 import definition.ApiDefinitionFactory
 import mocks.MockAppConfig
+import org.apache.pekko.stream.Materializer
+import org.apache.pekko.stream.testkit.NoMaterializer
 import org.scalamock.handlers.CallHandler
-import play.api.mvc.Results.Ok
+import play.api.Configuration
 import play.api.mvc.*
+import play.api.mvc.Results.Ok
 import uk.gov.hmrc.http.HeaderCarrier
 
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -85,6 +89,8 @@ class DocumentationControllerSpec extends ControllerBaseSpec with MockAppConfig 
 
     }
 
+    private val config = new Configuration(ConfigFactory.load())
+
     protected def willUse(check: CheckRewrite): CallHandler[Boolean] =
       (check(_: String, _: String)).expects(version, filename)
 
@@ -93,8 +99,10 @@ class DocumentationControllerSpec extends ControllerBaseSpec with MockAppConfig 
 
     protected def rewrittenOkAction: Action[AnyContent] = actionBuilder { (_: Request[AnyContent]) => Ok(rewrittenContent) }
 
-    protected val rewriteableAssets: RewriteableAssets = mock[RewriteableAssets]
-    protected val controller                           = new DocumentationController(apiFactory, docRewriters, rewriteableAssets, cc)
+    implicit val materializer: Materializer = NoMaterializer
+    private val rewriteableAssets           = mock[RewriteableAssets]
+
+    protected def controller = new DocumentationController(apiFactory, docRewriters, rewriteableAssets, config, cc)
   }
 
 }

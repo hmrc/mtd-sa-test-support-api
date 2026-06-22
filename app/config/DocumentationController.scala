@@ -19,17 +19,24 @@ package config
 import config.rewriters.DocumentationRewriters
 import controllers.RewriteableAssets
 import definition.ApiDefinitionFactory
+import org.apache.pekko.stream.Materializer
+import play.api.Configuration
 import play.api.libs.json.Json
 import play.api.mvc.{Action, AnyContent, ControllerComponents}
+import play.filters.cors.CORSActionBuilder
 import uk.gov.hmrc.play.bootstrap.backend.controller.BackendController
 
 import javax.inject.{Inject, Singleton}
+import scala.concurrent.ExecutionContext
 
 @Singleton
-class DocumentationController @Inject() (selfAssessmentApiDefinition: ApiDefinitionFactory,
-                                         docRewriters: DocumentationRewriters,
-                                         assets: RewriteableAssets,
-                                         cc: ControllerComponents)
+class DocumentationController @Inject() (
+    selfAssessmentApiDefinition: ApiDefinitionFactory,
+    docRewriters: DocumentationRewriters,
+    assets: RewriteableAssets,
+    configuration: Configuration,
+    cc: ControllerComponents
+)(implicit ec: ExecutionContext, materializer: Materializer)
     extends BackendController(cc) {
 
   def definition(): Action[AnyContent] = Action {
@@ -37,13 +44,13 @@ class DocumentationController @Inject() (selfAssessmentApiDefinition: ApiDefinit
   }
 
   def asset(version: String, filename: String): Action[AnyContent] = {
-    val path = s"/public/api/conf/$version"
-
-    val rewriters = docRewriters.rewriteables.flatMap { rewritable =>
-      if (rewritable.check(version, filename)) Some(rewritable.rewrite) else None
+    CORSActionBuilder(configuration).async { implicit request =>
+      val path = s"/public/api/conf/$version"
+      val rewriters = docRewriters.rewriteables.flatMap { rewritable =>
+        if (rewritable.check(version, filename)) Some(rewritable.rewrite) else None
+      }
+      assets.rewriteableAt(path, filename, rewriters)(request)
     }
-
-    assets.rewriteableAt(path, filename, rewriters)
   }
 
 }
