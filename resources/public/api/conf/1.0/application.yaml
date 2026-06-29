@@ -34,19 +34,15 @@ components:
 paths:
   /individuals/self-assessment-test-support/vendor-state:
     $ref: "./vendor_state.yaml"
-  # {{#if (enabled "checkpointing")}}
   /individuals/self-assessment-test-support/vendor-state/checkpoints:
     $ref: "./checkpoints_1.yaml"
   /individuals/self-assessment-test-support/vendor-state/checkpoints/{checkpointId}:
     $ref: "./checkpoints_delete.yaml"
   /individuals/self-assessment-test-support/vendor-state/checkpoints/{checkpointId}/restore:
     $ref: "./checkpoints_restore.yaml"
-  # {{/if}}
   /individuals/self-assessment-test-support/business/{nino}:
     $ref: "./business_create.yaml"
   /individuals/self-assessment-test-support/business/{nino}/{businessId}:
     $ref: "./business_delete.yaml"
-  # {{#if (enabled "create-amend-itsa-status")}}
   /individuals/self-assessment-test-support/itsa-status/{nino}/{taxYear}:
     $ref: "./itsa_status_create_amend.yaml"
-  # {{/if}}
