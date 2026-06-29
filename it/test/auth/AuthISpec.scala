@@ -59,7 +59,7 @@ class AuthISpec extends IntegrationBaseSpec {
     }
 
     "the user is not logged in" should {
-      "return 403" in new Test {
+      "return 401" in new Test {
         override def setupStubs(): StubMapping = AuthStub.unauthorisedNotLoggedIn()
 
         val response: WSResponse = await(request().delete())
@@ -68,7 +68,7 @@ class AuthISpec extends IntegrationBaseSpec {
     }
 
     "the user is not authorised" should {
-      "return 403" in new Test {
+      "return 401" in new Test {
         override def setupStubs(): StubMapping = AuthStub.unauthorisedOther()
 
         val response: WSResponse = await(request().delete())
