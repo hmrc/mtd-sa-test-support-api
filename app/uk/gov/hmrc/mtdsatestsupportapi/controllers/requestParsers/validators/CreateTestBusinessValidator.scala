@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2026 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,7 +19,6 @@ package uk.gov.hmrc.mtdsatestsupportapi.controllers.requestParsers.validators
 import api.controllers.requestParsers.validators.Validator
 import api.controllers.requestParsers.validators.validations.*
 import api.models.errors.*
-import config.FeatureSwitches
 import play.api.libs.json.{JsDefined, JsLookupResult, JsValue}
 import uk.gov.hmrc.mtdsatestsupportapi.controllers.requestParsers.validators.validations.*
 import uk.gov.hmrc.mtdsatestsupportapi.models.request.createTestBusiness.{Business, CreateTestBusinessRawData}
@@ -29,7 +28,7 @@ import javax.inject.{Inject, Singleton}
 import scala.math.Ordered.orderingToOrdered
 
 @Singleton
-class CreateTestBusinessValidator @Inject() (clock: Clock, featureSwitches: FeatureSwitches) extends Validator[CreateTestBusinessRawData] {
+class CreateTestBusinessValidator @Inject() (clock: Clock) extends Validator[CreateTestBusinessRawData] {
 
   override def validate(data: CreateTestBusinessRawData): List[MtdError] =
     (for {
@@ -103,30 +102,19 @@ class CreateTestBusinessValidator @Inject() (clock: Clock, featureSwitches: Feat
   }
 
   private def validateMissingPostcode(business: Business): Seq[MtdError] = {
-    if (featureSwitches.isEnabled("release5")) {
-      if (requiresBusinessPostcode(business) && business.businessAddressPostcode.isEmpty) {
-        Seq(MissingPostcodeError)
-      } else {
-        Nil
-      }
+    if (requiresBusinessPostcode(business) && business.businessAddressPostcode.isEmpty) {
+      Seq(MissingPostcodeError)
     } else {
-      (business.businessAddressPostcode, business.businessAddressCountryCode) match {
-        case (None, Some("GB")) => List(MissingPostcodeError)
-        case _                  => NoValidationErrors
-      }
+      Nil
     }
   }
 
   private def validateAccountingPeriod(business: Business): Seq[MtdError] = {
-    if (featureSwitches.isEnabled("release5")) {
-      (business.firstAccountingPeriodStartDate, business.firstAccountingPeriodEndDate) match {
-        case (Some(start), Some(end)) => TaxYearAlignmentDateRangeValidation.validate(start, end, RuleFirstAccountingDateRangeInvalid)
-        case (None, Some(_))          => Seq(MissingFirstAccountingPeriodStartDateError)
-        case (Some(_), None)          => Seq(MissingFirstAccountingPeriodEndDateError)
-        case _                        => Nil
-      }
-    } else {
-      Nil
+    (business.firstAccountingPeriodStartDate, business.firstAccountingPeriodEndDate) match {
+      case (Some(start), Some(end)) => TaxYearAlignmentDateRangeValidation.validate(start, end, RuleFirstAccountingDateRangeInvalid)
+      case (None, Some(_))          => Seq(MissingFirstAccountingPeriodStartDateError)
+      case (Some(_), None)          => Seq(MissingFirstAccountingPeriodEndDateError)
+      case _                        => Nil
     }
   }
 
@@ -137,14 +125,10 @@ class CreateTestBusinessValidator @Inject() (clock: Clock, featureSwitches: Feat
   }
 
   private def validateTradingName(business: Business): Seq[MtdError] = {
-    if (featureSwitches.isEnabled("release5")) {
-      if (forbidsTradingName(business) && business.tradingName.nonEmpty) {
-        Seq(RuleUnexpectedTradingName)
-      } else if (requiresTradingName(business) && business.tradingName.isEmpty) {
-        Seq(RuleMissingTradingName)
-      } else {
-        Nil
-      }
+    if (forbidsTradingName(business) && business.tradingName.nonEmpty) {
+      Seq(RuleUnexpectedTradingName)
+    } else if (requiresTradingName(business) && business.tradingName.isEmpty) {
+      Seq(RuleMissingTradingName)
     } else {
       Nil
     }
@@ -153,14 +137,10 @@ class CreateTestBusinessValidator @Inject() (clock: Clock, featureSwitches: Feat
   private def validateBusinessAddress(business: Business): Seq[MtdError] = {
     def haveSufficientBusinessAddress = business.businessAddressLineOne.nonEmpty && business.businessAddressCountryCode.nonEmpty
 
-    if (featureSwitches.isEnabled("release5")) {
-      if (forbidsBusinessAddress(business) && business.hasAnyBusinessAddressDetails) {
-        Seq(RuleUnexpectedBusinessAddress)
-      } else if (requiresBusinessAddress(business) && !haveSufficientBusinessAddress) {
-        Seq(RuleMissingBusinessAddress)
-      } else {
-        Nil
-      }
+    if (forbidsBusinessAddress(business) && business.hasAnyBusinessAddressDetails) {
+      Seq(RuleUnexpectedBusinessAddress)
+    } else if (requiresBusinessAddress(business) && !haveSufficientBusinessAddress) {
+      Seq(RuleMissingBusinessAddress)
     } else {
       Nil
     }

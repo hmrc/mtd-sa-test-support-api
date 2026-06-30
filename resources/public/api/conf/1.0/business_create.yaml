@@ -90,7 +90,6 @@ post:
               $ref: './common/errors.yaml#/components/examples/ruleIncorrectOrEmptyBodySubmitted'
             RULE_TAX_YEAR_RANGE_INVALID:
               $ref: './common/errors.yaml#/components/examples/ruleTaxYearRangeInvalid'
-            # {{#if (enabled "release5")}}
             MISSING_FIRST_ACCOUNTING_PERIOD_START_DATE:
               $ref: './common/errors.yaml#/components/examples/missingFirstAccountingPeriodStartDate'
             MISSING_FIRST_ACCOUNTING_PERIOD_END_DATE:
@@ -105,7 +104,6 @@ post:
               $ref: './common/errors.yaml#/components/examples/ruleUnexpectedTradingName'
             RULE_MISSING_TRADING_NAME:
               $ref: './common/errors.yaml#/components/examples/ruleMissingTradingName'
-            # {{/if}}
 
     "403":
       description: Forbidden
