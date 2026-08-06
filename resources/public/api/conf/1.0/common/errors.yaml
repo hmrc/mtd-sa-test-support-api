@@ -35,6 +35,12 @@ components:
         code: FORMAT_BUSINESS_ID
         message: The provided Business ID is invalid
 
+    formatString:
+      description: The supplied string format is not valid.
+      value:
+        code: FORMAT_STRING
+        message: The supplied string format is not valid
+
     formatDate:
       description: |
         The supplied date format is not valid.
@@ -134,6 +140,18 @@ components:
       value:
         code: RULE_MISSING_BUSINESS_ADDRESS
         message: businessAddress not provided for the self-employment business
+
+    ruleUnexpectedTradingType:
+      description: When creating a property business, you are not allowed to provide tradingType.
+      value:
+        code: RULE_UNEXPECTED_TRADING_TYPE
+        message: Unexpected tradingType provided for property business
+
+    ruleMissingTradingType:
+      description: When creating a self-employment business, you need to provide a tradingType value.
+      value:
+        code: RULE_MISSING_TRADING_TYPE
+        message: tradingType not provided for the self-employment business
 
     ruleUnexpectedTradingName:
       description: When creating a property business, you are not allowed to provide tradingName.

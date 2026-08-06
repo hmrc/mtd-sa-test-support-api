@@ -13,40 +13,49 @@
         "property-unspecified"
       ]
     },
+    "tradingType": {
+      "type": "string",
+      "description": "The type of trading carried out by the business.\n\nForbidden for property businesses.\n\nMandatory for self-employment businesses.",
+      "minLength": 1,
+      "maxLength": 35,
+      "example": "Plastering"
+    },
     "tradingName": {
       "type": "string",
       "description": "The trading name of the business.\n\nForbidden for property businesses.\n\nMandatory for self-employment businesses.",
+      "minLength": 1,
+      "maxLength": 105,
       "example": "ABC Ltd."
     },
     "firstAccountingPeriodStartDate": {
       "type": "string",
-      "description": "The first accounting period start date",
-      "format": "YYYY-MM-DD",
+      "description": "The first accounting period start date. Must conform to the format `YYYY-MM-DD`",
+      "format": "date",
       "example": "2019-09-30"
     },
     "firstAccountingPeriodEndDate": {
       "type": "string",
-      "description": "The first accounting period end date",
-      "format": "YYYY-MM-DD",
+      "description": "The first accounting period end date. Must conform to the format `YYYY-MM-DD`",
+      "format": "date",
       "example": "2020-02-29"
     },
     "latencyDetails": {
       "type": "object",
-      "description": "Income source latency details",
+      "description": "Income source latency details.",
       "properties": {
         "latencyEndDate": {
           "type": "string",
-          "description": "End date of latency period for the income source.",
+          "description": "End date of latency period for the income source. Must conform to the format `YYYY-MM-DD`",
           "example": "2020-02-27",
-          "format": "YYYY-MM-DD"
+          "format": "date"
         },
         "taxYear1": {
           "type": "string",
-          "description": "First tax year for the income source.",
+          "description": "First tax year for the income source.`",
           "example": "2018-19",
           "format": "YYYY-YY",
-          "minimum": 7,
-          "maximum": 7
+          "minLength": 7,
+          "maxLength": 7
         },
         "latencyIndicator1": {
           "type": "string",
@@ -62,8 +71,8 @@
           "description": "Second tax year for the income source.",
           "example": "2019-20",
           "format": "YYYY-YY",
-          "minimum": 7,
-          "maximum": 7
+          "minLength": 7,
+          "maxLength": 7
         },
         "latencyIndicator2": {
           "type": "string",
@@ -81,26 +90,33 @@
         "latencyIndicator1",
         "taxYear2",
         "latencyIndicator2"
-      ]
+      ],
+      "additionalProperties": false
     },
     "quarterlyTypeChoice": {
       "type": "object",
-      "description": "Quarterly reporting period type",
+      "description": "Quarterly reporting period type.",
       "properties": {
-      "quarterlyPeriodType": {
-        "description": "The quarterly period type that is being chosen for the business ID.",
-        "type": "string",
-        "enum": [
-          "standard",
-          "calendar"
-        ]
+        "quarterlyPeriodType": {
+          "description": "The quarterly period type that is being chosen for the business ID.",
+          "type": "string",
+          "enum": [
+            "standard",
+            "calendar"
+          ]
+        },
+        "taxYearOfChoice": {
+          "description": "The tax year for which the quarterly period type was chosen.",
+          "type": "string",
+          "pattern": "^2[0-9]{3}-[0-9]{2}$",
+          "example": "2023-24"
+        }
       },
-      "taxYearOfChoice": {
-        "description": "The tax year for which the quarterly period type was chosen.",
-        "type": "string",
-        "format": "^2[0-9]{3}-[0-9]{2}$"
-      }
-    }
+      "required": [
+        "quarterlyPeriodType",
+        "taxYearOfChoice"
+      ],
+      "additionalProperties": false
     },
     "accountingType": {
       "description": "CASH if you used the cash basis, money actually received and paid out, to calculate your income and expenses. Otherwise ACCRUALS.",
@@ -111,39 +127,43 @@
       ]
     },
     "commencementDate": {
-      "description": "Business start date, must be in the past.",
+      "description": "Business start date, must be in the past. Must conform to the format `YYYY-MM-DD`",
       "type": "string",
-      "format": "YYYY-MM-DD",
+      "format": "date",
       "example": "2016-09-24"
     },
     "cessationDate": {
-      "description": "Business cessation date.",
+      "description": "Business cessation date. Must conform to the format `YYYY-MM-DD`",
       "type": "string",
-      "format": "YYYY-MM-DD",
+      "format": "date",
       "example": "2020-03-24"
     },
     "businessAddressLineOne": {
       "description": "First line of the business address.\n\nForbidden for property businesses.\n\nMandatory for self-employment businesses.",
       "type": "string",
-      "maximum": 35,
+      "minLength": 1,
+      "maxLength": 35,
       "example": "1 ABC Rd."
     },
     "businessAddressLineTwo": {
       "description": "Second line of the business address.\n\nForbidden for property businesses.",
       "type": "string",
-      "maximum": 35,
+      "minLength": 1,
+      "maxLength": 35,
       "example": "London"
     },
     "businessAddressLineThree": {
       "description": "Third line of the business address.\n\nForbidden for property businesses.",
       "type": "string",
-      "maximum": 35,
+      "minLength": 1,
+      "maxLength": 35,
       "example": "Greater London"
     },
     "businessAddressLineFour": {
       "description": "Fourth line of the business address.\n\nForbidden for property businesses.",
       "type": "string",
-      "maximum": 35,
+      "minLength": 1,
+      "maxLength": 35,
       "example": "United Kingdom"
     },
     "businessAddressPostcode": {

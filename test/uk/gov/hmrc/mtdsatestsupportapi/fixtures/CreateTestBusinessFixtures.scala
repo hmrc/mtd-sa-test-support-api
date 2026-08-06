@@ -1,5 +1,5 @@
 /*
- * Copyright 2025 HM Revenue & Customs
+ * Copyright 2026 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -32,6 +32,7 @@ trait CreateTestBusinessFixtures {
           """
           |{
           |  "typeOfBusiness": "self-employment",
+          |  "tradingType": "Plastering",
           |  "tradingName": "Self Employed Name",
           |  "businessAddressLineOne": "Line 1 of address",
           |  "businessAddressCountryCode": "FR"
@@ -42,6 +43,7 @@ trait CreateTestBusinessFixtures {
 
       val business: Business = Business(
         typeOfBusiness = TypeOfBusiness.`self-employment`,
+        tradingType = Some("Plastering"),
         tradingName = Some("Self Employed Name"),
         firstAccountingPeriodStartDate = None,
         firstAccountingPeriodEndDate = None,
@@ -63,6 +65,7 @@ trait CreateTestBusinessFixtures {
           """
           |{
           |  "propertyIncomeFlag": false,
+          |  "incomeSource": "Plastering",
           |  "tradingName": "Self Employed Name",
           |  "businessAddressDetails": {
           |    "addressLine1": "Line 1 of address",
@@ -98,6 +101,7 @@ trait CreateTestBusinessFixtures {
 
       val business: Business = Business(
         typeOfBusiness = TypeOfBusiness.`uk-property`,
+        tradingType = None,
         tradingName = None,
         firstAccountingPeriodStartDate = None,
         firstAccountingPeriodEndDate = None,

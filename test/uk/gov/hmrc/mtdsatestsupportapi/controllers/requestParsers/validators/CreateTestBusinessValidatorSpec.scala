@@ -36,59 +36,62 @@ class CreateTestBusinessValidatorSpec extends UnitSpec with JsonErrorValidators 
   private val timeInPast = localDate(now.minus(Duration.ofDays(1)))
 
   private val bodySelfEmploymentValid = Json.parse(
-    s"""{
-       |  "typeOfBusiness": "self-employment",
-       |  "tradingName": "Abc Ltd",
-       |  "firstAccountingPeriodStartDate": "2022-04-06",
-       |  "firstAccountingPeriodEndDate": "2023-04-05",
-       |  "latencyDetails": {
-       |    "latencyEndDate": "2020-01-01",
-       |    "taxYear1": "2020-21",
-       |    "latencyIndicator1": "A",
-       |    "taxYear2": "2021-22",
-       |    "latencyIndicator2": "Q"
-       |  },
-       |  "quarterlyTypeChoice":{
-       |    "quarterlyPeriodType": "standard",
-       |    "taxYearOfChoice": "2023-24"
-       |  },
-       |  "accountingType": "CASH",
-       |  "commencementDate": ${timeInPast.toJson},
-       |  "cessationDate": "2030-01-01",
-       |  "businessAddressLineOne": "Address line 1",
-       |  "businessAddressLineTwo": "Address line 2",
-       |  "businessAddressLineThree": "Address line 3",
-       |  "businessAddressLineFour": "Address line 4",
-       |  "businessAddressPostcode": "SW1A 1AA",
-       |  "businessAddressCountryCode": "GB"
-       |}
-       |""".stripMargin
+    s"""
+      |{
+      |  "typeOfBusiness": "self-employment",
+      |  "tradingType": "Plastering",
+      |  "tradingName": "Abc Ltd",
+      |  "firstAccountingPeriodStartDate": "2022-04-06",
+      |  "firstAccountingPeriodEndDate": "2023-04-05",
+      |  "latencyDetails": {
+      |    "latencyEndDate": "2020-01-01",
+      |    "taxYear1": "2020-21",
+      |    "latencyIndicator1": "A",
+      |    "taxYear2": "2021-22",
+      |    "latencyIndicator2": "Q"
+      |  },
+      |  "quarterlyTypeChoice": {
+      |    "quarterlyPeriodType": "standard",
+      |    "taxYearOfChoice": "2023-24"
+      |  },
+      |  "accountingType": "CASH",
+      |  "commencementDate": ${timeInPast.toJson},
+      |  "cessationDate": "2030-01-01",
+      |  "businessAddressLineOne": "Address line 1",
+      |  "businessAddressLineTwo": "Address line 2",
+      |  "businessAddressLineThree": "Address line 3",
+      |  "businessAddressLineFour": "Address line 4",
+      |  "businessAddressPostcode": "SW1A 1AA",
+      |  "businessAddressCountryCode": "GB"
+      |}
+    """.stripMargin
   )
 
   private val bodyUkPropertyValid = Json.parse(
-    s"""{
-       |  "typeOfBusiness": "uk-property",
-       |  "firstAccountingPeriodStartDate": "2022-04-06",
-       |  "firstAccountingPeriodEndDate": "2023-04-05",
-       |  "latencyDetails": {
-       |    "latencyEndDate": "2020-01-01",
-       |    "taxYear1": "2020-21",
-       |    "latencyIndicator1": "A",
-       |    "taxYear2": "2021-22",
-       |    "latencyIndicator2": "Q"
-       |  },
-       |  "quarterlyTypeChoice":{
-       |    "quarterlyPeriodType": "standard",
-       |    "taxYearOfChoice": "2023-24"
-       |  },
-       |  "accountingType": "CASH",
-       |  "commencementDate": ${timeInPast.toJson},
-       |  "cessationDate": "2030-01-01"
-       |}
-       |""".stripMargin
+    s"""
+      |{
+      |  "typeOfBusiness": "uk-property",
+      |  "firstAccountingPeriodStartDate": "2022-04-06",
+      |  "firstAccountingPeriodEndDate": "2023-04-05",
+      |  "latencyDetails": {
+      |    "latencyEndDate": "2020-01-01",
+      |    "taxYear1": "2020-21",
+      |    "latencyIndicator1": "A",
+      |    "taxYear2": "2021-22",
+      |    "latencyIndicator2": "Q"
+      |  },
+      |  "quarterlyTypeChoice": {
+      |    "quarterlyPeriodType": "standard",
+      |    "taxYearOfChoice": "2023-24"
+      |  },
+      |  "accountingType": "CASH",
+      |  "commencementDate": ${timeInPast.toJson},
+      |  "cessationDate": "2030-01-01"
+      |}
+    """.stripMargin
   )
 
-  class Test {
+  private trait Test {
     val validator = new CreateTestBusinessValidator(clock)
   }
 
@@ -129,6 +132,27 @@ class CreateTestBusinessValidatorSpec extends UnitSpec with JsonErrorValidators 
         validator.validate(
           CreateTestBusinessRawData(validNino, bodySelfEmploymentValid.update("/typeOfBusiness", JsString("badValue")))) shouldBe Seq(
           TypeOfBusinessFormatError)
+      }
+    }
+
+    "return FORMAT_STRING error with the appropriate path" when {
+      def testWith(path: String, value: String)(implicit pos: Position): Unit = {
+        s"when the format of a string field is not valid for $path" in new Test {
+          validator.validate(
+            CreateTestBusinessRawData(validNino, bodySelfEmploymentValid.update(path, JsString(value)))
+          ) shouldBe Seq(StringFormatError.withExtraPath(path))
+        }
+      }
+
+      Seq(
+        ("/tradingType", "a" * 36),
+        ("/tradingName", "a" * 106),
+        ("/businessAddressLineOne", "a" * 36),
+        ("/businessAddressLineTwo", "a" * 36),
+        ("/businessAddressLineThree", "a" * 36),
+        ("/businessAddressLineFour", "a" * 36)
+      ).foreach { case (path, value) =>
+        testWith(path, value)
       }
     }
 
@@ -176,7 +200,7 @@ class CreateTestBusinessValidatorSpec extends UnitSpec with JsonErrorValidators 
     "return RULE_FIRST_ACCOUNTING_DATE_RANGE_INVALID when the first accounting period date range is not a full tax year" in new Test {
       validator.validate(
         CreateTestBusinessRawData(validNino, bodySelfEmploymentValid.update("/firstAccountingPeriodStartDate", JsString("2023-01-01")))) shouldBe
-        Seq(RuleFirstAccountingDateRangeInvalid)
+        Seq(RuleFirstAccountingDateRangeInvalidError)
     }
 
     "return MISSING_FIRST_ACCOUNTING_PERIOD_START_DATE when the the first accounting period start date is missing" in new Test {
@@ -211,7 +235,7 @@ class CreateTestBusinessValidatorSpec extends UnitSpec with JsonErrorValidators 
       "the commencement date is not in the past" in new Test {
         validator.validate(
           CreateTestBusinessRawData(validNino, bodySelfEmploymentValid.update("/commencementDate", Json.toJson(localDate(now))))) shouldBe
-          Seq(RuleCommencementDateNotSupported)
+          Seq(RuleCommencementDateNotSupportedError)
       }
     }
 
@@ -258,7 +282,7 @@ class CreateTestBusinessValidatorSpec extends UnitSpec with JsonErrorValidators 
               nino = validNino,
               bodyUkPropertyValid.update(path, JsString(value))
             )
-          ) shouldBe Seq(RuleUnexpectedBusinessAddress)
+          ) shouldBe Seq(RuleUnexpectedBusinessAddressError)
         }
       }
 
@@ -278,7 +302,7 @@ class CreateTestBusinessValidatorSpec extends UnitSpec with JsonErrorValidators 
               nino = validNino,
               bodySelfEmploymentValid.removeProperty(path)
             )
-          ) shouldBe Seq(RuleMissingBusinessAddress)
+          ) shouldBe Seq(RuleMissingBusinessAddressError)
         }
       }
 
@@ -286,25 +310,47 @@ class CreateTestBusinessValidatorSpec extends UnitSpec with JsonErrorValidators 
       testWithMissingAddressField("/businessAddressCountryCode")
     }
 
+    "return RULE_UNEXPECTED_TRADING_TYPE error" when {
+      "tradingType is provided for a property business" in new Test {
+        validator.validate(
+          CreateTestBusinessRawData(
+            nino = validNino,
+            bodyUkPropertyValid.update("/tradingType", JsString("Plastering"))
+          )
+        ) shouldBe Seq(RuleUnexpectedTradingTypeError)
+      }
+    }
+
+    "return RULE_MISSING_TRADING_TYPE error" when {
+      "tradingType is missing for a self-employment business" in new Test {
+        validator.validate(
+          CreateTestBusinessRawData(
+            nino = validNino,
+            bodySelfEmploymentValid.removeProperty("/tradingType")
+          )
+        ) shouldBe Seq(RuleMissingTradingTypeError)
+      }
+    }
+
     "return RULE_UNEXPECTED_TRADING_NAME error" when {
-      "tradingName is provided" in new Test {
+      "tradingName is provided for a property business" in new Test {
         validator.validate(
           CreateTestBusinessRawData(
             nino = validNino,
             bodyUkPropertyValid.update("/tradingName", JsString("Trading Name"))
           )
-        ) shouldBe Seq(RuleUnexpectedTradingName)
+        ) shouldBe Seq(RuleUnexpectedTradingNameError)
       }
     }
 
     "return RULE_MISSING_TRADING_NAME error" when {
-      "tradingName is missing" in new Test {
+      "tradingName is missing for a self-employment business" in new Test {
         validator.validate(
           CreateTestBusinessRawData(
             nino = validNino,
             bodySelfEmploymentValid.removeProperty("/tradingName")
           )
-        ) shouldBe Seq(RuleMissingTradingName)
+        ) shouldBe Seq(RuleMissingTradingNameError)
       }
     }
 

@@ -1,5 +1,5 @@
 /*
- * Copyright 2025 HM Revenue & Customs
+ * Copyright 2026 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,6 +21,7 @@ import play.api.libs.json.*
 import java.time.LocalDate
 
 case class Business(typeOfBusiness: TypeOfBusiness,
+                    tradingType: Option[String],
                     tradingName: Option[String],
                     firstAccountingPeriodStartDate: Option[LocalDate],
                     firstAccountingPeriodEndDate: Option[LocalDate],
@@ -75,6 +76,7 @@ object Business {
 
     val baseJson: JsObject = trimEmpty(
       Json.obj(
+        "incomeSource"                   -> business.tradingType,
         "tradingName"                    -> business.tradingName,
         "firstAccountingPeriodStartDate" -> business.firstAccountingPeriodStartDate,
         "firstAccountingPeriodEndDate"   -> business.firstAccountingPeriodEndDate,

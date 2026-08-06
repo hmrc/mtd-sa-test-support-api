@@ -25,16 +25,13 @@ post:
         schema:
           $ref: './schemas/businesses/create_request.json'
         examples:
-          uk-property-request:
-            description:     Create a UK property request
+          Create a UK property request:
             value:
               $ref: './examples/businesses/create_request_uk_property.json'
-          foreign-property-request:
-            description: Create a foreign property request
+          Create a foreign property request:
             value:
               $ref: './examples/businesses/create_request_foreign_property.json'
-          self-employment-business-request:
-            description: Create a self employment business request
+          Create a self employment business request:
             value:
               $ref: './examples/businesses/create_request_self_employment_business.json'
 
@@ -48,11 +45,8 @@ post:
         application/json:
           schema:
             $ref: './schemas/businesses/create_response.json'
-          examples:
-            example-response:
-              description: Example Response
-              value:
-                $ref: './examples/businesses/create_response.json'
+          example:
+            $ref: './examples/businesses/create_response.json'
 
     "400":
       description: Bad request
@@ -68,6 +62,8 @@ post:
               $ref: './common/errors.yaml#/components/examples/formatNino'
             FORMAT_TYPE_OF_BUSINESS:
               $ref: './common/errors.yaml#/components/examples/formatTypeOfBusiness'
+            FORMAT_STRING:
+              $ref: './common/errors.yaml#/components/examples/formatString'
             FORMAT_DATE:
               $ref: './common/errors.yaml#/components/examples/formatDate'
             FORMAT_TAX_YEAR:
@@ -100,6 +96,10 @@ post:
               $ref: './common/errors.yaml#/components/examples/ruleUnexpectedBusinessAddress'
             RULE_MISSING_BUSINESS_ADDRESS:
               $ref: './common/errors.yaml#/components/examples/ruleMissingBusinessAddress'
+            RULE_UNEXPECTED_TRADING_TYPE:
+              $ref: './common/errors.yaml#/components/examples/ruleUnexpectedTradingType'
+            RULE_MISSING_TRADING_TYPE:
+              $ref: './common/errors.yaml#/components/examples/ruleMissingTradingType'
             RULE_UNEXPECTED_TRADING_NAME:
               $ref: './common/errors.yaml#/components/examples/ruleUnexpectedTradingName'
             RULE_MISSING_TRADING_NAME:

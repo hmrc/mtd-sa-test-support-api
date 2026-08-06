@@ -1,5 +1,5 @@
 /*
- * Copyright 2025 HM Revenue & Customs
+ * Copyright 2026 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,12 +19,10 @@ package endpoints
 import api.models.errors.*
 import com.github.tomakehurst.wiremock.stubbing.StubMapping
 import org.scalactic.source.Position
-import play.api.http.HeaderNames.ACCEPT
-import play.api.http.Status.{BAD_REQUEST, CREATED}
 import play.api.libs.json.{JsObject, Json}
 import play.api.libs.ws.WSBodyWritables.writeableOf_JsValue
 import play.api.libs.ws.{WSRequest, WSResponse}
-import play.api.test.Helpers.AUTHORIZATION
+import play.api.test.Helpers.*
 import support.{IntegrationBaseSpec, UnitSpec}
 import uk.gov.hmrc.mtdsatestsupportapi.fixtures.CreateTestBusinessFixtures
 
@@ -32,7 +30,7 @@ import java.time.LocalDate
 
 class CreateTestBusinessControllerISpec extends UnitSpec with IntegrationBaseSpec with CreateTestBusinessFixtures {
 
-  trait Test {
+  private trait Test {
 
     val nino                   = "AA123456A"
     private val vendorClientId = "someId"
@@ -94,6 +92,13 @@ class CreateTestBusinessControllerISpec extends UnitSpec with IntegrationBaseSpe
 
       validationErrorTest(
         "AA123456A",
+        MinimalCreateTestBusinessRequest.SelfEmployment.mtdBusinessJson ++ Json.obj("tradingType" -> "a" * 36),
+        BAD_REQUEST,
+        StringFormatError.withExtraPath("/tradingType")
+      )
+
+      validationErrorTest(
+        "AA123456A",
         MinimalCreateTestBusinessRequest.SelfEmployment.mtdBusinessJson ++ Json.obj("firstAccountingPeriodStartDate" -> "not a valid date"),
         BAD_REQUEST,
         DateFormatError.withExtraPath("/firstAccountingPeriodStartDate")
@@ -110,7 +115,7 @@ class CreateTestBusinessControllerISpec extends UnitSpec with IntegrationBaseSpe
         "AA123456A",
         MinimalCreateTestBusinessRequest.SelfEmployment.mtdBusinessJson ++ Json.obj("commencementDate" -> LocalDate.now.plusYears(1)),
         BAD_REQUEST,
-        RuleCommencementDateNotSupported
+        RuleCommencementDateNotSupportedError
       )
 
       validationErrorTest(
@@ -133,7 +138,7 @@ class CreateTestBusinessControllerISpec extends UnitSpec with IntegrationBaseSpe
           "firstAccountingPeriodStartDate" -> LocalDate.now,
           "firstAccountingPeriodEndDate"   -> LocalDate.now),
         BAD_REQUEST,
-        RuleFirstAccountingDateRangeInvalid
+        RuleFirstAccountingDateRangeInvalidError
       )
 
       validationErrorTest(
@@ -176,30 +181,44 @@ class CreateTestBusinessControllerISpec extends UnitSpec with IntegrationBaseSpe
 
       validationErrorTest(
         "AA123456A",
+        MinimalCreateTestBusinessRequest.SelfEmployment.mtdBusinessJson - "tradingType",
+        BAD_REQUEST,
+        RuleMissingTradingTypeError
+      )
+
+      validationErrorTest(
+        "AA123456A",
+        MinimalCreateTestBusinessRequest.UkProperty.mtdBusinessJson ++ Json.obj("tradingType" -> "Plastering"),
+        BAD_REQUEST,
+        RuleUnexpectedTradingTypeError
+      )
+
+      validationErrorTest(
+        "AA123456A",
         MinimalCreateTestBusinessRequest.SelfEmployment.mtdBusinessJson - "tradingName",
         BAD_REQUEST,
-        RuleMissingTradingName
+        RuleMissingTradingNameError
       )
 
       validationErrorTest(
         "AA123456A",
         MinimalCreateTestBusinessRequest.UkProperty.mtdBusinessJson ++ Json.obj("tradingName" -> "Trading Name"),
         BAD_REQUEST,
-        RuleUnexpectedTradingName
+        RuleUnexpectedTradingNameError
       )
 
       validationErrorTest(
         "AA123456A",
         MinimalCreateTestBusinessRequest.SelfEmployment.mtdBusinessJson - "businessAddressLineOne",
         BAD_REQUEST,
-        RuleMissingBusinessAddress
+        RuleMissingBusinessAddressError
       )
 
       validationErrorTest(
         "AA123456A",
         MinimalCreateTestBusinessRequest.UkProperty.mtdBusinessJson ++ Json.obj("businessAddressLineOne" -> "Property Address Line 1"),
         BAD_REQUEST,
-        RuleUnexpectedBusinessAddress
+        RuleUnexpectedBusinessAddressError
       )
 
       validationErrorTest(

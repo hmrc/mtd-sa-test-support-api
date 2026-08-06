@@ -1,5 +1,5 @@
 /*
- * Copyright 2025 HM Revenue & Customs
+ * Copyright 2026 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,11 +16,11 @@
 
 package uk.gov.hmrc.mtdsatestsupportapi.models.request.createTestBusiness
 
+import api.models.domain.TaxYear
 import play.api.libs.json.{JsObject, Json}
 import support.UnitSpec
-import TypeOfBusiness.*
-import api.models.domain.TaxYear
 import uk.gov.hmrc.mtdsatestsupportapi.fixtures.CreateTestBusinessFixtures
+import uk.gov.hmrc.mtdsatestsupportapi.models.request.createTestBusiness.TypeOfBusiness.*
 
 import java.time.LocalDate
 
@@ -78,6 +78,7 @@ class BusinessSpec extends UnitSpec with CreateTestBusinessFixtures {
               """
                 |{
                 |  "typeOfBusiness": "self-employment",
+                |  "tradingType": "Plastering",
                 |  "tradingName": "Abc Ltd",
                 |  "firstAccountingPeriodStartDate": "2002-02-02",
                 |  "firstAccountingPeriodEndDate": "2012-12-12",
@@ -154,6 +155,7 @@ class BusinessSpec extends UnitSpec with CreateTestBusinessFixtures {
                       s"""
                         |{
                         |  "propertyIncomeFlag": $expectedPropertyIncomeFlag,
+                        |  "incomeSource": "Plastering",
                         |  "tradingName": "Abc Ltd",
                         |  "firstAccountingPeriodStartDate": "2002-02-02",
                         |  "firstAccountingPeriodEndDate": "2012-12-12",
@@ -200,18 +202,30 @@ class BusinessSpec extends UnitSpec with CreateTestBusinessFixtures {
   }
 
   private def businessWithMinimumFields(typeOfBusiness: TypeOfBusiness): Business = {
-    // @formatter:off
     Business(
       typeOfBusiness = typeOfBusiness,
-      None, None, None, None, None, None, None,
-      None, None, None, None, None, None, None
+      tradingType = None,
+      tradingName = None,
+      firstAccountingPeriodStartDate = None,
+      firstAccountingPeriodEndDate = None,
+      latencyDetails = None,
+      quarterlyTypeChoice = None,
+      accountingType = None,
+      commencementDate = None,
+      cessationDate = None,
+      businessAddressLineOne = None,
+      businessAddressLineTwo = None,
+      businessAddressLineThree = None,
+      businessAddressLineFour = None,
+      businessAddressPostcode = None,
+      businessAddressCountryCode = None
     )
   }
-  // @formatter:on
 
   private def businessWithMaxFields(typeOfBusiness: TypeOfBusiness) = {
     Business(
       typeOfBusiness = typeOfBusiness,
+      tradingType = Some("Plastering"),
       tradingName = Some("Abc Ltd"),
       firstAccountingPeriodStartDate = Some(LocalDate.parse("2002-02-02")),
       firstAccountingPeriodEndDate = Some(LocalDate.parse("2012-12-12")),
@@ -222,9 +236,14 @@ class BusinessSpec extends UnitSpec with CreateTestBusinessFixtures {
           latencyIndicator1 = LatencyIndicator.A,
           taxYear2 = TaxYear.fromMtd("2021-22"),
           latencyIndicator2 = LatencyIndicator.Q
-        )),
-      quarterlyTypeChoice =
-        Some(QuarterlyTypeChoice(quarterlyPeriodType = QuarterlyPeriodType.`standard`, taxYearOfChoice = TaxYear.fromMtd("2023-24"))),
+        )
+      ),
+      quarterlyTypeChoice = Some(
+        QuarterlyTypeChoice(
+          quarterlyPeriodType = QuarterlyPeriodType.`standard`,
+          taxYearOfChoice = TaxYear.fromMtd("2023-24")
+        )
+      ),
       accountingType = Some(AccountingType.ACCRUALS),
       commencementDate = Some(LocalDate.parse("2000-01-01")),
       cessationDate = Some(LocalDate.parse("2030-01-01")),

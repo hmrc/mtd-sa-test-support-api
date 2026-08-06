@@ -60,21 +60,31 @@ class CreateTestBusinessValidator @Inject() (clock: Clock) extends Validator[Cre
 
     def validateTaxYear(path: String) = validateField(path)(TaxYearValidation.validate(_, path))
 
-    val errors = validateField("/accountingType")(AccountingTypeValidation.validate(_)) ++
-      validateField("/typeOfBusiness")(TypeOfBusinessValidation.validate(_)) ++
-      validateLatencyIndicator("/latencyDetails/latencyIndicator1") ++
-      validateLatencyIndicator("/latencyDetails/latencyIndicator2") ++
-      validateTaxYear("/latencyDetails/taxYear1") ++
-      validateTaxYear("/latencyDetails/taxYear2") ++
-      validateQuarterlyPeriodType("/quarterlyTypeChoice/quarterlyPeriodType") ++
-      validateTaxYear("/quarterlyTypeChoice/taxYearOfChoice") ++
-      validateField("/businessAddressCountryCode")(CountryCodeValidation.validate(_)) ++
-      validateField("/businessAddressPostcode")(PostcodeValidation.validate(_)) ++
-      validateDate("/firstAccountingPeriodStartDate") ++
-      validateDate("/firstAccountingPeriodEndDate") ++
-      validateDate("/latencyDetails/latencyEndDate") ++
-      validateDate("/commencementDate") ++
+    def validateStringField(path: String, maxLength: Int) = validateField(path)(StringFieldValidation.validate(maxLength, path))
+
+    val errors = Seq(
+      validateField("/accountingType")(AccountingTypeValidation.validate(_)),
+      validateField("/typeOfBusiness")(TypeOfBusinessValidation.validate(_)),
+      validateField("/businessAddressCountryCode")(CountryCodeValidation.validate(_)),
+      validateField("/businessAddressPostcode")(PostcodeValidation.validate(_)),
+      validateStringField("/tradingType", 35),
+      validateStringField("/tradingName", 105),
+      validateStringField("/businessAddressLineOne", 35),
+      validateStringField("/businessAddressLineTwo", 35),
+      validateStringField("/businessAddressLineThree", 35),
+      validateStringField("/businessAddressLineFour", 35),
+      validateLatencyIndicator("/latencyDetails/latencyIndicator1"),
+      validateLatencyIndicator("/latencyDetails/latencyIndicator2"),
+      validateTaxYear("/latencyDetails/taxYear1"),
+      validateTaxYear("/latencyDetails/taxYear2"),
+      validateTaxYear("/quarterlyTypeChoice/taxYearOfChoice"),
+      validateQuarterlyPeriodType("/quarterlyTypeChoice/quarterlyPeriodType"),
+      validateDate("/firstAccountingPeriodStartDate"),
+      validateDate("/firstAccountingPeriodEndDate"),
+      validateDate("/latencyDetails/latencyEndDate"),
+      validateDate("/commencementDate"),
       validateDate("/cessationDate")
+    ).flatten
 
     errorsResult(errors)
   }
@@ -91,12 +101,14 @@ class CreateTestBusinessValidator @Inject() (clock: Clock) extends Validator[Cre
   private def bodyRuleValidation(data: CreateTestBusinessRawData): Either[List[MtdError], Unit] = {
     val business = data.body.as[Business]
 
-    val errors =
-      validateMissingPostcode(business) ++
-        validateAccountingPeriod(business) ++
-        validateBusinessAddress(business) ++
-        validateTradingName(business) ++
-        business.commencementDate.map(validateCommencementDate).getOrElse(Nil)
+    val errors = Seq(
+      validateMissingPostcode(business),
+      validateAccountingPeriod(business),
+      validateBusinessAddress(business),
+      validateTradingType(business),
+      validateTradingName(business),
+      business.commencementDate.map(validateCommencementDate).getOrElse(Nil)
+    ).flatten
 
     errorsResult(errors)
   }
@@ -111,7 +123,7 @@ class CreateTestBusinessValidator @Inject() (clock: Clock) extends Validator[Cre
 
   private def validateAccountingPeriod(business: Business): Seq[MtdError] = {
     (business.firstAccountingPeriodStartDate, business.firstAccountingPeriodEndDate) match {
-      case (Some(start), Some(end)) => TaxYearAlignmentDateRangeValidation.validate(start, end, RuleFirstAccountingDateRangeInvalid)
+      case (Some(start), Some(end)) => TaxYearAlignmentDateRangeValidation.validate(start, end, RuleFirstAccountingDateRangeInvalidError)
       case (None, Some(_))          => Seq(MissingFirstAccountingPeriodStartDateError)
       case (Some(_), None)          => Seq(MissingFirstAccountingPeriodEndDateError)
       case _                        => Nil
@@ -121,42 +133,52 @@ class CreateTestBusinessValidator @Inject() (clock: Clock) extends Validator[Cre
   private def validateCommencementDate(date: LocalDate): List[MtdError] = {
     val today = LocalDate.now(clock)
 
-    if (date < today) Nil else List(RuleCommencementDateNotSupported)
+    if (date < today) Nil else List(RuleCommencementDateNotSupportedError)
   }
 
-  private def validateTradingName(business: Business): Seq[MtdError] = {
-    if (forbidsTradingName(business) && business.tradingName.nonEmpty) {
-      Seq(RuleUnexpectedTradingName)
-    } else if (requiresTradingName(business) && business.tradingName.isEmpty) {
-      Seq(RuleMissingTradingName)
+  private def validateTradingField(business: Business, field: Option[String], missingError: MtdError, unexpectedError: MtdError): Seq[MtdError] = {
+    if (isProperty(business) && field.nonEmpty) {
+      Seq(unexpectedError)
+    } else if (isSelfEmployment(business) && field.isEmpty) {
+      Seq(missingError)
     } else {
       Nil
     }
   }
 
+  private def validateTradingType(business: Business): Seq[MtdError] = validateTradingField(
+    business = business,
+    field = business.tradingType,
+    missingError = RuleMissingTradingTypeError,
+    unexpectedError = RuleUnexpectedTradingTypeError
+  )
+
+  private def validateTradingName(business: Business): Seq[MtdError] = validateTradingField(
+    business = business,
+    field = business.tradingName,
+    missingError = RuleMissingTradingNameError,
+    unexpectedError = RuleUnexpectedTradingNameError
+  )
+
   private def validateBusinessAddress(business: Business): Seq[MtdError] = {
     def haveSufficientBusinessAddress = business.businessAddressLineOne.nonEmpty && business.businessAddressCountryCode.nonEmpty
 
-    if (forbidsBusinessAddress(business) && business.hasAnyBusinessAddressDetails) {
-      Seq(RuleUnexpectedBusinessAddress)
-    } else if (requiresBusinessAddress(business) && !haveSufficientBusinessAddress) {
-      Seq(RuleMissingBusinessAddress)
+    if (isProperty(business) && business.hasAnyBusinessAddressDetails) {
+      Seq(RuleUnexpectedBusinessAddressError)
+    } else if (isSelfEmployment(business) && !haveSufficientBusinessAddress) {
+      Seq(RuleMissingBusinessAddressError)
     } else {
       Nil
     }
   }
 
   private def requiresBusinessPostcode(business: Business): Boolean = {
-    !forbidsBusinessAddress(business) &&
+    isSelfEmployment(business) &&
     business.businessAddressCountryCode.contains("GB")
   }
 
-  private def requiresBusinessAddress(business: Business): Boolean = business.typeOfBusiness.isSelfEmployment
+  private def isSelfEmployment(business: Business): Boolean = business.typeOfBusiness.isSelfEmployment
 
-  private def forbidsBusinessAddress(business: Business): Boolean = business.typeOfBusiness.isProperty
-
-  private def requiresTradingName(business: Business): Boolean = business.typeOfBusiness.isSelfEmployment
-
-  private def forbidsTradingName(business: Business): Boolean = business.typeOfBusiness.isProperty
+  private def isProperty(business: Business): Boolean = business.typeOfBusiness.isProperty
 
 }

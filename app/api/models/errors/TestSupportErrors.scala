@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2026 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,7 +23,7 @@ object RulePropertyBusinessAddedError extends MtdError("RULE_PROPERTY_BUSINESS_A
 object TypeOfBusinessFormatError      extends MtdError("FORMAT_TYPE_OF_BUSINESS", "The provided typeOfBusiness field is invalid", BAD_REQUEST)
 object AccountingTypeFormatError      extends MtdError("FORMAT_ACCOUNTING_TYPE", "The provided accountingType field is invalid", BAD_REQUEST)
 
-object RuleCommencementDateNotSupported
+object RuleCommencementDateNotSupportedError
     extends MtdError("RULE_COMMENCEMENT_DATE_NOT_SUPPORTED", "The specified commencementDate must be in the past", BAD_REQUEST)
 
 object PostcodeFormatError         extends MtdError("FORMAT_POSTCODE", "The provided businessAddressPostcode is invalid", BAD_REQUEST)
@@ -31,7 +31,7 @@ object LatencyIndicatorFormatError extends MtdError("FORMAT_LATENCY_INDICATOR", 
 object MissingPostcodeError        extends MtdError("MISSING_POSTCODE", "Missing postcode", BAD_REQUEST)
 object CountryCodeFormatError      extends MtdError("FORMAT_COUNTRY_CODE", "The provided country code is invalid", BAD_REQUEST)
 
-object RuleFirstAccountingDateRangeInvalid
+object RuleFirstAccountingDateRangeInvalidError
     extends MtdError("RULE_FIRST_ACCOUNTING_DATE_RANGE_INVALID", "The first accounting period is not a single complete tax year", BAD_REQUEST)
 
 object MissingFirstAccountingPeriodStartDateError
@@ -40,16 +40,23 @@ object MissingFirstAccountingPeriodStartDateError
 object MissingFirstAccountingPeriodEndDateError
     extends MtdError("MISSING_FIRST_ACCOUNTING_PERIOD_END_DATE", "Missing firstAccountingPeriodEndDate value", BAD_REQUEST)
 
-object RuleUnexpectedBusinessAddress
+object RuleUnexpectedBusinessAddressError
     extends MtdError("RULE_UNEXPECTED_BUSINESS_ADDRESS", "Unexpected businessAddress provided for property business", BAD_REQUEST)
 
-object RuleMissingBusinessAddress
+object RuleMissingBusinessAddressError
     extends MtdError("RULE_MISSING_BUSINESS_ADDRESS", "businessAddress not provided for the self-employment business", BAD_REQUEST)
 
-object RuleUnexpectedTradingName
+object RuleUnexpectedTradingTypeError
+    extends MtdError("RULE_UNEXPECTED_TRADING_TYPE", "Unexpected tradingType provided for property business", BAD_REQUEST)
+
+object RuleMissingTradingTypeError
+    extends MtdError("RULE_MISSING_TRADING_TYPE", "tradingType not provided for the self-employment business", BAD_REQUEST)
+
+object RuleUnexpectedTradingNameError
     extends MtdError("RULE_UNEXPECTED_TRADING_NAME", "Unexpected tradingName provided for property business", BAD_REQUEST)
 
-object RuleMissingTradingName extends MtdError("RULE_MISSING_TRADING_NAME", "tradingName not provided for the self-employment business", BAD_REQUEST)
+object RuleMissingTradingNameError
+    extends MtdError("RULE_MISSING_TRADING_NAME", "tradingName not provided for the self-employment business", BAD_REQUEST)
 
 object StatusFormatError       extends MtdError("FORMAT_STATUS", "The provided status is invalid", BAD_REQUEST)
 object StatusReasonFormatError extends MtdError("FORMAT_STATUS_REASON", "The provided status reason is invalid", BAD_REQUEST)
