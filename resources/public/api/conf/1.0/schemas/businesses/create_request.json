@@ -51,7 +51,7 @@
         },
         "taxYear1": {
           "type": "string",
-          "description": "First tax year for the income source.`",
+          "description": "First tax year for the income source.",
           "example": "2018-19",
           "format": "YYYY-YY",
           "minLength": 7,
