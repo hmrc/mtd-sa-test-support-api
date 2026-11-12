@@ -1,5 +1,5 @@
 /*
- * Copyright 2025 HM Revenue & Customs
+ * Copyright 2026 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,22 +16,20 @@
 
 package api.controllers
 
-import api.controllers.ControllerTestRunner.validNino
-import api.mocks.MockIdGenerator
-import api.mocks.services.{MockAuditService, MockAuthService}
+import api.config.MockAppConfig
 import api.models.errors.MtdError
-import mocks.MockAppConfig
+import api.services.MockAuthService
+import api.utils.{MockIdGenerator, UnitSpec}
 import play.api.http.{HeaderNames, MimeTypes, Status}
 import play.api.libs.json.JsValue
 import play.api.mvc.{AnyContentAsEmpty, ControllerComponents, Result}
 import play.api.test.Helpers.stubControllerComponents
 import play.api.test.{FakeRequest, ResultExtractors}
-import support.UnitSpec
 import uk.gov.hmrc.http.HeaderCarrier
 
 import scala.concurrent.Future
 
-class ControllerBaseSpec extends UnitSpec with Status with MimeTypes with HeaderNames with ResultExtractors with MockAuditService with MockAppConfig {
+class ControllerBaseSpec extends UnitSpec with Status with MimeTypes with HeaderNames with ResultExtractors with MockAppConfig {
 
   implicit lazy val fakeRequest: FakeRequest[AnyContentAsEmpty.type] = FakeRequest()
 
@@ -41,9 +39,13 @@ class ControllerBaseSpec extends UnitSpec with Status with MimeTypes with Header
     HeaderNames.AUTHORIZATION -> "Bearer Token"
   )
 
-  lazy val fakeDeleteRequest: FakeRequest[AnyContentAsEmpty.type] = fakeRequest.withHeaders(
-    HeaderNames.AUTHORIZATION -> "Bearer Token"
-  )
+  lazy val fakeDeleteRequest: FakeRequest[AnyContentAsEmpty.type] = fakeRequest
+    .withHeaders(HeaderNames.AUTHORIZATION -> "Bearer Token")
+    .withMethod("DELETE")
+
+  lazy val fakePostEmptyRequest: FakeRequest[AnyContentAsEmpty.type] = fakeRequest
+    .withHeaders(HeaderNames.AUTHORIZATION -> "Bearer Token")
+    .withMethod("POST")
 
   def fakePostRequest[T](body: T): FakeRequest[T] = fakeRequest.withBody(body)
 
@@ -58,22 +60,22 @@ class ControllerBaseSpec extends UnitSpec with Status with MimeTypes with Header
 
 }
 
-trait ControllerTestRunner extends MockAuthService with MockIdGenerator { self: ControllerBaseSpec =>
-  protected val nino: String  = validNino
+trait ControllerTestRunner extends ControllerBaseSpec with MockAuthService with MockIdGenerator {
+  protected val nino: String  = "AA123456A"
   protected val correlationId = "X-123"
 
   trait ControllerTest {
     protected val hc: HeaderCarrier = HeaderCarrier()
 
     MockedEnrolmentsAuthService.authoriseUser()
-    MockIdGenerator.getCorrelationId.returns(correlationId)
-    MockAppConfig.apiGatewayContext.returns("individuals/vendor-state/checkpoints").anyNumberOfTimes()
+    MockedIdGenerator.getCorrelationId.returns(correlationId)
+    MockedAppConfig.apiGatewayContext.returns("individuals/vendor-state/checkpoints").anyNumberOfTimes()
 
     def runOkTest(expectedStatus: Int, maybeExpectedResponseBody: Option[JsValue] = None): Unit = {
       val result: Future[Result] = callController()
 
       status(result) shouldBe expectedStatus
-      header("X-CorrelationId", of = result) shouldBe Some(correlationId)
+      header(header = "X-CorrelationId", of = result) shouldBe Some(correlationId)
 
       maybeExpectedResponseBody match {
         case Some(jsBody) => contentAsJson(result) shouldBe jsBody
@@ -85,16 +87,18 @@ trait ControllerTestRunner extends MockAuthService with MockIdGenerator { self: 
       val result: Future[Result] = callController()
 
       status(result) shouldBe expectedError.httpStatus
-      header("X-CorrelationId", result) shouldBe Some(correlationId)
+      header(header = "X-CorrelationId", of = result) shouldBe Some(correlationId)
 
       contentAsJson(result) shouldBe expectedError.asJson
+    }
+
+    protected def runStatusCheck(expectedStatus: Int): Unit = {
+      val result: Future[Result] = callController()
+
+      status(result) shouldBe expectedStatus
     }
 
     protected def callController(): Future[Result]
   }
 
-}
-
-object ControllerTestRunner {
-  val validNino: String = "AA123456A"
 }

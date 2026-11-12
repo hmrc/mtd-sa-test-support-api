@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2026 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,13 +16,13 @@
 
 package api.services
 
+import api.config.{AppConfig, FeatureSwitches}
 import api.models.auth.UserDetails
 import api.models.errors.{ClientNotAuthenticatedError, InternalError, InvalidBearerTokenError}
 import api.models.outcomes.AuthOutcome
-import config.{AppConfig, FeatureSwitches}
+import api.utils.Logging
 import uk.gov.hmrc.auth.core.*
 import uk.gov.hmrc.http.HeaderCarrier
-import utils.Logging
 
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}

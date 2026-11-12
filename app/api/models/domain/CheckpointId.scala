@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2026 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,14 +16,6 @@
 
 package api.models.domain
 
-import play.api.libs.json.{Format, Json}
-
-case class CheckpointId(value: String) extends AnyVal
-
-object CheckpointId {
-  implicit val format: Format[CheckpointId] = Json.valueFormat
-
-  private val validCheckpointIdFormat = "^[A-Za-z0-9\\-]{36}$"
-
-  def isValid(checkpointId: String): Boolean = checkpointId != null && checkpointId.matches(validCheckpointIdFormat)
+case class CheckpointId(checkpointId: String) {
+  override def toString: String = checkpointId
 }

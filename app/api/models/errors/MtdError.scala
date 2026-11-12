@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2026 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,9 +22,31 @@ import play.api.libs.json.{JsObject, JsPath, Json, OWrites}
 case class MtdError(code: String, message: String, httpStatus: Int, paths: Option[Seq[String]] = None) {
   val asJson: JsObject = Json.toJson(this).as[JsObject]
 
-  def withExtraPath(newPath: String): MtdError = paths.fold(this.copy(paths = Some(Seq(newPath)))) { existingPaths =>
-    this.copy(paths = Some(existingPaths :+ newPath))
-  }
+  /** Returns a copy of this error with the path, replacing any that were already present.
+    */
+  def withPath(path: String): MtdError = copy(paths = Some(List(path)))
+
+  /** Returns a copy of this error with the paths, replacing any that were already present.
+    */
+  def withPaths(paths: Seq[String]): MtdError = copy(paths = Some(paths))
+
+  /** If maybePath is defined, returns a copy of this error with the path, replacing any that were already present; otherwise returns the original
+    * error.
+    */
+  def maybeWithPath(maybePath: Option[String]): MtdError =
+    maybePath.map(withPath).getOrElse(this)
+
+  /** Returns a copy of this error with an additional path.
+    */
+  def withExtraPath(newPath: String): MtdError =
+    paths.fold(
+      copy(paths = Some(List(newPath)))
+    ) { existingPaths =>
+      copy(paths = Some(existingPaths :+ newPath))
+    }
+
+  def maybeWithExtraPath(maybeNewPath: Option[String]): MtdError =
+    maybeNewPath.map(withExtraPath).getOrElse(this)
 
 }
 
@@ -42,8 +64,4 @@ object MtdError {
   implicit def genericWrites[T <: MtdError]: OWrites[T] =
     writes.contramap[T](c => c: MtdError)
 
-}
-
-object CustomMtdError {
-  def unapply(arg: MtdError): Option[String] = Some(arg.code)
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2026 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,33 +16,37 @@
 
 package api.connectors.httpparsers
 
+import api.models.errors.*
+import api.utils.Logging
+import play.api.http.Status.BAD_REQUEST
 import play.api.libs.json.*
 import uk.gov.hmrc.http.HttpResponse
-import utils.Logging
-import api.models.errors.*
-import play.api.http.Status.BAD_REQUEST
 
-import scala.util.{Success, Try}
+import scala.util.{Failure, Success, Try}
 
 trait HttpParser extends Logging {
 
-  implicit class KnownJsonResponse(response: HttpResponse) {
+  implicit class JsonResponseHelper(response: HttpResponse) {
+    private lazy val jsonTry: Try[JsValue] = Try(response.json)
 
-    def validateJson[T](implicit reads: Reads[T]): Option[T] = {
-      Try(response.json) match {
-        case Success(json: JsValue) => parseResult(json)
-        case _ =>
-          logger.warn("[KnownJsonResponse][validateJson] No JSON was returned")
+    def validateJson[T](implicit reads: Reads[T]): Option[T] = jsonTry.toOption.flatMap(_.asOpt[T])
+
+    def validateJsonWithLogging[T](implicit reads: Reads[T]): Option[T] =
+      jsonTry match {
+        case Success(json) =>
+          json
+            .validate[T]
+            .fold(
+              errors => {
+                logger.warn(s"[JsonResponseHelper][validateJsonWithLogging] JSON validation failed: $errors")
+                None
+              },
+              value => Some(value)
+            )
+        case Failure(_) =>
+          logger.warn("[JsonResponseHelper][validateJsonWithLogging] Response body is not valid JSON")
           None
       }
-    }
-
-    def parseResult[T](json: JsValue)(implicit reads: Reads[T]): Option[T] = json.validate[T] match {
-      case JsSuccess(value, _) => Some(value)
-      case JsError(error) =>
-        logger.warn(s"[KnownJsonResponse][validateJson] Unable to parse JSON: $error")
-        None
-    }
 
   }
 
@@ -56,9 +60,11 @@ trait HttpParser extends Logging {
   }
 
   def parseErrors(response: HttpResponse): DownstreamError = {
-    val singleError         = response.validateJson[DownstreamErrorCode].map(err => DownstreamErrors(List(err)))
-    lazy val multipleErrors = response.validateJson(multipleErrorReads).map(errs => DownstreamErrors(errs))
-    lazy val bvrErrors      = response.validateJson(bvrErrorReads).map(errs => OutboundError(BVRError, Some(errs.map(_.toMtd(BAD_REQUEST)))))
+    val wrappedResponse: JsonResponseHelper = new JsonResponseHelper(response)
+
+    lazy val singleError    = wrappedResponse.validateJson[DownstreamErrorCode].map(err => DownstreamErrors(List(err)))
+    lazy val multipleErrors = wrappedResponse.validateJson(multipleErrorReads).map(errs => DownstreamErrors(errs))
+    lazy val bvrErrors      = wrappedResponse.validateJson(bvrErrorReads).map(errs => OutboundError(BVRError, Some(errs.map(_.toMtd(BAD_REQUEST)))))
     lazy val unableToParseJsonError = {
       logger.warn(s"unable to parse errors from response: ${response.body}")
       OutboundError(InternalError)
