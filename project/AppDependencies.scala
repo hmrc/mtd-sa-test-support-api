@@ -24,7 +24,7 @@ private object AppDependencies {
     "uk.gov.hmrc"       %% "bootstrap-backend-play-30" % bootstrapPlayVersion,
     "org.typelevel"     %% "cats-core"                 % "2.13.0",
     "com.neovisionaries" % "nv-i18n"                   % "1.29",
-    "com.github.jknack"  % "handlebars"                % "4.5.1"
+    "com.github.jknack"  % "handlebars"                % "4.5.5"
   )
 
   val test: Seq[sbt.ModuleID] = Seq(
@@ -34,8 +34,8 @@ private object AppDependencies {
   ).map(_ % Test)
 
   val itDependencies: Seq[ModuleID] = Seq(
-    "io.swagger.parser.v3"          % "swagger-parser-v3"    % "2.1.43",
-    "com.fasterxml.jackson.module" %% "jackson-module-scala" % "2.22.0"
+    "io.swagger.parser.v3"          % "swagger-parser-v3"    % "2.1.48",
+    "com.fasterxml.jackson.module" %% "jackson-module-scala" % "2.22.4"
   ).map(_ % Test)
 
 }
