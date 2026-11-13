@@ -63,7 +63,11 @@ class VersionRoutingRequestHandler @Inject() (versionRoutingMap: VersionRoutingM
       case None => Some(invalidAcceptHeaderError)
     }
 
-    documentHandler orElse apiHandler
+    if (request.path.stripSuffix("/") == "/auth/generate" && !featureSwitches.isEnabled("generate_token")) {
+      Some(unsupportedVersionAction)
+    } else {
+      documentHandler orElse apiHandler
+    }
   }
 
   private def routeWith(router: Router)(request: RequestHeader): Option[Handler] =

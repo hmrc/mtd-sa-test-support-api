@@ -17,24 +17,42 @@
 package uk.gov.hmrc.internaltestsupport.connectors
 
 import api.connectors.ConnectorSpec
-import api.models.errors.{DownstreamErrorCode, DownstreamErrors}
+import api.models.errors.{DownstreamErrorCode, DownstreamErrors, InternalError, OutboundError}
 import api.models.outcomes.ResponseWrapper
 import config.DownstreamConfig
-import play.api.http.Status.OK
+import play.api.http.{MimeTypes, Status}
 import play.api.libs.json.{JsObject, JsValue, Json}
 import uk.gov.hmrc.internaltestsupport.models.oauth.{OAuthRequest, OAuthResponse}
 
 class OAuthConnectorSpec extends ConnectorSpec {
 
   "OAuthConnector" when {
+    Seq(
+      Status.OK                  -> Json.obj("unexpected" -> "response"),
+      Status.BAD_REQUEST         -> Json.obj("error" -> "invalid_grant"),
+      Status.UNAUTHORIZED        -> Json.obj("error" -> "invalid_client"),
+      Status.SERVICE_UNAVAILABLE -> Json.obj("error" -> "temporarily_unavailable")
+    ).foreach { case (responseStatus, body) =>
+      s"the downstream returns status $responseStatus with body $body" should {
+        "return an internal error for an unusable token response" in new Test {
+          when(POST, "/oauth/token")
+            .withRequestBody(testOauthRequest.urlEncoded)
+            .withHeaders(Seq(("content-type", MimeTypes.FORM)))
+            .thenReturn[JsValue](status = responseStatus, body = body)
+
+          await(connector.getOAuthToken(testOauthRequest)) shouldBe Left(ResponseWrapper("", OutboundError(InternalError)))
+        }
+      }
+    }
+
     "the downstream returns a successful 200 response" when {
       "retrieving oauth token" should {
         "return the oauth response with access token" in new Test {
 
           when(POST, s"/oauth/token")
-            .withRequestBody(Json.toJson(testOauthRequest))
-            .withHeaders(Seq(("content-type", "application/json")))
-            .thenReturn(OK, oauthSuccessResponse)
+            .withRequestBody(testOauthRequest.urlEncoded)
+            .withHeaders(Seq(("content-type", MimeTypes.FORM)))
+            .thenReturn(Status.OK, oauthSuccessResponse)
 
           await(connector.getOAuthToken(testOauthRequest)) shouldBe Right(
             ResponseWrapper("", oauthSuccessResponse)
@@ -47,7 +65,8 @@ class OAuthConnectorSpec extends ConnectorSpec {
       "the oauth token request fails" should {
         "return the corresponding error" in new Test {
           when(POST, s"/oauth/token")
-            .withHeaders(Seq(("content-type", "application/json")))
+            .withRequestBody(testOauthRequest.urlEncoded)
+            .withHeaders(Seq(("content-type", MimeTypes.FORM)))
             .thenReturn[JsValue](status = 400, body = oauthErrorResponse)
 
           await(connector.getOAuthToken(testOauthRequest)) shouldBe Left(
@@ -70,18 +89,18 @@ class OAuthConnectorSpec extends ConnectorSpec {
 
     val testOauthRequest: OAuthRequest =
       OAuthRequest(
-        grant_type = code,
-        code = "authorization_code",
+        grant_type = "authorization_code",
+        code = code,
         redirect_uri = "http://localhost:8080/callback",
         client_id = "test_client_id",
         client_secret = "test_client_secret")
 
     protected val oauthSuccessResponseJson: JsObject = Json.obj(
-      "accessToken"  -> accessToken,
-      "refreshToken" -> refreshToken,
-      "tokenType"    -> tokenType,
-      "expiresIn"    -> expiresIn,
-      "scope"        -> scope
+      "access_token"  -> accessToken,
+      "refresh_token" -> refreshToken,
+      "token_type"    -> tokenType,
+      "expires_in"    -> expiresIn,
+      "scope"         -> scope
     )
 
     protected val oauthSuccessResponse: OAuthResponse = oauthSuccessResponseJson.as[OAuthResponse]

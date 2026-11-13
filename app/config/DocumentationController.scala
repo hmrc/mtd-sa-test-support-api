@@ -28,6 +28,7 @@ import uk.gov.hmrc.play.bootstrap.backend.controller.BackendController
 
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.ExecutionContext
+import scala.concurrent.Future
 
 @Singleton
 class DocumentationController @Inject() (
@@ -35,7 +36,8 @@ class DocumentationController @Inject() (
     docRewriters: DocumentationRewriters,
     assets: RewriteableAssets,
     configuration: Configuration,
-    cc: ControllerComponents
+    cc: ControllerComponents,
+    featureSwitches: FeatureSwitches
 )(implicit ec: ExecutionContext, materializer: Materializer)
     extends BackendController(cc) {
 
@@ -45,11 +47,18 @@ class DocumentationController @Inject() (
 
   def asset(version: String, filename: String): Action[AnyContent] = {
     CORSActionBuilder(configuration).async { implicit request =>
-      val path = s"/public/api/conf/$version"
-      val rewriters = docRewriters.rewriteables.flatMap { rewritable =>
-        if (rewritable.check(version, filename)) Some(rewritable.rewrite) else None
+      val internalAuthAsset =
+        filename == "auth_generate.yaml" || filename.startsWith("schemas/auth/") || filename.startsWith("examples/auth/")
+
+      if (internalAuthAsset && !featureSwitches.isEnabled("generate_token")) {
+        Future.successful(NotFound)
+      } else {
+        val path = s"/public/api/conf/$version"
+        val rewriters = docRewriters.rewriteables.flatMap { rewritable =>
+          if (rewritable.check(version, filename)) Some(rewritable.rewrite) else None
+        }
+        assets.rewriteableAt(path, filename, rewriters)(request)
       }
-      assets.rewriteableAt(path, filename, rewriters)(request)
     }
   }
 

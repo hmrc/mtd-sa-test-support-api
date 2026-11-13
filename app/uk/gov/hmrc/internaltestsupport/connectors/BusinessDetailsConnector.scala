@@ -39,7 +39,7 @@ class BusinessDetailsConnector @Inject() (val http: HttpClientV2, val appConfig:
     implicit val context: ConnectorContext = ConnectorContext(config.hipDownstreamConfig)
 
     getWithBasicAuth(
-      DownstreamUri[MtdIdReference]("etmp/RESTAdapter/itsa/taxpayer/business-details?nino=$nino"),
+      DownstreamUri[MtdIdReference](s"etmp/RESTAdapter/itsa/taxpayer/business-details?nino=$nino"),
       DownstreamStrategy.basicAuthStrategy(config.hipDownstreamConfig)
     )
   }

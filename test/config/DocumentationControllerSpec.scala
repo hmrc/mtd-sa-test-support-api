@@ -37,6 +37,29 @@ import scala.concurrent.Future
 class DocumentationControllerSpec extends ControllerBaseSpec with MockAppConfig {
 
   "asset rewriting" when {
+    "internal authorization is disabled" must {
+      Seq("auth_generate.yaml", "schemas/auth/generate_request.json", "examples/auth/generate_response.json").foreach { asset =>
+        s"return 404 for $asset without serving the asset" in new Test {
+          status(requestAsset(asset)) shouldBe NOT_FOUND
+        }
+      }
+    }
+
+    "internal authorization is enabled" must {
+      "serve its documentation through the existing rewriters" in new Test {
+        override def internalAuthEnabled: Boolean = true
+
+        (check1(_: String, _: String)).expects(version, "auth_generate.yaml").returns(true)
+        (check2(_: String, _: String)).expects(version, "auth_generate.yaml").returns(false)
+        (rewriteableAssets
+          .rewriteableAt(_: String, _: String, _: Seq[Rewriter]))
+          .expects(s"/public/api/conf/$version", "auth_generate.yaml", Seq(rewriter1))
+          .returns(rewrittenOkAction)
+
+        status(requestAsset("auth_generate.yaml")) shouldBe OK
+      }
+    }
+
     "all rewriters are to be used" must {
       "use all rewriters" in new Test {
         willUse(check1) returns true
@@ -63,7 +86,8 @@ class DocumentationControllerSpec extends ControllerBaseSpec with MockAppConfig 
   }
 
   trait Test {
-    val hc: HeaderCarrier = HeaderCarrier()
+    def internalAuthEnabled: Boolean = false
+    val hc: HeaderCarrier            = HeaderCarrier()
 
     val version          = "1.0"
     val filename         = "someFile.ext"
@@ -100,9 +124,11 @@ class DocumentationControllerSpec extends ControllerBaseSpec with MockAppConfig 
     protected def rewrittenOkAction: Action[AnyContent] = actionBuilder { (_: Request[AnyContent]) => Ok(rewrittenContent) }
 
     implicit val materializer: Materializer = NoMaterializer
-    private val rewriteableAssets           = mock[RewriteableAssets]
+    protected val rewriteableAssets         = mock[RewriteableAssets]
+    private val featureSwitches             = mock[FeatureSwitches]
+    (featureSwitches.isEnabled(_: String)).stubs("generate_token").onCall((_: String) => internalAuthEnabled)
 
-    protected def controller = new DocumentationController(apiFactory, docRewriters, rewriteableAssets, config, cc)
+    protected def controller = new DocumentationController(apiFactory, docRewriters, rewriteableAssets, config, cc, featureSwitches)
   }
 
 }

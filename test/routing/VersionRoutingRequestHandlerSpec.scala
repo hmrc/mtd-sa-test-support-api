@@ -40,13 +40,15 @@ class VersionRoutingRequestHandlerSpec extends UnitSpec with Inside with MockApp
   import play.api.mvc.Handler
   import play.api.routing.sird.*
 
-  object DefaultHandler extends Handler
-  object V1Handler      extends Handler
-  object V2Handler      extends Handler
-  object V3Handler      extends Handler
+  object DefaultHandler      extends Handler
+  object V1Handler           extends Handler
+  object V2Handler           extends Handler
+  object V3Handler           extends Handler
+  object InternalAuthHandler extends Handler
 
-  private val defaultRouter = Router.from { case GET(p"") =>
-    DefaultHandler
+  private val defaultRouter = Router.from {
+    case GET(p"")                => DefaultHandler
+    case POST(p"/auth/generate") => InternalAuthHandler
   }
 
   private val v1Router = Router.from { case GET(p"/v1") =>
@@ -66,15 +68,16 @@ class VersionRoutingRequestHandlerSpec extends UnitSpec with Inside with MockApp
     override val map: Map[String, Router] = Map("1.0" -> v1Router, "2.0" -> v2Router, "3.0" -> v3Router)
   }
 
-  class Test(implicit acceptHeader: Option[String]) {
+  class Test(internalAuthEnabled: Boolean = true)(implicit acceptHeader: Option[String]) {
     val httpConfiguration: HttpConfiguration = HttpConfiguration("context")
     private val errorHandler                 = mock[HttpErrorHandler]
     private val filters                      = mock[HttpFilters]
     (() => filters.filters).stubs().returns(Seq.empty)
 
-    MockAppConfig.featureSwitches.returns(Configuration(ConfigFactory.parseString("""
+    MockAppConfig.featureSwitches.returns(Configuration(ConfigFactory.parseString(s"""
                                                                            |version-1.enabled = true
                                                                            |version-2.enabled = true
+                                                                           |generate_token.enabled = $internalAuthEnabled
                                                                          """.stripMargin)))
 
     val requestHandler: VersionRoutingRequestHandler =
@@ -86,6 +89,23 @@ class VersionRoutingRequestHandlerSpec extends UnitSpec with Inside with MockApp
           req.withHeaders((ACCEPT, accept))
         }
 
+  }
+
+  "Routing internal authorization requests" should {
+    implicit val acceptHeader: None.type = None
+
+    Seq("/auth/generate", "/auth/generate/").foreach { path =>
+      s"return 404 for $path when disabled" in new Test(internalAuthEnabled = false) {
+        val request = FakeRequest("POST", path)
+        inside(requestHandler.routeRequest(request)) { case Some(action: EssentialAction) =>
+          status(action.apply(request)) shouldBe NOT_FOUND
+        }
+      }
+
+      s"route $path when enabled without an Accept header" in new Test(internalAuthEnabled = true) {
+        requestHandler.routeRequest(FakeRequest("POST", path)) shouldBe Some(InternalAuthHandler)
+      }
+    }
   }
 
   "Routing requests with no version" should {

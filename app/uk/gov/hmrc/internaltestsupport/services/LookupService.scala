@@ -16,26 +16,40 @@
 
 package uk.gov.hmrc.internaltestsupport.services
 
-import api.models.errors.{InternalError, MtdError, NotFoundError}
+import api.models.errors.{DownstreamErrors, InternalError, MtdError, NotFoundError, OutboundError}
 import api.models.outcomes.ResponseWrapper
 import com.google.inject.{Inject, Singleton}
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.internaltestsupport.connectors.BusinessDetailsConnector
 import uk.gov.hmrc.internaltestsupport.models.{MtdIdReference}
+import utils.Logging
 
 import scala.concurrent.{ExecutionContext, Future}
+import scala.util.control.NonFatal
 
 @Singleton
-class LookupService @Inject() (connector: BusinessDetailsConnector) {
+class LookupService @Inject() (connector: BusinessDetailsConnector) extends Logging {
 
   def getMtdId(nino: String)(implicit correlationId: String, hc: HeaderCarrier, ec: ExecutionContext): Future[Either[MtdError, MtdIdReference]] = {
-    connector.getMtdId(nino).map {
-      case Right(response) =>
-        Right(response.responseData)
-        //TODO: check if these are handled appropriately for response mapping in controller
-      case Left(ResponseWrapper(_, NotFoundError)) => Left(NotFoundError)
-      case _                                       => Left(InternalError)
-    }
+    Future.unit
+      .flatMap(_ => connector.getMtdId(nino))
+      .map {
+        case Right(response) =>
+          Right(response.responseData)
+        case Left(ResponseWrapper(_, OutboundError(error, errors)))
+            if error.code == NotFoundError.code && errors.forall(_.forall(_.code == NotFoundError.code)) =>
+          Left(NotFoundError)
+        case Left(ResponseWrapper(_, DownstreamErrors(errors)))
+            if errors.nonEmpty && errors.forall(error => error.code == NotFoundError.code || error.code == "NOT_FOUND") =>
+          Left(NotFoundError)
+        case Left(_) =>
+          logger.error(s"[LookupService] MTD ID lookup failed [correlationId=$correlationId]")
+          Left(InternalError)
+      }
+      .recover { case NonFatal(e) =>
+        logger.error(s"[LookupService] MTD ID lookup raised ${e.getClass.getSimpleName} [correlationId=$correlationId]")
+        Left(InternalError)
+      }
   }
 
 }

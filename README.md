@@ -30,6 +30,20 @@ Run unit tests: `sbt test`
 
 Run integration tests: `sbt it/test`
 
+### Internal OAuth endpoint (QA only)
+
+`POST /auth/generate` and its OAS documentation are enabled locally by `sbt run`
+using Play development settings, but disabled by default in deployed applications.
+Use the existing feature-switch configuration format to enable them in QA:
+
+```hocon
+feature-switch.generate_token.enabled = true
+```
+
+Keep `feature-switch.generate_token.enabled = false` in environments beyond QA,
+including staging, sandbox and production. When disabled, the endpoint and its
+documentation assets return 404, and the endpoint is omitted from the OAS.
+
 
 ### View OpenAPI Specification (OAS) documentation
 

@@ -1,0 +1,24 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "title": "Generate a Test OAuth Token Validation Error",
+  "description": "Play JSON field validation errors, keyed by JSON path.",
+  "type": "object",
+  "additionalProperties": {
+    "type": "array",
+    "items": {
+      "type": "object",
+      "properties": {
+        "msg": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "args": {
+          "type": "array"
+        }
+      },
+      "required": ["msg", "args"]
+    }
+  }
+}

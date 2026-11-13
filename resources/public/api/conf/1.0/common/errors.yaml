@@ -224,3 +224,33 @@ components:
       value:
         code: MATCHING_RESOURCE_NOT_FOUND
         message: Matching resource not found
+
+    {{#if (enabled "generate_token")}}
+    notFoundMtdId:
+      description: No matching individual was found when looking up the MTD IT ID using the supplied NINO.
+      value:
+        code: MATCHING_RESOURCE_NOT_FOUND
+        message: Matching resource not found
+
+    # 422
+
+    grantScopeNotFound:
+      description: The grant-scope step did not return a redirect Location header.
+      value:
+        code: GRANTSCOPE_NOT_FOUND
+        message: Failed to retrieve grant scope from GG
+
+    oauthCodeRetrievalError:
+      description: The grant-scope callback did not contain an OAuth authorization code.
+      value:
+        code: OAUTH_CODE_RETRIEVAL_ERROR
+        message: Failed to retrieve OAuth code from GG
+
+    # 500
+
+    authInternalError:
+      description: An unexpected error occurred while generating the OAuth token.
+      value:
+        code: INTERNAL_SERVER_ERROR
+        message: An internal server error occurred
+    {{/if}}

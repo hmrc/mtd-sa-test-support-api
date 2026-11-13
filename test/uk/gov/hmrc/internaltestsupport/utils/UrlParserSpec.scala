@@ -17,10 +17,24 @@
 package uk.gov.hmrc.internaltestsupport.utils
 
 import support.UnitSpec
+import uk.gov.hmrc.internaltestsupport.models.OAuthCodeRetrievalError
 
 class UrlParserSpec extends UnitSpec {
 
   "UrlParser.extractCode" should {
+    Seq(
+      "http://localhost:9000/callback?code=",
+      "http://localhost:9000/callback?code=%ZZ"
+    ).foreach { url =>
+      s"return an error for an empty or malformed code in $url" in {
+        UrlParser.extractCode(url) shouldBe Left(OAuthCodeRetrievalError)
+      }
+    }
+
+    "decode a code exactly once" in {
+      UrlParser.extractCode("http://localhost:9000/callback?code=a%252Bb%2Bc") shouldBe Right("a%2Bb+c")
+    }
+
     "extract code from query string" in {
       val url = "http://localhost:9000/callback?code=abc123&state=1"
       UrlParser.extractCode(url) shouldBe Right("abc123")
@@ -46,11 +60,9 @@ class UrlParserSpec extends UnitSpec {
       UrlParser.extractCode(url) shouldBe Right("abc def/456")
     }
 
-    "throw RuntimeException when no code is found" in {
+    "return an error when no code is found" in {
       val url = "http://localhost:9000/callback?state=1&other=value"
-      the[RuntimeException] thrownBy {
-        UrlParser.extractCode(url)
-      } should have message "No OAuth code found in URL: http://localhost:9000/callback?state=1&other=value"
+      UrlParser.extractCode(url) shouldBe Left(OAuthCodeRetrievalError)
     }
 
     "prioritize query string over fragment" in {
@@ -61,6 +73,11 @@ class UrlParserSpec extends UnitSpec {
     "extract code from fragment when query is absent" in {
       val url = "http://localhost:9000/callback#state=1&code=fragcode&extra=value"
       UrlParser.extractCode(url) shouldBe Right("fragcode")
+    }
+
+    "extract code from an HTML-escaped query string" in {
+      val url = "http://localhost:9000/callback?state=1&amp;code=htmlcode"
+      UrlParser.extractCode(url) shouldBe Right("htmlcode")
     }
   }
 

@@ -18,6 +18,7 @@ package uk.gov.hmrc.internaltestsupport.services
 
 import api.controllers.RequestContext
 import api.models.errors.*
+import api.models.outcomes.ResponseWrapper
 import api.services.{BaseService, ServiceOutcome}
 import cats.implicits.toBifunctorOps
 import uk.gov.hmrc.internaltestsupport.connectors.OAuthConnector
@@ -25,12 +26,24 @@ import uk.gov.hmrc.internaltestsupport.models.oauth.{OAuthRequest, OAuthResponse
 
 import javax.inject.*
 import scala.concurrent.{ExecutionContext, Future}
+import scala.util.control.NonFatal
 
 @Singleton
 class OAuthService @Inject() (connector: OAuthConnector) extends BaseService {
 
   def getOAuthToken(request: OAuthRequest)(implicit ec: ExecutionContext, rc: RequestContext): Future[ServiceOutcome[OAuthResponse]] = {
-    connector.getOAuthToken(request).map(_.leftMap(mapDownstreamErrors(errorMap)))
+    Future.unit
+      .flatMap(_ => connector.getOAuthToken(request))
+      .map {
+        case Left(ResponseWrapper(id, DownstreamErrors(Nil))) =>
+          logger.error(s"[OAuthService] Empty downstream error response [correlationId=${rc.correlationId}]")
+          Left(ErrorWrapper(id, InternalError))
+        case outcome => outcome.leftMap(mapDownstreamErrors(errorMap))
+      }
+      .recover { case NonFatal(e) =>
+        logger.error(s"[OAuthService] Token exchange raised ${e.getClass.getSimpleName} [correlationId=${rc.correlationId}]")
+        Left(ErrorWrapper(rc.correlationId, InternalError))
+      }
   }
 
   private val errorMap: Map[String, MtdError] = {

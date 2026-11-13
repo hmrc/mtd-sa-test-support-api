@@ -43,6 +43,7 @@ lazy val microservice = Project(appName, file("."))
     Compile / unmanagedClasspath += baseDirectory.value / "resources"
   )
   .settings(CodeCoverageSettings.settings *)
+  .settings(PlayKeys.devSettings += "feature-switch.generate_token.enabled" -> "true")
   .settings(PlayKeys.playDefaultPort := 12221)
 
 lazy val it = project

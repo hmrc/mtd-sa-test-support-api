@@ -17,16 +17,16 @@
 package uk.gov.hmrc.internaltestsupport.models
 
 import api.models.errors.MtdError
-import play.api.http.Status.UNPROCESSABLE_ENTITY
+import play.api.http.Status.{INTERNAL_SERVER_ERROR, UNPROCESSABLE_ENTITY}
 
 object OAuthCodeRetrievalError extends MtdError("OAUTH_CODE_RETRIEVAL_ERROR", "Failed to retrieve OAuth code from GG", UNPROCESSABLE_ENTITY)
 
 object GrantScopeRetrievalError extends MtdError("GRANTSCOPE_NOT_FOUND", "Failed to retrieve grant scope from GG", UNPROCESSABLE_ENTITY)
 
-object PWTimeoutError extends MtdError("PW_TIMEOUT", "", UNPROCESSABLE_ENTITY) {
+object PWTimeoutError extends MtdError("PW_TIMEOUT", "Browser automation timed out", INTERNAL_SERVER_ERROR) {
   def withMessage(message: String): MtdError = this.copy(message = message)
 }
 
-object PWError extends MtdError("PLAYWRIGHT_ERROR", "", UNPROCESSABLE_ENTITY) {
+object PWError extends MtdError("PLAYWRIGHT_ERROR", "Browser automation failed", INTERNAL_SERVER_ERROR) {
   def withMessage(message: String): MtdError = this.copy(message = message)
 }

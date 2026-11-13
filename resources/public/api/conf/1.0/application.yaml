@@ -32,6 +32,10 @@ components:
             read:self-assessment: Grant read access
 
 paths:
+  {{#if (enabled "generate_token")}}
+  /auth/generate:
+    $ref: "./auth_generate.yaml"
+  {{/if}}
   /individuals/self-assessment-test-support/vendor-state:
     $ref: "./vendor_state.yaml"
   /individuals/self-assessment-test-support/vendor-state/checkpoints:

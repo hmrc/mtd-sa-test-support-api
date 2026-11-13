@@ -1,0 +1,92 @@
+post:
+  summary: Generate a Test OAuth Token
+  description: |
+    Generates an OAuth token for a QA test individual with read:self-assessment and write:self-assessment scopes.
+    Supply a NINO and optionally an MTD IT ID (identifier); if omitted, the identifier is looked up using the NINO.
+
+  tags:
+    - Internal Authorization
+
+  servers:
+    - url: http://localhost:12221
+      description: Local test-support service calling QA authentication services
+
+  parameters:
+    - $ref: ./common/headers.yaml#/components/parameters/contentTypeJson
+
+  security: []
+
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          $ref: ./schemas/auth/generate_request.json
+        examples:
+          Look up the MTD IT ID:
+            value:
+              $ref: ./examples/auth/generate_request_lookup.json
+          Supply the MTD IT ID:
+            value:
+              $ref: ./examples/auth/generate_request_identifier.json
+
+  responses:
+    "200":
+      description: Success
+      content:
+        application/json:
+          schema:
+            $ref: ./schemas/auth/generate_response.json
+          examples:
+            Authorization header value:
+              value:
+                $ref: ./examples/auth/generate_response.json
+
+    "400":
+      description: |
+        Bad request. A required field is missing or a field has the wrong JSON type.
+        Field validation errors use the Play JSON validation format rather than the standard API error response.
+        Malformed JSON is rejected by the JSON body parser.
+      content:
+        application/json:
+          schema:
+            $ref: ./schemas/auth/validation_error_response.json
+          examples:
+            Missing NINO:
+              value:
+                $ref: ./examples/auth/generate_validation_error_response.json
+
+    "404":
+      description: No matching individual was found during the MTD IT ID lookup.
+      content:
+        application/json:
+          schema:
+            $ref: ./schemas/error_response.yaml
+          examples:
+            MATCHING_RESOURCE_NOT_FOUND:
+              $ref: ./common/errors.yaml#/components/examples/notFoundMtdId
+
+    "415":
+      description: Unsupported media type. The request Content-Type must be application/json.
+
+    "422":
+      description: The authorization flow returned a missing or empty grant-scope redirect, or a missing, empty or malformed OAuth authorization code.
+      content:
+        application/json:
+          schema:
+            $ref: ./schemas/error_response.yaml
+          examples:
+            GRANTSCOPE_NOT_FOUND:
+              $ref: ./common/errors.yaml#/components/examples/grantScopeNotFound
+            OAUTH_CODE_RETRIEVAL_ERROR:
+              $ref: ./common/errors.yaml#/components/examples/oauthCodeRetrievalError
+
+    "500":
+      description: An unexpected error or timeout occurred while generating the OAuth token.
+      content:
+        application/json:
+          schema:
+            $ref: ./schemas/error_response.yaml
+          examples:
+            INTERNAL_SERVER_ERROR:
+              $ref: ./common/errors.yaml#/components/examples/authInternalError

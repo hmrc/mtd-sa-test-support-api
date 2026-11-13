@@ -30,7 +30,7 @@ import uk.gov.hmrc.internaltestsupport.utils.UrlParser
 import java.util.regex.Pattern
 import javax.inject.{Inject, Named, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
-import scala.util.Try
+import scala.util.Using
 import scala.util.control.NonFatal
 
 @Singleton
@@ -39,21 +39,42 @@ class GGAutomationService @Inject() (
     @Named("playwrightEc") playwrightEc: ExecutionContext
 ) extends BaseService {
 
-  private val playwright: Playwright = Playwright.create()
+  private var browserResources: Option[(Playwright, Browser)] = None
 
-  private val browser: Browser =
-    playwright
-      .chromium()
-      .launch(
-        new BrowserType.LaunchOptions()
-          .setHeadless(false)
-          .setSlowMo(50) // useful for debugging
-      )
+  protected def createPlaywright(): Playwright = Playwright.create()
+
+  private def browser: Browser = synchronized {
+    browserResources match {
+      case Some((_, instance)) => instance
+      case None =>
+        val playwright = createPlaywright()
+        try {
+          val instance = playwright
+            .chromium()
+            .launch(new BrowserType.LaunchOptions().setHeadless(true))
+          browserResources = Some(playwright -> instance)
+          instance
+        } catch {
+          case NonFatal(e) =>
+            try playwright.close()
+            catch {
+              case NonFatal(closeError) =>
+                logger.warn(s"[GGAutomationService] Playwright cleanup raised ${closeError.getClass.getSimpleName} after browser launch failed")
+            }
+            throw e
+        }
+    }
+  }
 
   lifecycle.addStopHook { () =>
     Future.successful {
-      try browser.close()
-      finally playwright.close()
+      synchronized {
+        browserResources.foreach { case (playwright, browser) =>
+          try browser.close()
+          finally playwright.close()
+        }
+        browserResources = None
+      }
     }
   }
 
@@ -86,82 +107,84 @@ class GGAutomationService @Inject() (
   }
 
   def submitForm(req: SubmitRequest)(implicit rc: RequestContext): Future[ServiceOutcome[GGAuthResponse]] =
-    Future(blockingSubmit(req))(playwrightEc)
-
-  private def blockingSubmit(req: SubmitRequest): ServiceOutcome[GGAuthResponse] = {
-    val context = browser.newContext(new Browser.NewContextOptions().setViewportSize(1280, 720))
-    val page    = context.newPage()
-
-    // Default timeout for all Playwright operations
-    page.setDefaultTimeout(15000d)
-
-    if (debugLogging) attachDebugLogging(context, page)
-
-    try {
-      val ggUrl    = "https://www.qa.tax.service.gov.uk/auth-login-stub/gg-sign-in"
-      val oauthUrl = "https://www.qa.tax.service.gov.uk/oauth"
-
-      page.navigate(ggUrl, new Page.NavigateOptions().setWaitUntil(WaitUntilState.DOMCONTENTLOADED))
-
-      // --- GG sign-in stub ---
-      page.locator(GGSelectors.confidenceLevelSelect).selectOption("250")
-      page.locator(GGSelectors.affinityGroupSelect).selectOption("Individual")
-      page.locator(GGSelectors.credentialStrengthSelect).selectOption("strong")
-
-      page.locator(GGSelectors.ninoInput).fill(req.nino)
-
-      // Redirect into oauth-frontend authorize flow. (String representation handling left as-is per your note.)
-      page
-        .locator(GGSelectors.redirectUrlInput)
-        .fill(
-          s"$oauthUrl/authorize" +
-            s"?client_id=$clientId" +
-            s"&scope=read:self-assessment+write:self-assessment" +
-            s"&response_type=code" +
-            s"&redirect_uri=http://localhost:9000" +
-            s"&state=12345"
-        )
-
-      page.locator(GGSelectors.enrolmentKeyInput).fill("HMRC-MTD-IT")
-      page.locator(GGSelectors.identifierNameInput).fill("MTDITID")
-      page.locator(GGSelectors.identifierValueInput).fill(req.identifier)
-      page.locator(GGSelectors.enrolmentStateInput).selectOption("Activated")
-
-      // GG submit
-      waitForSuccessfulNavigationTo(page, "/oauth/start") {
-        page.locator(GGSelectors.submitButton).click()
-      }
-      confirmPathSuffix(page, "/oauth/start")
-
-      // /oauth/start
-      waitForSuccessfulNavigationTo(page, "/oauth/whatYouWillNeed") {
-        page.locator(OauthSelectors.startButton).click()
-      }
-      confirmPathSuffix(page, "/oauth/whatYouWillNeed")
-
-      // /oauth/whatYouWillNeed
-      waitForSuccessfulNavigationTo(page, "/oauth/grantscope") {
-        page.locator(OauthSelectors.whatYouWillNeedButton).click()
-      }
-      confirmPathSuffix(page, "/oauth/grantscope")
-
-      // On grantscope: click givePermission and capture the 303 redirect Location header,
-      // then extract the code.
-      codeFromGivePermission(page) match {
-        case Right(resp) => Right(ResponseWrapper("", resp))
-        case Left(err)   => Left(ErrorWrapper("", err))
-      }
-
-    } catch {
+    Future(blockingSubmit(req))(playwrightEc).recover {
       case to: TimeoutError =>
-        Left(ErrorWrapper("", PWTimeoutError.withMessage(s"Timed out waiting for expected page navigation or response: ${to.getMessage}")))
+        logger.error(s"[GGAutomationService] Browser automation timed out [correlationId=${rc.correlationId}]")
+        Left(
+          ErrorWrapper(rc.correlationId, PWTimeoutError.withMessage(s"Timed out waiting for expected page navigation or response: ${to.getMessage}")))
       case pw: PlaywrightException =>
-        Left(ErrorWrapper("", PWError.withMessage(s"Playwright errored with response: ${pw.getMessage}")))
+        logger.error(s"[GGAutomationService] Browser automation failed [correlationId=${rc.correlationId}]")
+        Left(ErrorWrapper(rc.correlationId, PWError.withMessage(s"Playwright errored with response: ${pw.getMessage}")))
       case NonFatal(e) =>
-        Left(ErrorWrapper("", PWError.withMessage(s"Page navigation failed with response: ${e.getMessage}")))
-    } finally {
-      try page.close()
-      finally context.close()
+        logger.error(s"[GGAutomationService] Browser automation raised ${e.getClass.getSimpleName} [correlationId=${rc.correlationId}]")
+        Left(ErrorWrapper(rc.correlationId, PWError.withMessage(s"Page navigation failed with response: ${e.getMessage}")))
+    }(playwrightEc)
+
+  private def blockingSubmit(req: SubmitRequest)(implicit rc: RequestContext): ServiceOutcome[GGAuthResponse] = {
+    Using.resource(browser.newContext(new Browser.NewContextOptions().setViewportSize(1280, 720))) { context =>
+      Using.resource(context.newPage()) { page =>
+        // Default timeout for all Playwright operations
+        page.setDefaultTimeout(15000d)
+
+        if (debugLogging) attachDebugLogging(context, page)
+
+        val ggUrl    = "https://www.qa.tax.service.gov.uk/auth-login-stub/gg-sign-in"
+        val oauthUrl = "https://www.qa.tax.service.gov.uk/oauth"
+
+        page.navigate(ggUrl, new Page.NavigateOptions().setWaitUntil(WaitUntilState.DOMCONTENTLOADED))
+
+        // --- GG sign-in stub ---
+        page.locator(GGSelectors.confidenceLevelSelect).selectOption("250")
+        page.locator(GGSelectors.affinityGroupSelect).selectOption("Individual")
+        page.locator(GGSelectors.credentialStrengthSelect).selectOption("strong")
+
+        page.locator(GGSelectors.ninoInput).fill(req.nino)
+
+        // Redirect into oauth-frontend authorize flow. (String representation handling left as-is per your note.)
+        page
+          .locator(GGSelectors.redirectUrlInput)
+          .fill(
+            s"$oauthUrl/authorize" +
+              s"?client_id=$clientId" +
+              s"&scope=read:self-assessment+write:self-assessment" +
+              s"&response_type=code" +
+              s"&redirect_uri=http://localhost:9000" +
+              s"&state=12345"
+          )
+
+        page.locator(GGSelectors.enrolmentKeyInput).fill("HMRC-MTD-IT")
+        page.locator(GGSelectors.identifierNameInput).fill("MTDITID")
+        page.locator(GGSelectors.identifierValueInput).fill(req.identifier)
+        page.locator(GGSelectors.enrolmentStateInput).selectOption("Activated")
+
+        // GG submit
+        waitForSuccessfulNavigationTo(page, "/oauth/start") {
+          page.locator(GGSelectors.submitButton).click()
+        }
+        confirmPathSuffix(page, "/oauth/start")
+
+        // /oauth/start
+        waitForSuccessfulNavigationTo(page, "/oauth/whatYouWillNeed") {
+          page.locator(OauthSelectors.startButton).click()
+        }
+        confirmPathSuffix(page, "/oauth/whatYouWillNeed")
+
+        // /oauth/whatYouWillNeed
+        waitForSuccessfulNavigationTo(page, "/oauth/grantscope") {
+          page.locator(OauthSelectors.whatYouWillNeedButton).click()
+        }
+        confirmPathSuffix(page, "/oauth/grantscope")
+
+        // On grantscope: click givePermission and capture the 303 redirect Location header,
+        // then extract the code.
+        codeFromGivePermission(page) match {
+          case Right(resp) => Right(ResponseWrapper(rc.correlationId, resp))
+          case Left(err) =>
+            logger.warn(s"[GGAutomationService] Authorization flow failed: ${err.code} [correlationId=${rc.correlationId}]")
+            Left(ErrorWrapper(rc.correlationId, err))
+        }
+
+      }
     }
   }
 
@@ -172,23 +195,21 @@ class GGAutomationService @Inject() (
     } yield GGAuthResponse(oauthCode = code)
 
   private def grantscopeRedirectLocation(page: Page): Either[MtdError, String] = {
-    val respOpt =
-      Try {
-        page.waitForResponse(
-          (r: Response) => r.url().contains("/oauth/grantscope") && r.status() == 303,
-          new Page.WaitForResponseOptions().setTimeout(5000),
-          new Runnable {
-            override def run(): Unit =
-              page.locator(OauthSelectors.givePermission).click()
-          }
-        )
-      }.toOption
+    val response =
+      page.waitForResponse(
+        (r: Response) => r.url().contains("/oauth/grantscope") && r.status() == 303,
+        new Page.WaitForResponseOptions().setTimeout(5000),
+        new Runnable {
+          override def run(): Unit =
+            page.locator(OauthSelectors.givePermission).click()
+        }
+      )
 
     val localGrantscopeOpt =
-      respOpt
-        .flatMap(r => Option(r))
+      Option(response)
         .flatMap(r => Option(r.headers()))
         .flatMap(h => Option(h.get("location")).orElse(Option(h.get("Location"))))
+        .filter(_.trim.nonEmpty)
 
     localGrantscopeOpt.toRight(GrantScopeRetrievalError)
   }
@@ -225,13 +246,8 @@ class GGAutomationService @Inject() (
     page.onPopup(p => logger.debug(s"[page.onPopup] popup opened: ${p.url()}"))
     page.onRequestFailed(r => logger.debug(s"[request failed] ${r.url()} -> ${r.failure()}"))
 
-    context.onRequest(r =>
-      try logger.debug(s"[context.onRequest] ${r.method()} ${r.url()}")
-      catch { case _: Throwable => () })
-
-    context.onResponse(r =>
-      try logger.debug(s"[context.onResponse] ${r.status()} ${r.url()}")
-      catch { case _: Throwable => () })
+    context.onRequest(r => logger.debug(s"[context.onRequest] ${r.method()} ${r.url()}"))
+    context.onResponse(r => logger.debug(s"[context.onResponse] ${r.status()} ${r.url()}"))
   }
 
 }

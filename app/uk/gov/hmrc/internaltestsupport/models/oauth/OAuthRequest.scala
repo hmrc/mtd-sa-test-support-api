@@ -18,14 +18,19 @@ package uk.gov.hmrc.internaltestsupport.models.oauth
 
 import play.api.libs.json.{Json, OFormat}
 
+import java.net.URLEncoder
+import java.nio.charset.StandardCharsets.UTF_8
+
 case class OAuthRequest(grant_type: String, code: String, redirect_uri: String, client_id: String, client_secret: String) {
 
+  private def encode(value: String): String = URLEncoder.encode(value, UTF_8)
+
   val urlEncoded: String = {
-    s"grant_type=${this.grant_type}" +
-      s"&code=${this.code}" +
-      s"&redirect_uri=${this.redirect_uri}" +
-      s"&client_id=${this.client_id}" +
-      s"&client_secret=${this.client_secret}"
+    s"grant_type=${encode(grant_type)}" +
+      s"&code=${encode(code)}" +
+      s"&redirect_uri=${encode(redirect_uri)}" +
+      s"&client_id=${encode(client_id)}" +
+      s"&client_secret=${encode(client_secret)}"
   }
 
 }

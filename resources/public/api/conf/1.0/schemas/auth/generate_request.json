@@ -1,0 +1,20 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "title": "Generate a Test OAuth Token Request",
+  "description": "The QA test individual's details used to generate an OAuth access token.",
+  "type": "object",
+  "properties": {
+    "nino": {
+      "description": "The test individual's National Insurance number. Used for Government Gateway sign-in and, when identifier is omitted, the MTD IT ID lookup.",
+      "type": "string",
+      "example": "AA123456A"
+    },
+    "identifier": {
+      "description": "The test individual's MTD IT ID, used as the HMRC-MTD-IT enrolment identifier MTDITID. If omitted or null, it is looked up using the NINO.",
+      "type": "string",
+      "nullable": true,
+      "example": "XQIT12345678901"
+    }
+  },
+  "required": ["nino"]
+}

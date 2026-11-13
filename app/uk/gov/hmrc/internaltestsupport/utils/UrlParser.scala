@@ -29,26 +29,30 @@ object UrlParser {
 
   def extractCode(url: String): Either[MtdError, String] = {
 
-    def decode(s: String): String =
-      URLDecoder.decode(s, "UTF-8")
+    def decode(s: String): Option[String] =
+      Try(URLDecoder.decode(s, "UTF-8")).toOption.filter(_.nonEmpty)
 
     def extractFrom(component: String): Option[String] =
       Option(component)
         .filter(_.nonEmpty)
         .flatMap { str =>
-          str.split("&amp;").iterator.collectFirst {
-            case part if part.startsWith("code=") =>
-              decode(part.substring("code=".length))
-          }
+          str
+            .split("&amp;|&")
+            .iterator
+            .collectFirst {
+              case part if part.startsWith("code=") =>
+                decode(part.substring("code=".length))
+            }
+            .flatten
         }
 
     def fromUri(u: String): Option[String] =
       Try(new URI(u)).toOption.flatMap { uri =>
-        extractFrom(uri.getQuery).orElse(extractFrom(uri.getFragment))
+        extractFrom(uri.getRawQuery).orElse(extractFrom(uri.getRawFragment))
       }
 
     def fromRegex(u: String): Option[String] =
-      CodeRegex.findFirstMatchIn(u).map(m => decode(m.group(1)))
+      CodeRegex.findFirstMatchIn(u).flatMap(m => decode(m.group(1)))
 
     fromUri(url)
       .orElse(fromRegex(url))

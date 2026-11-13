@@ -37,6 +37,16 @@ trait MockAppConfig extends TestSuite with MockFactory {
     def oauthToken: CallHandler[String]                      = (() => mockAppConfig.oauthToken).expects()
     def oauthEnv: CallHandler[String]                        = (() => mockAppConfig.oauthEnv).expects()
 
+    // HIP Config
+    def hipBaseUrl: CallHandler[String]                         = (() => mockAppConfig.hipBaseUrl).expects()
+    def hipEnv: CallHandler[String]                             = (() => mockAppConfig.hipEnv).expects()
+    def hipClientId: CallHandler[String]                        = (() => mockAppConfig.hipClientId).expects()
+    def hipClientSecret: CallHandler[String]                    = (() => mockAppConfig.hipClientSecret).expects()
+    def hipEnvironmentHeaders: CallHandler[Option[Seq[String]]] = (() => mockAppConfig.hipEnvironmentHeaders).expects()
+
+    def atsAppClientId: CallHandler[String]     = (() => mockAppConfig.atsAppClientId).expects()
+    def atsAppClientSecret: CallHandler[String] = (() => mockAppConfig.atsAppClientSecret).expects()
+
     // API Config
     def featureSwitches: CallHandler[Configuration]             = (() => mockAppConfig.featureSwitches).expects()
     def apiGatewayContext: CallHandler[String]                  = (() => mockAppConfig.apiGatewayContext).expects()

@@ -17,7 +17,7 @@
 package uk.gov.hmrc.internaltestsupport.controllers
 
 import api.controllers.{AuthorisedController, EndpointLogContext, RequestContext}
-import api.models.errors.{ErrorWrapper, MtdError}
+import api.models.errors.ErrorWrapper
 import api.models.outcomes.ResponseWrapper
 import api.services.AuthService
 import cats.data.EitherT
@@ -32,8 +32,6 @@ import utils.IdGenerator
 
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
-
-//TODO: this controller should be feature switched along with its route so it is never published past QA
 
 @Singleton
 class OAuthController @Inject() (
@@ -50,7 +48,7 @@ class OAuthController @Inject() (
   def post(): Action[JsValue] = Action.async(parse.json) { implicit request =>
     val endpointLogContext             = EndpointLogContext(controllerName = "OauthController", endpointName = "GetOauthToken")
     implicit val ctx: RequestContext   = RequestContext.from(idGenerator, endpointLogContext)
-    implicit val correlationId: String = idGenerator.getCorrelationId
+    implicit val correlationId: String = ctx.correlationId
 
     import uk.gov.hmrc.internaltestsupport.utils.ErrorWrapperSyntax.*
 
@@ -105,12 +103,7 @@ class OAuthController @Inject() (
       )
   }
 
-  //TODO: check all error cases and return appropriate status codes
-  private def errorResultMap(errorWrapper: ErrorWrapper): Result = {
-    (errorWrapper.error: @unchecked) match {
-      case GrantScopeRetrievalError | OAuthCodeRetrievalError => UnprocessableEntity(Json.toJson(errorWrapper))
-      case PWTimeoutError | PWError                           => InternalServerError(Json.toJson(errorWrapper))
-    }
-  }
+  private def errorResultMap(errorWrapper: ErrorWrapper): Result =
+    Status(errorWrapper.error.httpStatus)(Json.toJson(errorWrapper))
 
 }

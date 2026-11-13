@@ -1,0 +1,15 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "title": "Generate a Test OAuth Token Response",
+  "description": "An Authorization header value for subsequent test API requests.",
+  "type": "object",
+  "properties": {
+    "Authorization": {
+      "description": "The generated OAuth access token prefixed with Bearer. The field name is case-sensitive.",
+      "type": "string",
+      "example": "Bearer example-access-token"
+    }
+  },
+  "additionalProperties": false,
+  "required": ["Authorization"]
+}
