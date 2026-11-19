@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2026 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,52 +16,113 @@
 
 package api.connectors
 
-import config.DownstreamConfig
-import mocks.MockAppConfig
-import stubs.DownstreamStub
-import support.UnitSpec
+import api.config.MockAppConfig
+import api.mocks.MockHttpClient
+import api.utils.UnitSpec
+import org.scalamock.handlers.CallHandler
+import play.api.http.{HeaderNames, MimeTypes, Status}
+import play.api.libs.json.{Json, Writes}
 import uk.gov.hmrc.http.HeaderCarrier
-import uk.gov.hmrc.http.test.{HttpClientV2Support, WireMockSupport}
 
-import scala.concurrent.ExecutionContext
+import java.net.URL
+import scala.concurrent.{ExecutionContext, Future}
 
-trait ConnectorSpec extends UnitSpec with WireMockSupport with DownstreamStub with HttpClientV2Support {
-  implicit val requestCorrelationId: String = "requestCorrelationId"
-  val responseCorrelationId: String         = "responseCorrelationId"
+trait ConnectorSpec extends UnitSpec with Status with MimeTypes with HeaderNames {
 
-  protected val baseUrl: String = s"http://localhost:$wireMockPort"
+  lazy val baseUrl: String           = "http://test-BaseUrl"
+  implicit val correlationId: String = "a1e8057e-fbbc-47a8-a8b4-78d9f015c253"
 
-  protected val notPassedThroughHeader: (String, String) = "NotPassedThroughHeader" -> "NotPassedThroughValue"
-  protected val passedThroughHeader: (String, String)    = "PassedThroughHeader"    -> "PassedThroughValue"
+  val otherHeaders: Seq[(String, String)] = List(
+    "Gov-Test-Scenario" -> "DEFAULT",
+    "AnotherHeader"     -> "HeaderValue"
+  )
 
-  val headersInRequest: Seq[(String, String)] = Seq(passedThroughHeader, notPassedThroughHeader)
-
-  implicit val hc: HeaderCarrier    = HeaderCarrier(otherHeaders = headersInRequest)
+  implicit val hc: HeaderCarrier    = HeaderCarrier(otherHeaders = otherHeaders)
   implicit val ec: ExecutionContext = scala.concurrent.ExecutionContext.global
 
-  val responseHeaders: Seq[(String, String)] = Seq("correlationId" -> responseCorrelationId)
+  val dummyHeaderCarrierConfig: HeaderCarrier.Config =
+    HeaderCarrier.Config(
+      List("^not-test-BaseUrl?$".r),
+      Nil,
+      Some("mtd-sa-test-support-api")
+    )
 
-  val requiredHeaders: Seq[(String, String)] = Seq(
-    "CorrelationId" -> requestCorrelationId,
-    passedThroughHeader
-  )
-
-  val allowedHeaderNames: Seq[String] = Seq(
+  val allowedHeaders: Seq[String] = List(
+    "Accept",
+    "Gov-Test-Scenario",
     "Content-Type",
-    "PassedThroughHeader"
+    "Location",
+    "X-Request-Timestamp",
+    "X-Session-Id"
   )
 
-  val stubEnv   = "ET"
-  val stubToken = "ABCD1234"
+  protected trait StubTest extends MockHttpClient with MockAppConfig {
+    protected val baseUrl: String = "http://test-BaseUrl"
 
-  val downstreamConfig: DownstreamConfig = DownstreamConfig(this.baseUrl, stubEnv, stubToken, Some(allowedHeaderNames))
+    implicit protected val hc: HeaderCarrier = HeaderCarrier(otherHeaders = otherHeaders)
 
-  protected trait ConnectorTest extends MockAppConfig
+    protected val requiredHeaders: Seq[(String, String)] = List(
+      "Authorization"     -> "Bearer stub-token",
+      "Environment"       -> "stub-environment",
+      "User-Agent"        -> "mtd-sa-test-support-api",
+      "CorrelationId"     -> correlationId,
+      "Gov-Test-Scenario" -> "DEFAULT"
+    )
 
-  protected trait StubTest extends ConnectorTest {
-    MockAppConfig.stubDownstreamConfig returns downstreamConfig
-    MockAppConfig.stubEnv returns stubEnv
-    MockAppConfig.stubToken returns stubToken
+    MockedAppConfig.stubBaseUrl returns baseUrl
+    MockedAppConfig.stubToken returns "stub-token"
+    MockedAppConfig.stubEnv returns "stub-environment"
+    MockedAppConfig.stubEnvironmentHeaders returns Some(allowedHeaders)
+
+    protected def willGet[T](url: URL, parameters: Seq[(String, String)] = Nil): CallHandler[Future[T]] = {
+      MockedHttpClient.get(
+        url = url,
+        config = dummyHeaderCarrierConfig,
+        parameters = parameters,
+        requiredHeaders = requiredHeaders,
+        excludedHeaders = List("AnotherHeader" -> "HeaderValue")
+      )
+    }
+
+    protected def willPost[BODY, T](url: URL, body: BODY)(implicit writes: Writes[BODY]): CallHandler[Future[T]] = {
+      MockedHttpClient.post(
+        url = url,
+        config = dummyHeaderCarrierConfig,
+        body = Json.toJson(body),
+        requiredHeaders = requiredHeaders ++ List("Content-Type" -> "application/json"),
+        excludedHeaders = List("AnotherHeader" -> "HeaderValue")
+      )
+    }
+
+    protected def willPostEmpty[T](url: URL): CallHandler[Future[T]] = {
+      MockedHttpClient.postEmpty(
+        url = url,
+        config = dummyHeaderCarrierConfig,
+        requiredHeaders = requiredHeaders,
+        excludedHeaders = List("AnotherHeader" -> "HeaderValue")
+      )
+    }
+
+    protected def willPut[BODY, T](url: URL, body: BODY)(implicit writes: Writes[BODY]): CallHandler[Future[T]] = {
+      MockedHttpClient.put(
+        url = url,
+        config = dummyHeaderCarrierConfig,
+        body = Json.toJson(body),
+        requiredHeaders = requiredHeaders ++ List("Content-Type" -> "application/json"),
+        excludedHeaders = List("AnotherHeader" -> "HeaderValue")
+      )
+    }
+
+    protected def willDelete[T](url: URL, parameters: Seq[(String, String)] = Nil): CallHandler[Future[T]] = {
+      MockedHttpClient.delete(
+        url = url,
+        config = dummyHeaderCarrierConfig,
+        parameters = parameters,
+        requiredHeaders = requiredHeaders,
+        excludedHeaders = List("AnotherHeader" -> "HeaderValue")
+      )
+    }
+
   }
 
 }

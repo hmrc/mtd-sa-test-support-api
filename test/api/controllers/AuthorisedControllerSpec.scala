@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2026 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,9 +16,8 @@
 
 package api.controllers
 
-import api.mocks.services.MockAuthService
 import api.models.errors.{ClientNotAuthenticatedError, ClientNotAuthorisedError, InternalError, InvalidBearerTokenError, MtdError}
-import api.services.AuthService
+import api.services.{AuthService, MockAuthService}
 import play.api.libs.json.Json
 import play.api.mvc.{Action, AnyContent}
 import uk.gov.hmrc.auth.core.Enrolment
@@ -61,7 +60,7 @@ class AuthorisedControllerSpec extends ControllerBaseSpec {
     "the MTD user is not authorised" when {
 
       def testNotAuth(error: MtdError): Unit =
-        s"the service returns an error with code ${error.code}" must {
+        s"the service returns an error with code ${error.code}" should {
           s"return a ${error.httpStatus} with code ${error.code}" in new Test {
             MockedEnrolmentsAuthService.authorised
               .returns(Future.successful(Left(error)))

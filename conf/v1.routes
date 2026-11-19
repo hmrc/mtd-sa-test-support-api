@@ -1,21 +1,21 @@
 # microservice specific routes
 
 # State deletion routes
-DELETE        /vendor-state                                     uk.gov.hmrc.mtdsatestsupportapi.controllers.DeleteVendorStateController.handleRequest(nino: Option[String])
+DELETE        /vendor-state                                     v1.deleteStatefulTestData.DeleteStatefulTestDataController.handleRequest(nino: Option[String])
 
 # Checkpointing routes
-POST          /vendor-state/checkpoints                         uk.gov.hmrc.mtdsatestsupportapi.controllers.CreateCheckpointController.handleRequest(nino: Option[String])
+POST          /vendor-state/checkpoints                         v1.createCheckpoint.CreateCheckpointController.handleRequest(nino: Option[String])
 
-GET           /vendor-state/checkpoints                         uk.gov.hmrc.mtdsatestsupportapi.controllers.ListCheckpointsController.handleRequest(nino: Option[String])
+GET           /vendor-state/checkpoints                         v1.listCheckpoints.ListCheckpointsController.handleRequest(nino: Option[String])
 
-DELETE        /vendor-state/checkpoints/:checkpointId           uk.gov.hmrc.mtdsatestsupportapi.controllers.DeleteCheckpointController.handleRequest(checkpointId: String)
+DELETE        /vendor-state/checkpoints/:checkpointId           v1.deleteCheckpoint.DeleteCheckpointController.handleRequest(checkpointId: String)
 
-POST          /vendor-state/checkpoints/:checkpointId/restore   uk.gov.hmrc.mtdsatestsupportapi.controllers.RestoreCheckpointController.handleRequest(checkpointId: String)
+POST          /vendor-state/checkpoints/:checkpointId/restore   v1.restoreCheckpoint.RestoreCheckpointController.handleRequest(checkpointId: String)
 
 # Test Business Routes
-DELETE       /business/:nino/:businessId                        uk.gov.hmrc.mtdsatestsupportapi.controllers.DeleteTestBusinessController.handleRequest(nino: String, businessId:String)
+DELETE       /business/:nino/:businessId                        v1.deleteTestBusiness.DeleteTestBusinessController.handleRequest(nino: String, businessId:String)
 
-POST        /business/:nino                                     uk.gov.hmrc.mtdsatestsupportapi.controllers.CreateTestBusinessController.handleRequest(nino: String)
+POST        /business/:nino                                     v1.createTestBusiness.CreateTestBusinessController.handleRequest(nino: String)
 
 # ITSA Status Routes
-POST        /itsa-status/:nino/:taxYear                         uk.gov.hmrc.mtdsatestsupportapi.controllers.CreateAmendITSAStatusController.handleRequest(nino: String, taxYear: String)
+POST        /itsa-status/:nino/:taxYear                         v1.createAmendItsaStatus.CreateAmendItsaStatusController.handleRequest(nino: String, taxYear: String)

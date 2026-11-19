@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2026 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,92 +16,96 @@
 
 package api.models.domain
 
-import utils.DateTimeSupport
+import play.api.libs.json.Writes
 
+import java.time.{Clock, LocalDate}
 import scala.math.Ordering.Implicits.*
-import java.time.LocalDate
 
-/** Opaque representation of a tax year A single-year representation, e.g. "2024" represents the tax year 2023-24
+/** Opaque representation of a tax year.
+  *
+  * @param value
+  *   A single-year representation, e.g. "2027" represents the tax year 2026-27.
   */
-sealed abstract case class TaxYear(endYear: Int) {
-  def startYear: Int = endYear - 1
+final case class TaxYear private (private val value: String) {
+
+  /** The year that the tax year ends as a number, e.g. for "2026-27" this will be 2027.
+    */
+  val year: Int = value.toInt
+
+  /** The year that the tax year starts as a number, e.g. for "2026-27" this will be 2026.
+    */
+  val startYear: Int = year - 1
 
   def startDate: LocalDate = TaxYear.startInYear(startYear)
-  def endDate: LocalDate   = startDate.plusYears(1).minusDays(1)
 
-  /** The tax year as a string in a YY-YY format e.g. "23-24".
+  def endDate: LocalDate = startDate.plusYears(1).minusDays(1)
+
+  /** The tax year in MTD (vendor-facing) format, e.g. "2026-27".
     */
-  def asTys: String = {
-    val year2 = endYear - 2000
-    val year1 = year2 - 1
-    s"$year1-$year2"
+  val asMtd: String = {
+    val prefix  = value.take(2)
+    val yearTwo = value.drop(2)
+    val yearOne = (yearTwo.toInt - 1).toString
+    prefix + yearOne + "-" + yearTwo
   }
 
-  /** The tax year as a string in a YYYY format e.g. "2024".
+  /** The tax year in the pre-TYS downstream format, e.g. "2027".
     */
-  def asDownstream: String = endYear.toString
+  val asDownstream: String = value
 
-  /** The tax year as a string in a YYYY format e.g. "2023-24".
+  /** The tax year in the Tax Year Specific downstream format, e.g. "26-27".
     */
-  def asMtd: String = {
-    val year2 = endYear - 2000
-    s"$startYear-$year2"
+  val asTysDownstream: String = {
+    val yearTwo = value.toInt - 2000
+    val yearOne = yearTwo - 1
+    s"$yearOne-$yearTwo"
   }
 
-  override def toString: String = s"TaxYear($startYear - $endYear)"
-
+  override def toString: String = s"TaxYear($value)"
 }
 
-object TaxYear extends DateTimeSupport {
+object TaxYear {
 
-  /** UK tax year starts on 6th of April, and ends on the following 5th of April
+  /** UK tax year starts on 6 April.
     */
-  private val taxYearMonthStartEnd = 4
-  private val taxYearDayStart      = 6
+  private val taxYearMonthStart = 4
+  private val taxYearDayStart   = 6
 
-  private val tysEndYearRegex   = """\d{2}-(\d{2})""".r
-  private val yyyyEndYearRegex  = """(\d{4})""".r
-  private val mtdStartYearRegex = """(\d{4})-\d{2}""".r
+  def starting(year: Int): TaxYear = TaxYear.ending(year + 1)
+  def ending(year: Int): TaxYear   = new TaxYear(year.toString)
 
-  def ending(year: Int): TaxYear = new TaxYear(year) {}
+  /** @param taxYear
+    *   tax year in MTD format (e.g. 2026-27)
+    */
+  def fromMtd(taxYear: String): TaxYear =
+    TaxYear(taxYear.take(2) + taxYear.drop(5))
 
-  /*
-   * Gets a TaxYear from YY-YY (e.g. 22-23) format
-   */
-  def fromTys(value: String): TaxYear =
-    value match {
-      case tysEndYearRegex(endYear) => TaxYear.ending(2000 + endYear.toInt)
-      case _ =>
-        throw new IllegalArgumentException(s"Invalid value: $value does not match the YY-YY pattern")
-    }
+  def now(implicit clock: Clock = Clock.systemUTC): TaxYear            = TaxYear.containing(LocalDate.now(clock))
+  def currentTaxYear(implicit clock: Clock = Clock.systemUTC): TaxYear = TaxYear.now
 
-  /*
-   * Gets a TaxYear from YYYY (e.g. 2023) format
-   */
-  def fromDownstream(value: String): TaxYear =
-    value match {
-      case yyyyEndYearRegex(endYear) => TaxYear.ending(endYear.toInt)
-      case _ =>
-        throw new IllegalArgumentException(s"Invalid value: $value does not match the YYYY pattern")
-    }
-
-  /*
-   * Gets a TaxYear from YYYY-YY (e.g. 2023-24) format
-   */
-  def fromMtd(value: String): TaxYear =
-    value match {
-      case mtdStartYearRegex(startYear) => TaxYear.ending(startYear.toInt + 1)
-      case _ =>
-        throw new IllegalArgumentException(s"Invalid value: $value does not match the YYYY-YY pattern")
-    }
+  /** @param date
+    *   the date in extended ISO-8601 format (e.g. 2027-04-05)
+    */
+  def fromIso(date: String): TaxYear = containing(LocalDate.parse(date))
 
   def containing(date: LocalDate): TaxYear = {
-    val endYear = if (date < startInYear(date.getYear)) date.getYear else date.getYear + 1
+    val year = (
+      if (isPreviousTaxYear(date)) date.getYear else date.getYear + 1
+    ).toString
 
-    TaxYear.ending(endYear)
+    new TaxYear(year)
   }
 
-  private def startInYear(year: Int): LocalDate =
-    LocalDate.of(year, taxYearMonthStartEnd, taxYearDayStart)
+  private def isPreviousTaxYear(date: LocalDate): Boolean = {
+    val taxYearStartDate = LocalDate.of(date.getYear, taxYearMonthStart, taxYearDayStart)
+    date.isBefore(taxYearStartDate)
+  }
 
+  private def startInYear(year: Int): LocalDate = LocalDate.of(year, taxYearMonthStart, taxYearDayStart)
+
+  def fromDownstream(taxYear: String): TaxYear = new TaxYear(taxYear)
+
+  implicit val ordering: Ordering[TaxYear] = Ordering.by(_.year)
+
+  implicit val writes: Writes[TaxYear] = implicitly[Writes[String]].contramap(_.asMtd)
 }

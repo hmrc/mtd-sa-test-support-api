@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2026 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,8 +16,8 @@
 
 package api.models.errors
 
-import play.api.libs.json.Json
-import support.UnitSpec
+import api.utils.UnitSpec
+import play.api.libs.json.*
 
 class DownstreamErrorCodeSpec extends UnitSpec {
 
@@ -33,6 +33,10 @@ class DownstreamErrorCodeSpec extends UnitSpec {
 
     "generate the correct error code" in {
       json.as[DownstreamErrorCode] shouldBe DownstreamErrorCode("CODE")
+    }
+
+    "return an error when JSON is invalid" in {
+      JsObject.empty.validate[DownstreamErrorCode] shouldBe a[JsError]
     }
   }
 

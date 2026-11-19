@@ -1,0 +1,107 @@
+/*
+ * Copyright 2026 HM Revenue & Customs
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package api.controllers
+
+import api.config.MockAppConfig
+import api.config.rewriters.DocumentationRewriters
+import api.config.rewriters.DocumentationRewriters.{CheckAndRewrite, CheckRewrite}
+import api.definition.ApiDefinitionFactory
+import com.typesafe.config.ConfigFactory
+import controllers.{RewriteableAssets, Rewriter}
+import org.apache.pekko.stream.Materializer
+import org.apache.pekko.stream.testkit.NoMaterializer
+import org.scalamock.handlers.CallHandler
+import play.api.Configuration
+import play.api.mvc.*
+import play.api.mvc.Results.Ok
+import uk.gov.hmrc.http.HeaderCarrier
+
+import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.Future
+
+class DocumentationControllerSpec extends ControllerBaseSpec with MockAppConfig {
+
+  "asset rewriting" when {
+    "all rewriters are to be used" should {
+      "use all rewriters" in new Test {
+        willUse(check1) returns true
+        willUse(check2) returns true
+        willRewriteUsing(Seq(rewriter1, rewriter2)) returns rewrittenOkAction
+
+        val response: Future[Result] = requestAsset(filename)
+        status(response) shouldBe OK
+        contentAsString(response) shouldBe rewrittenContent
+      }
+    }
+
+    "some rewriters are not be used" should {
+      "only use the required rewriters" in new Test {
+        willUse(check1) returns false
+        willUse(check2) returns true
+        willRewriteUsing(Seq(rewriter2)) returns rewrittenOkAction
+
+        val response: Future[Result] = requestAsset(filename)
+        status(response) shouldBe OK
+        contentAsString(response) shouldBe rewrittenContent
+      }
+    }
+  }
+
+  trait Test {
+    val hc: HeaderCarrier = HeaderCarrier()
+
+    val version          = "1.0"
+    val filename         = "someFile.ext"
+    val rewrittenContent = "RE-WRITTEN"
+
+    protected def requestAsset(filename: String, accept: String = "text/yaml"): Future[Result] =
+      controller.asset("1.0", filename)(fakeGetRequest.withHeaders(ACCEPT -> accept))
+
+    private val apiFactory    = new ApiDefinitionFactory(mockAppConfig)
+    private val actionBuilder = DefaultActionBuilder(BodyParsers.utils.ignore[AnyContent](AnyContentAsEmpty))
+
+    protected val check1: CheckRewrite = mock[CheckRewrite]
+    protected val rewriter1: Rewriter  = mock[Rewriter]
+
+    protected val check2: CheckRewrite = mock[CheckRewrite]
+    protected val rewriter2: Rewriter  = mock[Rewriter]
+
+    private val docRewriters = new DocumentationRewriters {
+
+      override def rewriteables: Seq[CheckAndRewrite] = {
+        Seq(CheckAndRewrite(check1, rewriter1), CheckAndRewrite(check2, rewriter2))
+      }
+
+    }
+
+    private val config = new Configuration(ConfigFactory.load())
+
+    protected def willUse(check: CheckRewrite): CallHandler[Boolean] =
+      (check(_: String, _: String)).expects(version, filename)
+
+    protected def willRewriteUsing(rewriters: Seq[Rewriter]): CallHandler[Action[AnyContent]] =
+      (rewriteableAssets.rewriteableAt(_: String, _: String, _: Seq[Rewriter])).expects(s"/public/api/conf/$version", filename, rewriters)
+
+    protected def rewrittenOkAction: Action[AnyContent] = actionBuilder { (_: Request[AnyContent]) => Ok(rewrittenContent) }
+
+    implicit val materializer: Materializer = NoMaterializer
+    private val rewriteableAssets           = mock[RewriteableAssets]
+
+    protected def controller = new DocumentationController(apiFactory, docRewriters, rewriteableAssets, config, cc)
+  }
+
+}

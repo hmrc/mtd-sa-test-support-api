@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2026 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,15 +16,15 @@
 
 package api.services
 
+import api.config.MockAppConfig
 import api.models.auth.UserDetails
-import api.models.errors.{ClientNotAuthenticatedError, InvalidBearerTokenError, MtdError}
-import mocks.MockAppConfig
+import api.models.errors.{ClientNotAuthenticatedError, InternalError, InvalidBearerTokenError, MtdError}
 import org.scalamock.handlers.CallHandler
 import play.api.Configuration
 import uk.gov.hmrc.auth.core.*
 import uk.gov.hmrc.auth.core.authorise.{EmptyPredicate, Predicate}
 import uk.gov.hmrc.auth.core.retrieve.{EmptyRetrieval, Retrieval}
-import uk.gov.hmrc.http.HeaderCarrier
+import uk.gov.hmrc.http.{HeaderCarrier, UpstreamErrorResponse}
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -39,14 +39,25 @@ class AuthServiceSpec extends ServiceSpec with MockAppConfig {
       await(target.authorised) shouldBe Right(UserDetails("Authorised", None))
     }
 
-    "disallow users that are not logged in" in
+    "disallow users that are not logged in" in {
       authFailure(InvalidBearerToken(), InvalidBearerTokenError)
+    }
 
-    "disallow requests without a bearer token" in
+    "disallow requests without a bearer token" in {
       authFailure(MissingBearerToken(), InvalidBearerTokenError)
+    }
 
-    "disallow users where auth fails in other ways" in
+    "disallow users where auth call returns AuthorisationException" in {
       authFailure(new AuthorisationException("general auth failure") {}, ClientNotAuthenticatedError)
+    }
+
+    "disallow users where auth call returns an unexpected exception" in new Test {
+      MockedAuthConnector
+        .authorised()
+        .returns(Future.failed(UpstreamErrorResponse("FORBIDDEN", FORBIDDEN)))
+
+      await(target.authorised) shouldBe Left(InternalError)
+    }
 
     def authFailure(authException: AuthorisationException, expectedError: MtdError): Unit = new Test {
       MockedAuthConnector
@@ -56,7 +67,7 @@ class AuthServiceSpec extends ServiceSpec with MockAppConfig {
       await(target.authorised) shouldBe Left(expectedError)
     }
 
-    "calling auth is bypassed" must {
+    "calling auth is bypassed" should {
       "do nothing (but return a successful result anyway)" in new BaseTest(callAuthEnabled = false) {
         await(target.authorised) shouldBe Right(UserDetails("Authorised", None))
       }
@@ -66,7 +77,7 @@ class AuthServiceSpec extends ServiceSpec with MockAppConfig {
   class Test extends BaseTest(callAuthEnabled = true)
 
   abstract class BaseTest(callAuthEnabled: Boolean) {
-    MockAppConfig.featureSwitches.returns(Configuration("callAuth.enabled" -> callAuthEnabled)).anyNumberOfTimes()
+    MockedAppConfig.featureSwitches.returns(Configuration("callAuth.enabled" -> callAuthEnabled)).anyNumberOfTimes()
 
     val mockAuthConnector: AuthConnector = mock[AuthConnector]
     lazy val target                      = new AuthService(mockAuthConnector, mockAppConfig)

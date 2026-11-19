@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2026 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,17 +16,18 @@
 
 package api.connectors.httpparsers
 
-import play.api.http.Status.*
-import play.api.libs.json.Reads
-import uk.gov.hmrc.http.{HttpReads, HttpResponse}
 import api.connectors.DownstreamOutcome
 import api.models.errors.{InternalError, OutboundError}
 import api.models.outcomes.ResponseWrapper
+import play.api.http.Status.*
+import play.api.libs.json.Reads
+import uk.gov.hmrc.http.{HttpReads, HttpResponse}
 
-trait StandardDownstreamHttpParser extends HttpParser {
-  import StandardDownstreamHttpParser.SuccessCode
+object StandardDownstreamHttpParser extends HttpParser {
 
-  // Return HttpReads[DownstreamOutcome[Unit]] as success response has no body - no need to assign it a value
+  case class SuccessCode(status: Int) extends AnyVal
+
+  // Return Right[IfsResponse[Unit]] as success response has no body - no need to assign it a value
   implicit def readsEmpty(implicit successCode: SuccessCode = SuccessCode(NO_CONTENT)): HttpReads[DownstreamOutcome[Unit]] =
     (_: String, url: String, response: HttpResponse) =>
       doRead(url, response) { correlationId =>
@@ -36,7 +37,7 @@ trait StandardDownstreamHttpParser extends HttpParser {
   implicit def reads[A: Reads](implicit successCode: SuccessCode = SuccessCode(OK)): HttpReads[DownstreamOutcome[A]] =
     (_: String, url: String, response: HttpResponse) =>
       doRead(url, response) { correlationId =>
-        response.validateJson[A] match {
+        response.validateJsonWithLogging[A] match {
           case Some(ref) => Right(ResponseWrapper(correlationId, ref))
           case None      => Left(ResponseWrapper(correlationId, OutboundError(InternalError)))
         }
@@ -50,7 +51,7 @@ trait StandardDownstreamHttpParser extends HttpParser {
     if (response.status != successCode.status) {
       logger.warn(
         "[StandardDownstreamHttpParser][read] - " +
-          s"Error response received from back-end with status: ${response.status} and body\n" +
+          s"Error response received from downstream with status: ${response.status} and body\n" +
           s"${response.body} and correlationId: $correlationId when calling $url")
     }
 
@@ -58,15 +59,15 @@ trait StandardDownstreamHttpParser extends HttpParser {
       case successCode.status =>
         logger.info(
           "[StandardDownstreamHttpParser][read] - " +
-            s"Success response received from back-end with correlationId: $correlationId when calling $url")
+            s"Success response received from downstream with correlationId: $correlationId when calling $url")
         successOutcomeFactory(correlationId)
-      case BAD_REQUEST | NOT_FOUND | FORBIDDEN | CONFLICT | UNPROCESSABLE_ENTITY | GONE => Left(ResponseWrapper(correlationId, parseErrors(response)))
-      case _ => Left(ResponseWrapper(correlationId, OutboundError(InternalError)))
+
+      case BAD_REQUEST | NOT_FOUND | FORBIDDEN | CONFLICT | UNPROCESSABLE_ENTITY | GONE =>
+        Left(ResponseWrapper(correlationId, parseErrors(response)))
+
+      case _ =>
+        Left(ResponseWrapper(correlationId, OutboundError(InternalError)))
     }
   }
 
-}
-
-object StandardDownstreamHttpParser extends StandardDownstreamHttpParser {
-  case class SuccessCode(status: Int) extends AnyVal
 }

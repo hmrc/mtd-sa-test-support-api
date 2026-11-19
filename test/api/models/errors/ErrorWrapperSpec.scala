@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2026 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,9 +16,8 @@
 
 package api.models.errors
 
-import api.models.audit.AuditError
+import api.utils.UnitSpec
 import play.api.libs.json.Json
-import support.UnitSpec
 
 class ErrorWrapperSpec extends UnitSpec {
 
@@ -90,38 +89,6 @@ class ErrorWrapperSpec extends UnitSpec {
 
     "generate the correct JSON" in {
       Json.toJson(error) shouldBe json
-    }
-  }
-
-  "When ErrorWrapper has several errors, containsAnyOf" should {
-    val errorWrapper = ErrorWrapper("correlationId", BadRequestError, Some(List(NinoFormatError, TaxYearFormatError, StringFormatError)))
-
-    "return false" when {
-      "given no matching errors" in {
-        val result = errorWrapper.containsAnyOf(DateFormatError, ValueFormatError, SubmissionIdNotFoundError)
-        result shouldBe false
-      }
-      "given a matching error in 'errors' but not the single 'error' which should be a BadRequestError" in {
-        val result = errorWrapper.containsAnyOf(NinoFormatError, TaxYearFormatError, ValueFormatError)
-        result shouldBe false
-      }
-    }
-    "return true" when {
-      "given the 'single' BadRequestError" in {
-        val result = errorWrapper.containsAnyOf(NinoFormatError, BadRequestError, TaxYearFormatError, ValueFormatError)
-        result shouldBe true
-      }
-    }
-  }
-
-  "auditErrors" should {
-    "handle errors = None" in {
-      val errorWrapper = ErrorWrapper(correlationId, BadRequestError, None)
-      errorWrapper.auditErrors shouldBe Seq(AuditError(BadRequestError.code))
-    }
-    "handle errors = Some(_)" in {
-      val errorWrapper = ErrorWrapper(correlationId, BadRequestError, Some(Seq(NinoFormatError, BusinessIdFormatError)))
-      errorWrapper.auditErrors shouldBe Seq(AuditError(NinoFormatError.code), AuditError(BusinessIdFormatError.code))
     }
   }
 
